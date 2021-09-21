@@ -1,4 +1,4 @@
-# 🍽️ Food Devil
+# 🍽️ Food Devil 💙
 This is our repo for the CS316 semester project. Our project is a tool for students to explore Duke Dining's offerings and maintain a healthy diet.
 
 Features include: 
