@@ -4,6 +4,7 @@ This is our repo for the CS316 semester project. Food Devil is a tool for studen
 Features include: 
 * Nutritional database of dining locations
 * Diet tracking
+* Campus feed
 * Meal recommendations
 * On and off-campus food reviews
 
