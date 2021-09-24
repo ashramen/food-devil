@@ -9,3 +9,6 @@ Features include:
 * On and off-campus food reviews
 
 Our tech stack: MERN (React on frontend, Node on backend, MongoDB for database).
+
+# Running the App
+`npm start` in the root folder
