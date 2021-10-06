@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import Sidebar from './components/home/sidebar';
 import AddMeal from "./components/addmeal/addMeal";
 import Home from "./components/home/home";
 import Restaurants from "./components/restaurants/restuarants";
@@ -11,7 +10,6 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Sidebar/>
         <Switch>
           <Route exact path="/">
             <Home />
