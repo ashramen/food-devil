@@ -1,28 +1,32 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import Example from './components/example/example';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Sidebar from './components/home/sidebar';
+import AddMeal from "./components/addmeal/addMeal";
+import Home from "./components/home/home";
+import Restaurants from "./components/restaurants/restuarants";
+import Login from "./components/login/login";
 
 function App() {
   return (
     <div className="App">
-      <Sidebar/>
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <Example display = 'hello world!'/>
-      </header>
+      <BrowserRouter>
+        <Sidebar/>
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route exact path="/addmeal">
+            <AddMeal />
+          </Route>
+          <Route exact path="/restaurants">
+            <Restaurants />
+          </Route>
+          <Route exact path="/login">
+            <Login />
+          </Route>
+        </Switch>
+      </BrowserRouter>
     </div>
   );
 }

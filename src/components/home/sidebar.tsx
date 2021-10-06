@@ -112,11 +112,11 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
                         }}/>
                         <ListItemText primary={'Home'}/>
                         </ListItemButton>
-                        <ListItemButton component="a" href="/recorddiet">
+                        <ListItemButton component="a" href="/addmeal">
                         <FastfoodIcon sx={{
                             color: 'white'
                         }}/>
-                        <ListItemText primary={'Record Diet'}/>
+                        <ListItemText primary={'Add Meal'}/>
                         </ListItemButton>
                         <ListItemButton component="a" href="/restaurants">
                         <RestaurantIcon sx={{
