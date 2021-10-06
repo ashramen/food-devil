@@ -11,4 +11,4 @@ Features include:
 Our tech stack: MERN (React on frontend, Node on backend, MongoDB for database).
 
 # Running the App
-`npm start` in the root folder
+After you `cd` into the root folder, run `npm install` to install all dependencies, followed by `npm start` to run the app.
