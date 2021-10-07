@@ -17,6 +17,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 import { logIn, logOut } from '../../store/actions';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 160;
 
@@ -32,8 +33,7 @@ const ListItemText = styled(MuiListItemText)(() => ({
     color: 'white'
 }));
 
-interface sidebarProps extends PropsFromRedux {
-};
+interface sidebarProps extends PropsFromRedux{};
 
 interface sidebarStates {
     open: boolean;
@@ -60,8 +60,6 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
             this.props.logOut();
         } else {
             // TODO: redirect this to a sign-in page where this.props.logIn() will be called
-            this.props.logIn('username');
-            window.location.href = "/login";
         }
     };
 
@@ -106,27 +104,35 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
                         </IconButton>
                     </DrawerHeader>
                     <List>
-                        <ListItemButton component="a" href="/">
-                        <HomeIcon sx={{
-                            color: 'white'
-                        }}/>
-                        <ListItemText primary={'Home'}/>
-                        </ListItemButton>
-                        <ListItemButton component="a" href="/addmeal">
-                        <FastfoodIcon sx={{
-                            color: 'white'
-                        }}/>
-                        <ListItemText primary={'Add Meal'}/>
-                        </ListItemButton>
-                        <ListItemButton component="a" href="/restaurants">
-                        <RestaurantIcon sx={{
-                            color: 'white'
-                        }}/>
-                        <ListItemText primary={'Restaurants'}/>
-                        </ListItemButton>
+                        <Link to='/' style={{ textDecoration: 'none' }}>
+                            <ListItemButton>
+                            <HomeIcon sx={{
+                                color: 'white'
+                            }}/>
+                            <ListItemText primary={'Home'}/>
+                            </ListItemButton>
+                        </Link>
+                        <Link to='/addmeal' style={{ textDecoration: 'none' }}>
+                            <ListItemButton>
+                            <FastfoodIcon sx={{
+                                color: 'white'
+                            }}/>
+                            <ListItemText primary={'Add Meal'}/>
+                            </ListItemButton>
+                        </Link>
+                        <Link to='/restaurants' style={{ textDecoration: 'none' }}>
+                            <ListItemButton>
+                            <RestaurantIcon sx={{
+                                color: 'white'
+                            }}/>
+                            <ListItemText primary={'Restaurants'}/>
+                            </ListItemButton>
+                        </Link>
                     </List>
                 </Drawer>
-                <Button variant="text" onClick={() => this.handleLogInButton()}>{this.props.loggedIn? 'Log Out' : 'Log In'}</Button>
+                <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
+                    <Button variant="text" onClick={() => this.handleLogInButton()}>{this.props.loggedIn? 'Log Out' : 'Log In'}</Button>
+                </Link>
             </Box>
         );
     }
