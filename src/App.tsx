@@ -9,6 +9,7 @@ import Login from "./components/login/login";
 function App() {
   return (
     <div className="App">
+      <div className="content">
       <BrowserRouter>
         <Switch>
           <Route exact path="/">
@@ -25,6 +26,7 @@ function App() {
           </Route>
         </Switch>
       </BrowserRouter>
+      </div>
     </div>
   );
 }

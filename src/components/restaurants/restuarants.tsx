@@ -1,10 +1,14 @@
 import React from 'react';
+import Sidebar from '../sidebar/sidebar';
 
 class Restaurants extends React.Component{
 
   render() {
     return (
-        <h1>Restaurants</h1>
+        <>
+          <Sidebar isLogIn={false}/>
+          <h1>Restaurants</h1>
+        </>
     );
   }
 }

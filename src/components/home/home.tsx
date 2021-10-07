@@ -1,14 +1,14 @@
 import React from 'react';
-import Sidebar from './sidebar';
+import Sidebar from '../sidebar/sidebar';
 
 class Home extends React.Component{
 
   render() {
     return (
-        <div>
-          <Sidebar/>
+        <>
+          <Sidebar isLogIn={false}/>
           <h1>Home</h1>
-        </div>
+        </>
     );
   }
 }
