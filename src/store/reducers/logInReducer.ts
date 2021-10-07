@@ -7,7 +7,7 @@ interface State {
 
 const initialState: State = {
     loggedIn: false,
-    username: null
+    username: null,
 };
 
 const logInReducer = (state: State = initialState, action: Action) => {
@@ -16,7 +16,7 @@ const logInReducer = (state: State = initialState, action: Action) => {
             return {
                 ...state,
                 loggedIn: true,
-                username: action.payload,
+                username: action.payload.username,
             };
         case ActionType.LOG_OUT:
             return {

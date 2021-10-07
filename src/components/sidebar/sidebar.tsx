@@ -18,6 +18,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 import { logIn, logOut } from '../../store/actions';
 import { Link } from 'react-router-dom';
+import './styles.css';
 
 const drawerWidth = 160;
 
@@ -33,7 +34,9 @@ const ListItemText = styled(MuiListItemText)(() => ({
     color: 'white'
 }));
 
-interface sidebarProps extends PropsFromRedux{};
+interface sidebarProps extends PropsFromRedux{
+    isLogIn: boolean;
+};
 
 interface sidebarStates {
     open: boolean;
@@ -43,7 +46,7 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
     constructor(props: sidebarProps) {
         super(props);
         this.state = {
-            open: true
+            open: false
         };
     }
 
@@ -130,9 +133,12 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
                         </Link>
                     </List>
                 </Drawer>
-                <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
-                    <Button variant="text" onClick={() => this.handleLogInButton()}>{this.props.loggedIn? 'Log Out' : 'Log In'}</Button>
-                </Link>
+                {this.props.loggedIn? <div className='login'>Logged in as {this.props.username}</div> : <div></div>}
+                {this.props.isLogIn? <div></div> : <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
+                    <div className='loginButton'>
+                        <Button variant="contained" onClick={() => this.handleLogInButton()}>{this.props.loggedIn? 'Log Out' : 'Log In'}</Button>
+                    </div>
+                </Link>}
             </Box>
         );
     }
