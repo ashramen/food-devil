@@ -1,9 +1,5 @@
-.login {
-    margin-top: 12px;
+.displayUser {
+    margin-top: 30px;
     margin-right: 6px;
-}
-
-.loginButton {
-    margin-top: 6px;
-    margin-right: 6px;
+    color: white;
 }

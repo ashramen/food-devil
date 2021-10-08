@@ -101,6 +101,21 @@ class Login extends React.Component<LoginProps, LoginStates> {
     });
   };
 
+  createTextField(label: string, id: string, onChange: any, password?: boolean) {
+    return (
+    <Grid item xs={12}>
+      <TextField
+        required
+        label={label}
+        id={id}
+        variant='standard'
+        onChange={onChange}
+        type={password? 'password': 'text'}
+        style ={{width: '75%'}}
+      />
+    </Grid>)
+  }
+
   render() {
     const {
       firstName,
@@ -129,7 +144,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
           <Card className='card' sx={{
             maxWidth: 350,
             boxShadow: 5,
-            marginTop: 5,
+            marginTop: 20,
           }}>
             <h3 className='subtitle'>{newAccount? 'Create Account' : 'Log In'}</h3>
             <Grid container
@@ -190,59 +205,12 @@ class Login extends React.Component<LoginProps, LoginStates> {
                   </Grid>
                 </Grid> : <div></div>}
               {newAccount?
-              <><Grid item xs={12}>
-                  <TextField
-                    required
-                    label='First Name'
-                    id='first_name'
-                    variant='standard'
-                    onChange={(e) => { this.setState({ firstName: e.target.value }); } }
-                    type='text'
-                    style={{ width: '75%' }} />
-                </Grid><Grid item xs={12}>
-                    <TextField
-                      required
-                      label='Last Name'
-                      id='last_name'
-                      variant='standard'
-                      onChange={(e) => { this.setState({ lastName: e.target.value }); } }
-                      type='text'
-                      style={{ width: '75%' }} />
-                  </Grid></>
+              <>{this.createTextField('First Name', 'first_name', (e: any) => {this.setState({firstName: e.target.value})})}
+              {this.createTextField('Last Name', 'last_name', (e: any) => {this.setState({lastName: e.target.value})})}</>
               : <div></div>}
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  label='Username'
-                  id='username'
-                  variant='standard'
-                  onChange={(e) => {this.setState({username: e.target.value})}}
-                  type='text'
-                  style ={{width: '75%'}}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  label='Password'
-                  id='password'
-                  variant='standard'
-                  onChange={(e) => {this.setState({password: e.target.value})}}
-                  type='password'
-                  style ={{width: '75%'}}
-                />
-              </Grid>
-              {newAccount? <Grid item xs={12}>
-                <TextField
-                  required
-                  label='Confirm Password'
-                  id='confirm_password'
-                  variant='standard'
-                  onChange={(e) => {this.setState({confirmPassword: e.target.value})}}
-                  type='password'
-                  style ={{width: '75%'}}
-                />
-              </Grid>: <div></div>}
+              {this.createTextField('Username', 'username', (e: any) => {this.setState({username: e.target.value})})}
+              {this.createTextField('Password', 'password', (e: any) => {this.setState({password: e.target.value})}, true)}
+              {newAccount? this.createTextField('Confirm Password', 'confirm_password', (e: any) => {this.setState({confirmPassword: e.target.value})}, true): <div></div>}
               <Grid item xs={12}>
                 <Link to={!newAccount && this.correctLogInInfo()? '/' : '/login'} style={{ textDecoration: 'none' }}>
                   <Button variant='contained' onClick={this.handleLogIn}>{newAccount? 'Create New Account' : 'Log In'}</Button>
