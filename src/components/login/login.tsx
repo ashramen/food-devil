@@ -141,14 +141,14 @@ class Login extends React.Component<LoginProps, LoginStates> {
       <>
         <Sidebar isLogIn={true}/>
         <Grid container alignItems='center' direction="column">
-          <Card className='card' sx={{
+          <Card sx={{
             maxWidth: 350,
             boxShadow: 5,
             marginTop: 20,
           }}>
             <h3 className='subtitle'>{newAccount? 'Create Account' : 'Log In'}</h3>
             <Grid container
-              spacing={2}
+              spacing={1.5}
               direction='row'
               alignItems='center'
               justifyContent='center'

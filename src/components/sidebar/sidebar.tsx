@@ -37,16 +37,16 @@ const ListItemText = styled(MuiListItemText)(() => ({
     color: 'white'
 }));
 
-interface sidebarProps extends PropsFromRedux{
+interface SidebarProps extends PropsFromRedux{
     isLogIn: boolean;
 };
 
-interface sidebarStates {
+interface SidebarStates {
     open: boolean;
 };
 
-export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
-    constructor(props: sidebarProps) {
+export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
+    constructor(props: SidebarProps) {
         super(props);
         this.state = {
             open: false
@@ -94,7 +94,7 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
                                 </IconButton>
                             </Grid>
                             <Grid item xs={4}>
-                                <Typography className='title' variant="h3" component="div" fontFamily='Apple Chancery'
+                                <Typography variant="h3" component="div" fontFamily='Apple Chancery'
                                     sx={{
                                         marginTop: 3,
                                     }}
@@ -173,7 +173,6 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
                         </Link>
                     </List>
                 </Drawer>
-                
             </Box>
         );
     }
