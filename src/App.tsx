@@ -22,7 +22,11 @@ function App() {
             <Restaurants />
           </Route>
           <Route exact path="/login">
-            <Login />
+          <div className='login'>
+            <div className='loginPage'>
+              <Login />
+            </div>
+          </div>
           </Route>
         </Switch>
       </BrowserRouter>
