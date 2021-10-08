@@ -19,6 +19,9 @@ import { State } from '../../store/index';
 import { logIn, logOut } from '../../store/actions';
 import { Link } from 'react-router-dom';
 import './styles.css';
+import AppBar from '@mui/material/AppBar';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 
 const drawerWidth = 160;
 
@@ -70,20 +73,51 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
         return (
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
-                <Toolbar>
-                <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={this.handleDrawerOpen}
-                    edge="start"
-                    sx={{
-                    marginRight: '36px',
-                    ...(this.state.open && { display: 'none' }),
-                    }}
-                >
-                <MenuIcon />
-                </IconButton>
-                </Toolbar>
+                <AppBar sx={{
+                    height:100,
+                    bgcolor: '#003087',
+                }}>
+                    <Toolbar>
+                        <Grid container alignItems='center' justifyContent='center'>
+                            <Grid item xs={4} style={{display: "flex", justifyContent: "flex-start"}}>
+                                <IconButton
+                                    className='button'
+                                    color="inherit"
+                                    aria-label="open drawer"
+                                    onClick={this.handleDrawerOpen}
+                                    edge="start"
+                                    sx={{
+                                        marginTop: 2,
+                                    }}
+                                >
+                                    <MenuIcon className='button'/>
+                                </IconButton>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography className='title' variant="h3" component="div" fontFamily='Apple Chancery'
+                                    sx={{
+                                        marginTop: 3,
+                                    }}
+                                >
+                                    Food Devil
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={4} style={{ display: "flex", justifyContent: "flex-end" }}>
+                                {this.props.loggedIn? <div className='displayUser'>Logged in as {this.props.username}</div> : <div></div>}
+                                {this.props.isLogIn? <div></div> : <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
+                                    <div className='loginButton'>
+                                        <Button variant="text" onClick={() => this.handleLogInButton()}
+                                            sx={{
+                                                color: 'white',
+                                                marginTop: 3,
+                                            }}>{this.props.loggedIn? 'Log Out' : 'Log In'}
+                                        </Button>
+                                    </div>
+                                </Link>}
+                            </Grid>
+                        </Grid>
+                    </Toolbar>
+                </AppBar>
                 <Drawer
                     sx={{
                         width: drawerWidth,
@@ -91,7 +125,7 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
                         '& .MuiDrawer-paper': {
                         width: drawerWidth,
                         boxSizing: 'border-box',
-                        bgcolor: '#003087'
+                        bgcolor: 'white'
                         },
                     }}
                     variant="persistent"
@@ -102,7 +136,7 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
                     <DrawerHeader>
                         <IconButton onClick={this.handleDrawerClose}>
                             <ChevronLeftIcon sx={{
-                                color: 'white'
+                                color: '#003087'
                             }}/>
                         </IconButton>
                     </DrawerHeader>
@@ -110,35 +144,36 @@ export class Sidebar extends React.Component<sidebarProps, sidebarStates> {
                         <Link to='/' style={{ textDecoration: 'none' }}>
                             <ListItemButton>
                             <HomeIcon sx={{
-                                color: 'white'
+                                color: '#003087'
                             }}/>
-                            <ListItemText primary={'Home'}/>
+                            <ListItemText primary={'Home'} sx={{
+                                color: '#003087'
+                            }}/>
                             </ListItemButton>
                         </Link>
                         <Link to='/addmeal' style={{ textDecoration: 'none' }}>
                             <ListItemButton>
                             <FastfoodIcon sx={{
-                                color: 'white'
+                                color: '#003087'
                             }}/>
-                            <ListItemText primary={'Add Meal'}/>
+                            <ListItemText primary={'Add Meal'} sx={{
+                                color: '#003087'
+                            }}/>
                             </ListItemButton>
                         </Link>
                         <Link to='/restaurants' style={{ textDecoration: 'none' }}>
                             <ListItemButton>
                             <RestaurantIcon sx={{
-                                color: 'white'
+                                color: '#003087'
                             }}/>
-                            <ListItemText primary={'Restaurants'}/>
+                            <ListItemText primary={'Restaurants'} sx={{
+                                color: '#003087'
+                            }}/>
                             </ListItemButton>
                         </Link>
                     </List>
                 </Drawer>
-                {this.props.loggedIn? <div className='login'>Logged in as {this.props.username}</div> : <div></div>}
-                {this.props.isLogIn? <div></div> : <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
-                    <div className='loginButton'>
-                        <Button variant="contained" onClick={() => this.handleLogInButton()}>{this.props.loggedIn? 'Log Out' : 'Log In'}</Button>
-                    </div>
-                </Link>}
+                
             </Box>
         );
     }
