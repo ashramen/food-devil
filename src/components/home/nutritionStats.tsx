@@ -17,7 +17,7 @@ class NutritionStats extends React.Component<NutritionStatsProps, NutritionStats
     constructor(props: NutritionStatsProps) {
         super(props);
         this.state = {
-            progress: 0
+            progress: 0,
         };
     };
 
@@ -26,7 +26,7 @@ class NutritionStats extends React.Component<NutritionStatsProps, NutritionStats
         const barFillSpeed: number = 10;
         setInterval(() => { 
             this.setState({
-                progress: this.state.progress >= percentage - barFillSpeed? percentage : this.state.progress + barFillSpeed
+                progress: this.state.progress >= percentage - barFillSpeed? percentage : this.state.progress + barFillSpeed,
             });
         }, 100);
     }
@@ -47,17 +47,17 @@ class NutritionStats extends React.Component<NutritionStatsProps, NutritionStats
                     value={this.state.progress} />
                 <Box
                     sx={{
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    position: "absolute",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: 0,
+                        position: "absolute",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
                     }}
                 >
-                    <Typography variant="caption" fontSize={20} fontFamily='Open Sans' component="div">
+                    <Typography variant="caption" fontSize={18} fontFamily='Lucida Grande' component="div">
                         {`${currentStats} ${unit}`}
                     </Typography>
                 </Box>
