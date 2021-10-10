@@ -12,3 +12,5 @@ Our tech stack: MERN (React on frontend, Node on backend, MongoDB for database).
 
 # Running the App
 After you `cd` into the root folder, run `npm install` to install all dependencies, followed by `npm start` to run the app.
+
+For testing, you can log in with username `CaffeineOverflow` and password `cs316`.
