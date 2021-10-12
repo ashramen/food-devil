@@ -1,7 +1,8 @@
 import * as React from "react";
+
 import Box from "@mui/material/Box";
-import Plot from 'react-plotly.js';
 import { Layout } from "plotly.js";
+import Plot from 'react-plotly.js';
 
 export interface NutritionGraphProps {
     nutrient: string;

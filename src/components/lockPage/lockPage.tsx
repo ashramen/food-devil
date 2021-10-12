@@ -1,14 +1,17 @@
 import React from 'react';
+
 import Sidebar from '../sidebar/sidebar';
+
 import Box from '@mui/material/Box';
 import LockIcon from '@mui/icons-material/Lock';
+
 import './styles.css';
 
 class LockPage extends React.Component{
   render() {
     return (
         <>
-            <Sidebar isLogIn={false}/>
+            <Sidebar page='lock'/>
             <Box mt={30}>
                 <>
                     <LockIcon style={{

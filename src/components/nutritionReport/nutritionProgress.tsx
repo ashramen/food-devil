@@ -1,20 +1,21 @@
 import * as React from "react";
+
+import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 
-export interface NutritionStatsProps {
+export interface NutritionProgressProps {
     currentStats: number;
     DV: number;
     unit: string;
 };
 
-interface NutritionStatsStates {
+interface NutritionProgressStates {
     progress: number;
 };
 
-class NutritionStats extends React.Component<NutritionStatsProps, NutritionStatsStates> {
-    constructor(props: NutritionStatsProps) {
+class NutritionProgress extends React.Component<NutritionProgressProps, NutritionProgressStates> {
+    constructor(props: NutritionProgressProps) {
         super(props);
         this.state = {
             progress: 0,
@@ -66,4 +67,4 @@ class NutritionStats extends React.Component<NutritionStatsProps, NutritionStats
     }
 }
 
-export default NutritionStats;
+export default NutritionProgress;

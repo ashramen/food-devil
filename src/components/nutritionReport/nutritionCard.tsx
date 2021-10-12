@@ -1,10 +1,12 @@
 import * as React from "react";
-import Typography from "@mui/material/Typography";
-import NutritionStats, { NutritionStatsProps } from './nutritionStats';
+
+import NutritionProgress, { NutritionProgressProps } from './nutritionProgress';
+
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
-interface NutritionCardProps extends NutritionStatsProps {
+interface NutritionCardProps extends NutritionProgressProps {
     nutrient: string;
 };
 
@@ -37,7 +39,7 @@ class NutritionCard extends React.Component<NutritionCardProps, NutritionCardSta
                         <Typography variant='caption' fontSize={15}>Daily Value: {DV} {unit}</Typography>
                     </Grid>
                     <Grid item xs={12} mt={3} mb={3}>
-                        <NutritionStats currentStats={currentStats} DV={DV} unit={unit}/>
+                        <NutritionProgress currentStats={currentStats} DV={DV} unit={unit}/>
                     </Grid>
                 </Grid>
             </Box>
