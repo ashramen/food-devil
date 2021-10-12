@@ -6,7 +6,7 @@ class Restaurants extends React.Component{
   render() {
     return (
         <>
-          <Sidebar isLogIn={false}/>
+          <Sidebar page='restaurants'/>
           <h1>Restaurants</h1>
         </>
     );

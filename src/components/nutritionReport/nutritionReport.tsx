@@ -1,19 +1,23 @@
 import React from 'react';
-import Sidebar from '../sidebar/sidebar';
+
+import LockPage from '../lockPage/lockPage';
 import NutritionCard from './nutritionCard';
+import NutritionGraph from './nutritionGraph';
+import Sidebar from '../sidebar/sidebar';
+
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Box from '@mui/material/Box';
-import LockPage from '../lockPage/lockPage';
+
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
-import NutritionGraph from './nutritionGraph';
+
 import './styles.css';
 
-interface HomeProps extends PropsFromRedux {};
-interface HomeStates {
+interface NutritionReportProps extends PropsFromRedux {};
+interface NutritionReportStates {
   nutrientGraphed: string;
 };
 
@@ -36,8 +40,8 @@ const nutritionStats: NutritionStats = {
   'Water': [8, 8, 'cups'],
 }
 
-class Home extends React.Component<HomeProps, HomeStates>{
-  constructor(props: HomeProps) {
+class NutritionReport extends React.Component<NutritionReportProps, NutritionReportStates>{
+  constructor(props: NutritionReportProps) {
     super(props);
     this.state = {
       nutrientGraphed: 'Calories',
@@ -54,7 +58,7 @@ class Home extends React.Component<HomeProps, HomeStates>{
         <Box mx={2}>
           {this.props.loggedIn?
           <>
-            <Sidebar isLogIn={false}/>
+            <Sidebar page='nutrition report'/>
             <div className='titleIndent'>Daily Nutrition Report</div>
             <Divider variant='middle'/>
             <Grid container alignItems='center' direction='column'>
@@ -104,4 +108,4 @@ const mapStateToProps = (state: State) => ({
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(Home);
+export default connector(NutritionReport);

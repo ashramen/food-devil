@@ -1,17 +1,21 @@
 import React from "react";
-import './styles.css';
-import TextField from "@mui/material/TextField";
+import { Link } from 'react-router-dom';
+
+import Sidebar from '../sidebar/sidebar';
+
+import Alert from '@mui/material/Alert';
 import Button from "@mui/material/Button";
+import Card from '@mui/material/Card';
+import CloseIcon from '@mui/icons-material/Close';
 import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 import { logIn, logOut } from '../../store/actions';
-import { Link } from 'react-router-dom';
-import IconButton from "@mui/material/IconButton";
-import Alert from '@mui/material/Alert';
-import CloseIcon from '@mui/icons-material/Close';
-import Sidebar from '../sidebar/sidebar';
-import Card from '@mui/material/Card';
+
+import './styles.css';
 
 interface LoginProps extends PropsFromRedux {};
 
@@ -139,7 +143,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
     );
     return (
       <>
-        <Sidebar isLogIn={true}/>
+        <Sidebar page='login'/>
         <Grid container alignItems='center' direction="column">
           <Card sx={{
             maxWidth: 350,
