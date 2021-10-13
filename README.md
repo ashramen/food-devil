@@ -10,6 +10,8 @@ Features include:
 
 Our tech stack: MERN (React on frontend, Node on backend, MongoDB for database).
 
+This is the frontend repo. Our backend repo is here: https://github.com/bluqiu001/food-devil-backend
+
 # Running the App
 After you `cd` into the root folder, run `npm install` to install all dependencies, followed by `npm start` to run the app.
 
