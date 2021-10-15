@@ -34,7 +34,7 @@ interface NutritionStats {
 
 // TODO: create a function that retrieves this data on a certain day
 const nutritionStats: NutritionStats = {
-  'Calories': [0, 2300, 'cal'],
+  'Calories': [1800, 2300, 'cal'],
   'Sugar': [28, 36, 'g'],
   'Salt': [8, 6, 'g'],
   'Calcium': [1000, 2500, 'mg'],
@@ -45,7 +45,7 @@ const nutritionStats: NutritionStats = {
   'Fat': [20, 50, 'g'],
   'Carbohydrates': [240, 300, 'g'],
   'Protein': [44, 50, 'g'],
-  'Water': [8, 8, 'cups'],
+  'Water': [0, 8, 'cups'],
 }
 
 class NutritionReport extends React.Component<NutritionReportProps, NutritionReportStates>{

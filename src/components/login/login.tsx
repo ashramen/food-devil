@@ -61,6 +61,15 @@ class Login extends React.Component<LoginProps, LoginStates> {
     ) as boolean;
   }
 
+  validUserName = () => {
+    return this.state.username.match("^[A-Za-z0-9]+$");
+  }
+
+  validPassword = () => {
+    const passwordLength: number =  this.state.password.length;
+    return (passwordLength >= 8 && passwordLength <= 32);
+  }
+
   correctAccountInfo = () => {
     // TODO: Also implement unique username check
     const {
@@ -76,6 +85,8 @@ class Login extends React.Component<LoginProps, LoginStates> {
       && password
       && confirmPassword
       && password === confirmPassword
+      && this.validUserName()
+      && this.validPassword()
     ) as boolean;
   }
   
@@ -84,6 +95,9 @@ class Login extends React.Component<LoginProps, LoginStates> {
       if (this.correctAccountInfo()) {
         // TODO: Create Account once backend is implemented
         this.setState({
+          firstName: '',
+          lastName: '',
+          confirmPassword: '',
           newAccount: false,
           accountCreated: true
         });
@@ -105,7 +119,19 @@ class Login extends React.Component<LoginProps, LoginStates> {
     });
   };
 
+  closeMessage = () => {
+      this.setState({
+        correctLogIn: true,
+        correctAccount: true,
+        accountCreated: false,
+      });
+  }
+
   createTextField(label: string, id: string, onChange: any, password?: boolean) {
+    const handleChange = (e: any) => {
+      onChange(e);
+      this.closeMessage();
+    }
     return (
     <Grid item xs={12}>
       <TextField
@@ -113,7 +139,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
         label={label}
         id={id}
         variant='standard'
-        onChange={onChange}
+        onChange={handleChange}
         type={password? 'password': 'text'}
         style ={{width: '75%'}}
       />
@@ -137,8 +163,12 @@ class Login extends React.Component<LoginProps, LoginStates> {
       'One of the required fields is empty.' : 
       newAccount && password !== confirmPassword?
       "Passwords don't match." :
-      !this.validUserInfo()?
+      !newAccount && !this.validUserInfo()?
       'Incorrect username or password.' :
+      newAccount && !this.validUserName() ?
+      'Username must only have letters and numbers.' :
+      newAccount && !this.validPassword() ?
+      'Password must be between 8 to 32 characters.' :
       'Username is already taken.'
     );
     return (
@@ -150,7 +180,11 @@ class Login extends React.Component<LoginProps, LoginStates> {
             boxShadow: 5,
             marginTop: 20,
           }}>
-            <h3 className='subtitle'>{newAccount? 'Create Account' : 'Log In'}</h3>
+            <h3>{newAccount? 'Create Account' : 'Log In'}</h3>
+            {newAccount?
+            <div className='subtitle'>Your username must only contain letters and numbers. <br></br>
+            Your password must have between 8 to 32 characters.</div>
+            : <div></div>}
             <Grid container
               spacing={1.5}
               direction='row'
@@ -167,12 +201,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
                           aria-label='close'
                           color='inherit'
                           size='small'
-                          onClick={() => {
-                            this.setState({
-                              correctLogIn: true,
-                              correctAccount: true
-                            });
-                          }}
+                          onClick={this.closeMessage}
                         >
                           <CloseIcon fontSize='inherit' />
                         </IconButton>
@@ -193,11 +222,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
                           aria-label='close'
                           color='inherit'
                           size='small'
-                          onClick={() => {
-                            this.setState({
-                              accountCreated: false,
-                            });
-                          }}
+                          onClick={this.closeMessage}
                         >
                           <CloseIcon fontSize='inherit' />
                         </IconButton>
@@ -215,13 +240,17 @@ class Login extends React.Component<LoginProps, LoginStates> {
               {this.createTextField('Username', 'username', (e: any) => {this.setState({username: e.target.value})})}
               {this.createTextField('Password', 'password', (e: any) => {this.setState({password: e.target.value})}, true)}
               {newAccount? this.createTextField('Confirm Password', 'confirm_password', (e: any) => {this.setState({confirmPassword: e.target.value})}, true): <div></div>}
-              <Grid item xs={12}>
+              <Grid item xs={12} mt={1}>
                 <Link to={!newAccount && this.correctLogInInfo()? '/' : '/login'} style={{ textDecoration: 'none' }}>
-                  <Button variant='contained' onClick={this.handleLogIn}>{newAccount? 'Create New Account' : 'Log In'}</Button>
+                  <Button variant='contained' onClick={this.handleLogIn} sx={{
+                    backgroundColor: '#003087'
+                  }}>{newAccount? 'Create New Account' : 'Log In'}</Button>
                 </Link>
               </Grid>
               <Grid item xs={12}>
-                <Button size='small' onClick={this.handleSwitch}>{newAccount? 'I already have an account' : 'Create New Account'}</Button>
+                <Button size='small' onClick={this.handleSwitch} sx={{
+                  color: '#003087'
+                }}>{newAccount? 'I already have an account' : 'Create New Account'}</Button>
               </Grid>
             </Grid>
           </Card>

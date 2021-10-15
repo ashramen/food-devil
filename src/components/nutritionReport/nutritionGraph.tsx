@@ -45,8 +45,8 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
             y: intake,
             mode: 'lines+markers',
             name: `Your ${nutrient} Intake (${unit})`,
-            color: '#003087',
             line: {
+                color: '#003087',
                 dash: 'solid',
                 width: 4
             },
@@ -61,6 +61,7 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
             mode: 'lines+markers',
             name: 'Daily Value',
             line: {
+                color: 'magenta',
                 dash: 'dashdot',
                 width: 4
             },
