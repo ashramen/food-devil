@@ -25,7 +25,8 @@ class NutritionCard extends React.Component<NutritionCardProps, NutritionCardSta
             nutrient,
             currentStats,
             DV,
-            unit
+            unit,
+            date,
         } = this.props;
         return (
             <Box sx={{
@@ -39,7 +40,7 @@ class NutritionCard extends React.Component<NutritionCardProps, NutritionCardSta
                         <Typography variant='caption' fontSize={15}>Daily Value: {DV} {unit}</Typography>
                     </Grid>
                     <Grid item xs={12} mt={3} mb={3}>
-                        <NutritionProgress currentStats={currentStats} DV={DV} unit={unit}/>
+                        <NutritionProgress currentStats={currentStats} DV={DV} unit={unit} date={date}/>
                     </Grid>
                 </Grid>
             </Box>
