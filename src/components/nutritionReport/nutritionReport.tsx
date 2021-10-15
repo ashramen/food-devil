@@ -5,11 +5,15 @@ import NutritionCard from './nutritionCard';
 import NutritionGraph from './nutritionGraph';
 import Sidebar from '../sidebar/sidebar';
 
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Box from '@mui/material/Box';
+import DatePicker from '@mui/lab/DatePicker';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import TextField from '@mui/material/TextField';
 
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
@@ -19,14 +23,18 @@ import './styles.css';
 interface NutritionReportProps extends PropsFromRedux {};
 interface NutritionReportStates {
   nutrientGraphed: string;
+  reportDate: Date;
+  historyStartDate: Date;
+  historyEndDate: Date;
 };
 
 interface NutritionStats {
   [x: string]: [number, number, string];
 }
 
+// TODO: create a function that retrieves this data on a certain day
 const nutritionStats: NutritionStats = {
-  'Calories': [1800, 2300, 'cal'],
+  'Calories': [0, 2300, 'cal'],
   'Sugar': [28, 36, 'g'],
   'Salt': [8, 6, 'g'],
   'Calcium': [1000, 2500, 'mg'],
@@ -45,12 +53,18 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
     super(props);
     this.state = {
       nutrientGraphed: 'Calories',
+      reportDate: new Date(),
+      historyStartDate: new Date(new Date().getTime() - (6 * 24 * 60 * 60 * 1000)),
+      historyEndDate: new Date(),
     }
   }
 
   render() {
     const {
-      nutrientGraphed
+      nutrientGraphed,
+      reportDate,
+      historyStartDate,
+      historyEndDate,
     } = this.state;
     const DV = nutritionStats[nutrientGraphed][1];
     const unit = nutritionStats[nutrientGraphed][2];
@@ -59,19 +73,66 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
           {this.props.loggedIn?
           <>
             <Sidebar page='nutrition report'/>
-            <div className='titleIndent'>Daily Nutrition Report</div>
-            <Divider variant='middle'/>
-            <Grid container alignItems='center' direction='column'>
-              <Grid container justifyContent='center' alignItems='center'>
-                {Object.keys(nutritionStats).map((key: string) => {
-                  const [intake, DV, unit] = nutritionStats[key];
-                  return (<Grid item xs={2}>
-                    <NutritionCard nutrient={key} currentStats={intake} DV={DV} unit={unit}/>
-                  </Grid>)
-                })}
+            <Grid container mt={15}>
+              <Grid item xs={6}>
+                <div className='title'>Daily Nutrition Report</div>
+              </Grid>
+              <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end" }} mb={1}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label='Date'
+                    value={reportDate}
+                    maxDate={new Date()}
+                    onChange={(newDate: Date | null) => {
+                      this.setState({reportDate: newDate? newDate : new Date()})
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
               </Grid>
             </Grid>
-            <div className='title'>Nutrition History</div>
+            <Divider variant='middle'/>
+            <Grid container justifyContent='center'>
+              {Object.keys(nutritionStats).map((key: string) => {
+                const [intake, DV, unit] = nutritionStats[key];
+                return (<Grid item xs={2}>
+                  <NutritionCard nutrient={key} currentStats={intake} DV={DV} unit={unit} date={reportDate}/>
+                </Grid>)
+              })}
+            </Grid>
+            <Grid container mt={2}>
+              <Grid item xs={6}>
+                <div className='title'>Nutrition History</div>
+              </Grid>
+              <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end" }} mb={1}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label='Start Date'
+                    value={historyStartDate}
+                    maxDate={new Date()}
+                    onChange={(newDate: Date | null) => {
+                      this.setState({
+                        historyStartDate: newDate? newDate : new Date(),
+                        historyEndDate: newDate && newDate > historyEndDate? newDate : historyEndDate,
+                      })
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                  <DatePicker
+                    label='End Date'
+                    value={historyEndDate}
+                    maxDate={new Date()}
+                    onChange={(newDate: Date | null) => {
+                      this.setState({
+                        historyEndDate: newDate? newDate : new Date(),
+                        historyStartDate: newDate && newDate < historyStartDate? newDate : historyStartDate,
+                      })
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+              </Grid>
+            </Grid>
             <Divider variant='middle'/>
             <Grid container justifyContent='left' alignItems='left'>
               <Tabs
@@ -95,7 +156,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                 })}
               </Tabs>
             </Grid>
-            <NutritionGraph nutrient={nutrientGraphed} numPreviousDays={7} DV={DV} unit={unit}/>
+            <NutritionGraph nutrient={nutrientGraphed} startDate={historyStartDate} endDate={historyEndDate} DV={DV} unit={unit}/>
           </>: <LockPage/>}
         </Box>
     );
