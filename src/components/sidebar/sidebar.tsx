@@ -80,7 +80,7 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                 }}>
                     <Toolbar>
                         <Grid container alignItems='center' justifyContent='center'>
-                            <Grid item xs={4} style={{display: "flex", justifyContent: "flex-start"}}>
+                            <Grid item xs={2} style={{display: "flex", justifyContent: "flex-start"}}>
                                 <IconButton
                                     className='button'
                                     color="inherit"
@@ -94,7 +94,7 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                                     <MenuIcon className='button'/>
                                 </IconButton>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={8}>
                                 <Typography variant="h3" component="div" fontFamily='Apple Chancery'
                                     sx={{
                                         marginTop: 3,
@@ -103,7 +103,7 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                                     Food Devil
                                 </Typography>
                             </Grid>
-                            <Grid item xs={4} style={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Grid item xs={2} style={{ display: "flex", justifyContent: "flex-end" }}>
                                 {this.props.loggedIn? <div className='displayUser'>Logged in as {this.props.username}</div> : <div></div>}
                                 {this.props.page === 'login'? <div></div> : <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
                                     <div className='loginButton'>

@@ -70,9 +70,9 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
     const unit = nutritionStats[nutrientGraphed][2];
     return (
         <Box mx={2}>
+          <Sidebar page='nutrition report'/>
           {this.props.loggedIn?
           <>
-            <Sidebar page='nutrition report'/>
             <Grid container mt={15}>
               <Grid item xs={6}>
                 <div className='title'>Daily Nutrition Report</div>
