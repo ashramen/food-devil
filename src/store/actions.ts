@@ -7,7 +7,6 @@ export const logIn = (username: string) => ({
     }
 })
 
-
 export const logOut = () => ({
     type: ActionType.LOG_OUT,
 })

@@ -11,12 +11,15 @@ import Drawer from '@mui/material/Drawer';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
+import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import MuiListItemText from '@mui/material/ListItemText';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
@@ -33,6 +36,121 @@ interface SidebarProps extends PropsFromRedux{
 interface SidebarStates {
     open: boolean;
 };
+
+interface ILogInOutMenu {
+    onClick: any;
+    loggedIn: boolean;
+    username: string | null;
+};
+
+const LogOutMenuList = styled((props: MenuProps) => (
+    <Menu
+      elevation={0}
+      anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+      }}
+      transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+      }}
+      {...props}
+    />
+))(({ theme }) => ({
+    '& .MuiPaper-root': {
+      borderRadius: 0,
+      marginTop: theme.spacing(1),
+      minWidth: 180,
+      color:
+        theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+      boxShadow:
+        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+      '& .MuiMenu-list': {
+        padding: '4px 0',
+      },
+      '& .MuiMenuItem-root': {
+        '& .MuiSvgIcon-root': {
+          fontSize: 18,
+          color: theme.palette.text.secondary,
+          marginRight: theme.spacing(1.5),
+        },
+        '&:active': {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            theme.palette.action.selectedOpacity,
+          ),
+        },
+      },
+    },
+}));
+
+function LogOutMenu(props: ILogInOutMenu) {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    return (
+        <div>
+            <Button
+                id="logged-in-button"
+                aria-controls="logged-in-menu"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                variant="text"
+                sx={{
+                    color: 'white',
+                    marginTop: 3,
+                }}
+                onClick={handleClick}
+                endIcon={<KeyboardArrowDownIcon />}
+            >
+                {props.username}
+            </Button>
+            <LogOutMenuList
+                id="logged-in-menu"
+                MenuListProps={{
+                    'aria-labelledby': 'logged-in-button',
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={props.onClick} disableRipple>
+                    Log Out
+                </MenuItem>
+                <MenuItem onClick={handleClose} disableRipple>
+                    Other Items We Wanna Add
+                </MenuItem>
+            </LogOutMenuList>
+        </div>   
+    )
+}
+
+function LogInOutButton(props: ILogInOutMenu) {
+    if (props.loggedIn) {
+        return(
+            <LogOutMenu 
+                onClick={props.onClick}
+                loggedIn={props.loggedIn}
+                username={props.username}
+            />
+        )
+    } else {
+        return(
+            <Button variant="text" onClick={props.onClick}
+                sx={{
+                    color: 'white',
+                    marginTop: 3,
+                }}>Log In
+            </Button>
+        )
+    }
+}
 
 export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
     constructor(props: SidebarProps) {
@@ -104,15 +222,13 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                                 </Typography>
                             </Grid>
                             <Grid item xs={4} style={{ display: "flex", justifyContent: "flex-end" }}>
-                                {this.props.loggedIn? <div className='displayUser'>Logged in as {this.props.username}</div> : <div></div>}
                                 {this.props.page === 'login'? <div></div> : <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
                                     <div className='loginButton'>
-                                        <Button variant="text" onClick={() => this.handleLogInButton()}
-                                            sx={{
-                                                color: 'white',
-                                                marginTop: 3,
-                                            }}>{this.props.loggedIn? 'Log Out' : 'Log In'}
-                                        </Button>
+                                        <LogInOutButton 
+                                            onClick={() => this.handleLogInButton()} 
+                                            loggedIn={this.props.loggedIn} 
+                                            username={this.props.username ? this.props.username : null}
+                                        />
                                     </div>
                                 </Link>}
                             </Grid>
