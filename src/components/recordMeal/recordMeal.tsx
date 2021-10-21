@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Sidebar from '../sidebar/sidebar';
+import TopAppBar from '../topAppBar/topAppBar';
 import { getAllFoods } from '../../API/getFoods';
 
 interface allFoods {
@@ -36,20 +36,20 @@ interface RecordMealStates {
 class RecordMeal extends React.Component<RecordMealProps, RecordMealStates>{
 
   // call API
-  async componentDidMount() {
-    const allFoods: allFoods[] = await getAllFoods() as allFoods[];
-    this.setState({
-      allFoods
-    })
+  // async componentDidMount() {
+  //   const allFoods: allFoods[] = await getAllFoods() as allFoods[];
+  //   this.setState({
+  //     allFoods
+  //   })
 
-    // testing: expect to see array of length 3130
-    console.log(allFoods);
-  }
+  //   // testing: expect to see array of length 3130
+  //   console.log(allFoods);
+  // }
 
   render() {
     return (
         <>
-          <Sidebar page='record meal'/>
+          <TopAppBar page='record meal'/>
           <h1>Record Meal</h1>
         </>
     );

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import AppBar from '@mui/material/AppBar';
 import AssessmentIcon from '@mui/icons-material/Assessment';
@@ -11,12 +11,15 @@ import Drawer from '@mui/material/Drawer';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
+import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import MuiListItemText from '@mui/material/ListItemText';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
@@ -26,16 +29,131 @@ import { logIn, logOut } from '../../store/actions';
 
 import './styles.css';
 
-interface SidebarProps extends PropsFromRedux{
+interface TopAppBarProps extends PropsFromRedux, RouteComponentProps {
     page: string;
 };
 
-interface SidebarStates {
+interface TopAppBarStates {
     open: boolean;
 };
 
-export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
-    constructor(props: SidebarProps) {
+interface ILogInOutMenu {
+    onClick: any;
+    loggedIn: boolean;
+    username: string | null;
+};
+
+const LogOutMenuList = styled((props: MenuProps) => (
+    <Menu
+      elevation={0}
+      anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+      }}
+      transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+      }}
+      {...props}
+    />
+))(({ theme }) => ({
+    '& .MuiPaper-root': {
+      borderRadius: 0,
+      marginTop: theme.spacing(1),
+      minWidth: 100,
+      color:
+        theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+      boxShadow:
+        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+      '& .MuiMenu-list': {
+        padding: '4px 0',
+      },
+      '& .MuiMenuItem-root': {
+        '& .MuiSvgIcon-root': {
+          fontSize: 18,
+          color: theme.palette.text.secondary,
+          marginRight: theme.spacing(1.5),
+        },
+        '&:active': {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            theme.palette.action.selectedOpacity,
+          ),
+        },
+      },
+    },
+}));
+
+function LogOutMenu(props: ILogInOutMenu) {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    return (
+        <div>
+            <Button
+                id="logged-in-button"
+                aria-controls="logged-in-menu"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                variant="text"
+                sx={{
+                    color: 'white',
+                    marginTop: 3,
+                }}
+                onClick={handleClick}
+                endIcon={<KeyboardArrowDownIcon />}
+            >
+                {props.username}
+            </Button>
+            <LogOutMenuList
+                id="logged-in-menu"
+                MenuListProps={{
+                    'aria-labelledby': 'logged-in-button',
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={props.onClick} disableRipple>
+                    Log Out
+                </MenuItem>
+                <MenuItem onClick={handleClose} disableRipple>
+                    Other Items We Wanna Add
+                </MenuItem>
+            </LogOutMenuList>
+        </div>   
+    )
+}
+
+function LogInOutButton(props: ILogInOutMenu) {
+    if (props.loggedIn) {
+        return(
+            <LogOutMenu 
+                onClick={props.onClick}
+                loggedIn={props.loggedIn}
+                username={props.username}
+            />
+        )
+    } else {
+        return(
+            <Button variant="text" onClick={props.onClick}
+                sx={{
+                    color: 'white',
+                    marginTop: 3,
+                }}>Log In
+            </Button>
+        )
+    }
+}
+
+export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> {
+    constructor(props: TopAppBarProps) {
         super(props);
         this.state = {
             open: false
@@ -54,7 +172,7 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
         if (this.props.loggedIn) {
             this.props.logOut();
         } else {
-            // TODO: redirect this to a sign-in page where this.props.logIn() will be called
+            this.props.history.push('/login');
         }
     };
 
@@ -104,17 +222,14 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                                 </Typography>
                             </Grid>
                             <Grid item xs={2} style={{ display: "flex", justifyContent: "flex-end" }}>
-                                {this.props.loggedIn? <div className='displayUser'>Logged in as {this.props.username}</div> : <div></div>}
-                                {this.props.page === 'login'? <div></div> : <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
-                                    <div className='loginButton'>
-                                        <Button variant="text" onClick={() => this.handleLogInButton()}
-                                            sx={{
-                                                color: 'white',
-                                                marginTop: 3,
-                                            }}>{this.props.loggedIn? 'Log Out' : 'Log In'}
-                                        </Button>
-                                    </div>
-                                </Link>}
+                                {this.props.page === 'login'? <div></div> :
+                                <div className='loginButton'>
+                                    <LogInOutButton 
+                                        onClick={() => this.handleLogInButton()} 
+                                        loggedIn={this.props.loggedIn} 
+                                        username={this.props.username ? this.props.username : null}
+                                    />
+                                </div>}
                             </Grid>
                         </Grid>
                     </Toolbar>
@@ -136,24 +251,18 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                         </IconButton>
                     </DrawerHeader>
                     <List>
-                        <Link to='/' style={{ textDecoration: 'none' }}>
-                            <ListItemButton style={this.sidebarButtonStyle('nutrition report')}>
+                        <ListItemButton style={this.sidebarButtonStyle('nutrition report')} onClick={() => {this.props.history.push('/')}}>
                             <AssessmentIcon sx={this.sidebarItemStyle('nutrition report')}/>
                             <ListItemText primary={'Nutrition Report'} sx={this.sidebarItemStyle('nutrition report')}/>
-                            </ListItemButton>
-                        </Link>
-                        <Link to='/recordmeal' style={{ textDecoration: 'none' }}>
-                            <ListItemButton style={this.sidebarButtonStyle('record meal')}>
+                        </ListItemButton>
+                        <ListItemButton style={this.sidebarButtonStyle('record meal')} onClick={() => {this.props.history.push('/recordmeal')}}>
                             <FastfoodIcon sx={this.sidebarItemStyle('record meal')}/>
                             <ListItemText primary={'Record Meal'} sx={this.sidebarItemStyle('record meal')}/>
-                            </ListItemButton>
-                        </Link>
-                        {<Link to='/restaurants' style={{ textDecoration: 'none' }}>
-                            <ListItemButton style={this.sidebarButtonStyle('restaurants')}>
+                        </ListItemButton>
+                        <ListItemButton style={this.sidebarButtonStyle('restaurants')} onClick={() => {this.props.history.push('/restaurants')}}>
                             <RestaurantIcon sx={this.sidebarItemStyle('restaurants')}/>
                             <ListItemText primary={'Restaurants'} sx={this.sidebarItemStyle('restaurants')}/>
-                            </ListItemButton>
-                        </Link>}
+                        </ListItemButton>
                     </List>
                 </Drawer>
             </Box>
@@ -185,4 +294,4 @@ const mapDispatchToProps = {
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(Sidebar);
+export default connector(withRouter(TopAppBar));
