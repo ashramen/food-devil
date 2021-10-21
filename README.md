@@ -15,4 +15,4 @@ This is the frontend repo. Our backend repo is here: https://github.com/bluqiu00
 # Running the App
 After you `cd` into the root folder, run `npm install` to install all dependencies, followed by `npm start` to run the app.
 
-For testing, you can log in with username `CaffeineOverflow` and password `cs316`.
+You can now test the log in page by creating an account and logging in.
