@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Sidebar from '../sidebar/sidebar';
+import TopAppBar from '../topAppBar/topAppBar';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -11,7 +11,7 @@ class Restaurants extends React.Component{
     return (
         <Box mx={2}>
           <>
-            <Sidebar page='restaurants'/>
+            <TopAppBar page='restaurants'/>
             <Grid container mt={15}>
               <Grid item xs={6}>
                 <div className='title'>Restaurants</div>

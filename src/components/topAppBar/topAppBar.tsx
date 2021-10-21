@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import AppBar from '@mui/material/AppBar';
 import AssessmentIcon from '@mui/icons-material/Assessment';
@@ -29,11 +29,11 @@ import { logIn, logOut } from '../../store/actions';
 
 import './styles.css';
 
-interface SidebarProps extends PropsFromRedux{
+interface TopAppBarProps extends PropsFromRedux, RouteComponentProps {
     page: string;
 };
 
-interface SidebarStates {
+interface TopAppBarStates {
     open: boolean;
 };
 
@@ -60,7 +60,7 @@ const LogOutMenuList = styled((props: MenuProps) => (
     '& .MuiPaper-root': {
       borderRadius: 0,
       marginTop: theme.spacing(1),
-      minWidth: 180,
+      minWidth: 100,
       color:
         theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
       boxShadow:
@@ -152,8 +152,8 @@ function LogInOutButton(props: ILogInOutMenu) {
     }
 }
 
-export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
-    constructor(props: SidebarProps) {
+export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> {
+    constructor(props: TopAppBarProps) {
         super(props);
         this.state = {
             open: false
@@ -172,7 +172,7 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
         if (this.props.loggedIn) {
             this.props.logOut();
         } else {
-            // TODO: redirect this to a sign-in page where this.props.logIn() will be called
+            this.props.history.push('/login');
         }
     };
 
@@ -198,7 +198,7 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                 }}>
                     <Toolbar>
                         <Grid container alignItems='center' justifyContent='center'>
-                            <Grid item xs={4} style={{display: "flex", justifyContent: "flex-start"}}>
+                            <Grid item xs={2} style={{display: "flex", justifyContent: "flex-start"}}>
                                 <IconButton
                                     className='button'
                                     color="inherit"
@@ -212,7 +212,7 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                                     <MenuIcon className='button'/>
                                 </IconButton>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={8}>
                                 <Typography variant="h3" component="div" fontFamily='Apple Chancery'
                                     sx={{
                                         marginTop: 3,
@@ -221,16 +221,15 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                                     Food Devil
                                 </Typography>
                             </Grid>
-                            <Grid item xs={4} style={{ display: "flex", justifyContent: "flex-end" }}>
-                                {this.props.page === 'login'? <div></div> : <Link to={this.props.loggedIn? '/' : '/login'} style={{ textDecoration: 'none' }}>
-                                    <div className='loginButton'>
-                                        <LogInOutButton 
-                                            onClick={() => this.handleLogInButton()} 
-                                            loggedIn={this.props.loggedIn} 
-                                            username={this.props.username ? this.props.username : null}
-                                        />
-                                    </div>
-                                </Link>}
+                            <Grid item xs={2} style={{ display: "flex", justifyContent: "flex-end" }}>
+                                {this.props.page === 'login'? <div></div> :
+                                <div className='loginButton'>
+                                    <LogInOutButton 
+                                        onClick={() => this.handleLogInButton()} 
+                                        loggedIn={this.props.loggedIn} 
+                                        username={this.props.username ? this.props.username : null}
+                                    />
+                                </div>}
                             </Grid>
                         </Grid>
                     </Toolbar>
@@ -252,24 +251,18 @@ export class Sidebar extends React.Component<SidebarProps, SidebarStates> {
                         </IconButton>
                     </DrawerHeader>
                     <List>
-                        <Link to='/' style={{ textDecoration: 'none' }}>
-                            <ListItemButton style={this.sidebarButtonStyle('nutrition report')}>
+                        <ListItemButton style={this.sidebarButtonStyle('nutrition report')} onClick={() => {this.props.history.push('/')}}>
                             <AssessmentIcon sx={this.sidebarItemStyle('nutrition report')}/>
                             <ListItemText primary={'Nutrition Report'} sx={this.sidebarItemStyle('nutrition report')}/>
-                            </ListItemButton>
-                        </Link>
-                        <Link to='/recordmeal' style={{ textDecoration: 'none' }}>
-                            <ListItemButton style={this.sidebarButtonStyle('record meal')}>
+                        </ListItemButton>
+                        <ListItemButton style={this.sidebarButtonStyle('record meal')} onClick={() => {this.props.history.push('/recordmeal')}}>
                             <FastfoodIcon sx={this.sidebarItemStyle('record meal')}/>
                             <ListItemText primary={'Record Meal'} sx={this.sidebarItemStyle('record meal')}/>
-                            </ListItemButton>
-                        </Link>
-                        {<Link to='/restaurants' style={{ textDecoration: 'none' }}>
-                            <ListItemButton style={this.sidebarButtonStyle('restaurants')}>
+                        </ListItemButton>
+                        <ListItemButton style={this.sidebarButtonStyle('restaurants')} onClick={() => {this.props.history.push('/restaurants')}}>
                             <RestaurantIcon sx={this.sidebarItemStyle('restaurants')}/>
                             <ListItemText primary={'Restaurants'} sx={this.sidebarItemStyle('restaurants')}/>
-                            </ListItemButton>
-                        </Link>}
+                        </ListItemButton>
                     </List>
                 </Drawer>
             </Box>
@@ -301,4 +294,4 @@ const mapDispatchToProps = {
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(Sidebar);
+export default connector(withRouter(TopAppBar));

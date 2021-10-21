@@ -3,7 +3,7 @@ import React from 'react';
 import LockPage from '../lockPage/lockPage';
 import NutritionCard from './nutritionCard';
 import NutritionGraph from './nutritionGraph';
-import Sidebar from '../sidebar/sidebar';
+import TopAppBar from '../topAppBar/topAppBar';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Box from '@mui/material/Box';
@@ -70,9 +70,9 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
     const unit = nutritionStats[nutrientGraphed][2];
     return (
         <Box mx={2}>
+          <TopAppBar page='nutrition report'/>
           {this.props.loggedIn?
           <>
-            <Sidebar page='nutrition report'/>
             <Grid container mt={15}>
               <Grid item xs={6}>
                 <div className='title'>Daily Nutrition Report</div>
@@ -139,18 +139,15 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                 variant='scrollable'
                 scrollButtons={true}
                 onChange={(event, value) => this.setState({nutrientGraphed: value})}
+                value={nutrientGraphed}
               >
                 {Object.keys(nutritionStats).map((key: string) => {
-                  const bgColor = nutrientGraphed === key? '#003087' : 'white';
-                  const textColor = nutrientGraphed === key? 'white' : '#003087';
                   return (<Tab
                       value={key}
                       label={key}
                       wrapped
                       sx={{
                         fontSize: 15,
-                        color: textColor,
-                        bgcolor: bgColor,
                       }}
                   />)
                 })}

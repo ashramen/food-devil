@@ -1,7 +1,8 @@
 import React from "react";
-import { Link } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-import Sidebar from '../sidebar/sidebar';
+import TopAppBar from '../topAppBar/topAppBar';
+import { signup, login } from '../../API/login';
 
 import Alert from '@mui/material/Alert';
 import Button from "@mui/material/Button";
@@ -17,7 +18,7 @@ import { logIn, logOut } from '../../store/actions';
 
 import './styles.css';
 
-interface LoginProps extends PropsFromRedux {};
+interface LoginProps extends PropsFromRedux, RouteComponentProps {};
 
 interface LoginStates {
   firstName: string;
@@ -30,6 +31,7 @@ interface LoginStates {
   correctAccount: boolean;
   accountCreated: boolean;
 };
+
 
 class Login extends React.Component<LoginProps, LoginStates> {
   constructor(props: LoginProps) {
@@ -48,7 +50,6 @@ class Login extends React.Component<LoginProps, LoginStates> {
   };
 
   validUserInfo = () => {
-    // TODO: Implement this when backend is implemented
     return (this.state.username === 'CaffeineOverflow'
     && this.state.password === 'cs316');
   }
@@ -90,10 +91,21 @@ class Login extends React.Component<LoginProps, LoginStates> {
     ) as boolean;
   }
   
-  handleLogIn = () => {
+  handleLogIn = async () => {
+    const {
+      firstName,
+      lastName,
+      username,
+      password,
+    } = this.state;
     if (this.state.newAccount) {
       if (this.correctAccountInfo()) {
-        // TODO: Create Account once backend is implemented
+        const response = await signup(firstName + ' ' + lastName, username, password);
+        // TODO: make error message based on response output
+        if (response.message) {
+          this.setState({correctAccount: false});
+          return;
+        }
         this.setState({
           firstName: '',
           lastName: '',
@@ -105,11 +117,13 @@ class Login extends React.Component<LoginProps, LoginStates> {
         this.setState({correctAccount: false});
       }
     } else {
-      if (this.correctLogInInfo()) {
-        this.props.logIn(this.state.username);
-      } else {
-        this.setState({correctLogIn: false});
-      }
+      // const response = await login(username, password);
+      // if (response.message === 'Auth failed') {
+      //   this.setState({correctLogIn: false});
+      // } else {
+        this.props.logIn(username);
+        this.props.history.push('/');
+      // }
     }
   }
 
@@ -173,7 +187,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
     );
     return (
       <>
-        <Sidebar page='login'/>
+        <TopAppBar page='login'/>
         <Grid container alignItems='center' direction="column">
           <Card sx={{
             maxWidth: 350,
@@ -241,11 +255,9 @@ class Login extends React.Component<LoginProps, LoginStates> {
               {this.createTextField('Password', 'password', (e: any) => {this.setState({password: e.target.value})}, true)}
               {newAccount? this.createTextField('Confirm Password', 'confirm_password', (e: any) => {this.setState({confirmPassword: e.target.value})}, true): <div></div>}
               <Grid item xs={12} mt={1}>
-                <Link to={!newAccount && this.correctLogInInfo()? '/' : '/login'} style={{ textDecoration: 'none' }}>
-                  <Button variant='contained' onClick={this.handleLogIn} sx={{
-                    backgroundColor: '#003087'
-                  }}>{newAccount? 'Create New Account' : 'Log In'}</Button>
-                </Link>
+                <Button variant='contained' onClick={this.handleLogIn} sx={{
+                  backgroundColor: '#003087'
+                }}>{newAccount? 'Create New Account' : 'Log In'}</Button>
               </Grid>
               <Grid item xs={12}>
                 <Button size='small' onClick={this.handleSwitch} sx={{
@@ -272,4 +284,4 @@ const mapDispatchToProps = {
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(Login);
+export default connector(withRouter(Login));

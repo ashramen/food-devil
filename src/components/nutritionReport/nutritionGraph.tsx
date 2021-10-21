@@ -35,8 +35,6 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
             dateList.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
         }
 
-        console.log(dateList);
-
         // TODO: Change this to real data
         const intake: number[] = [DV*0.6, DV*1.2, DV*0.8, DV, DV, DV*0.9, DV*1.2]
 
