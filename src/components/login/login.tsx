@@ -30,8 +30,8 @@ interface LoginStates {
   correctLogIn: boolean;
   correctAccount: boolean;
   accountCreated: boolean;
+  userExists: boolean;
 };
-
 
 class Login extends React.Component<LoginProps, LoginStates> {
   constructor(props: LoginProps) {
@@ -46,21 +46,9 @@ class Login extends React.Component<LoginProps, LoginStates> {
       correctLogIn: true,
       correctAccount: true,
       accountCreated: false,
+      userExists: false,
     };
   };
-
-  validUserInfo = () => {
-    return (this.state.username === 'CaffeineOverflow'
-    && this.state.password === 'cs316');
-  }
-
-  correctLogInInfo = () => {
-    // TODO: Implement this when backend is implemented
-    return (this.state.username
-      && this.state.password
-      && this.validUserInfo()
-    ) as boolean;
-  }
 
   validUserName = () => {
     return this.state.username.match("^[A-Za-z0-9]+$");
@@ -71,8 +59,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
     return (passwordLength >= 8 && passwordLength <= 32);
   }
 
-  correctAccountInfo = () => {
-    // TODO: Also implement unique username check
+  correctAccountInputs = () => {
     const {
       firstName,
       lastName,
@@ -99,10 +86,12 @@ class Login extends React.Component<LoginProps, LoginStates> {
       password,
     } = this.state;
     if (this.state.newAccount) {
-      if (this.correctAccountInfo()) {
+      if (this.correctAccountInputs()) {
         const response = await signup(firstName + ' ' + lastName, username, password);
-        // TODO: make error message based on response output
-        if (response.message) {
+        if (response.message !== 'User created') {
+          if (response.message === 'User already exists!') {
+            this.setState({userExists: true});
+          }
           this.setState({correctAccount: false});
           return;
         }
@@ -111,19 +100,20 @@ class Login extends React.Component<LoginProps, LoginStates> {
           lastName: '',
           confirmPassword: '',
           newAccount: false,
-          accountCreated: true
+          accountCreated: true,
+          userExists: false,
         });
       } else {
         this.setState({correctAccount: false});
       }
     } else {
-      // const response = await login(username, password);
-      // if (response.message === 'Auth failed') {
-      //   this.setState({correctLogIn: false});
-      // } else {
+      const response = await login(username, password);
+      if (response.message === 'Auth failed') {
+        this.setState({correctLogIn: false});
+      } else {
         this.props.logIn(username);
         this.props.history.push('/');
-      // }
+      }
     }
   }
 
@@ -138,6 +128,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
         correctLogIn: true,
         correctAccount: true,
         accountCreated: false,
+        userExists: false,
       });
   }
 
@@ -170,20 +161,23 @@ class Login extends React.Component<LoginProps, LoginStates> {
       newAccount,
       correctLogIn,
       correctAccount,
-      accountCreated
+      accountCreated,
+      userExists,
     } = this.state;
     const errorMessage: string = (
       !(username && password && (!newAccount || (firstName && lastName && confirmPassword)))?
       'One of the required fields is empty.' : 
-      newAccount && password !== confirmPassword?
-      "Passwords don't match." :
-      !newAccount && !this.validUserInfo()?
+      !newAccount?
       'Incorrect username or password.' :
-      newAccount && !this.validUserName() ?
+      password !== confirmPassword?
+      "Passwords don't match." :
+      !this.validUserName()?
       'Username must only have letters and numbers.' :
-      newAccount && !this.validPassword() ?
+      !this.validPassword()?
       'Password must be between 8 to 32 characters.' :
-      'Username is already taken.'
+      userExists?
+      'User already exists.' :
+      'There is an error in the system. Please try again later.'
     );
     return (
       <>
