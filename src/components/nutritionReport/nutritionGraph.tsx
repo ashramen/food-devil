@@ -6,7 +6,8 @@ import Plot from 'react-plotly.js';
 
 export interface NutritionGraphProps {
     nutrient: string;
-    numPreviousDays: number;
+    startDate: Date;
+    endDate: Date;
     DV: number;
     unit: string;
 };
@@ -24,15 +25,14 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
     render() {
         const {
             nutrient,
-            numPreviousDays,
+            startDate,
+            endDate,
             DV,
             unit
         } = this.props;
-        const today: Date = new Date();
         const dateList: string[] = [];
-        for (let days=numPreviousDays-1; days>=0; days--) {
-            const newDate: Date = new Date(today.getTime() - (days * 24 * 60 * 60 * 1000));
-            dateList.push(`${newDate.getFullYear()}-${newDate.getMonth()+1}-${newDate.getDate()}`);
+        for (let date = new Date(startDate); date < new Date(endDate.getTime() + 24*60*60*1000); date.setDate(date.getDate() + 1)) {
+            dateList.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
         }
 
         // TODO: Change this to real data
@@ -41,23 +41,30 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
         const record = {
             x: dateList,
             y: intake,
-            mode: 'lines',
+            mode: 'lines+markers',
             name: `Your ${nutrient} Intake (${unit})`,
-            color: '#003087',
             line: {
+                color: '#003087',
                 dash: 'solid',
                 width: 4
+            },
+            marker: {
+                size: 10
             }
         };
           
         const DVLine = {
             x: dateList,
-            y: Array(numPreviousDays).fill(DV),
-            mode: 'lines',
+            y: Array(dateList.length).fill(DV),
+            mode: 'lines+markers',
             name: 'Daily Value',
             line: {
+                color: 'magenta',
                 dash: 'dashdot',
                 width: 4
+            },
+            marker: {
+                size: 10
             }
         };
           
@@ -76,6 +83,8 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
                 color: 'black'
             },
             xaxis: {
+                tickmode: "linear",
+                tick0: dateList[0],
                 range: [dateList[0], dateList[dateList.length - 1]],
                 autorange: false
             },

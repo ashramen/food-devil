@@ -1,4 +1,15 @@
-.subtitle {
+h3 {
+    text-align: center;
+    color: #003087;
+    font-family: 'Open Sans';
     font-size: 25px;
-    font-family: 'Comic Sans';
+    font-weight: 300;
+    margin-left: 0px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 12px;
+    text-align: center;
+    color: gray;
 }

@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import RecordMeal from "./components/recordMeal/recordMeal";
 import NutritionReport from "./components/nutritionReport/nutritionReport";
 import Login from "./components/login/login";
-import Restaurants from "./components/restaurants/restuarants";
+import Restaurants from "./components/restaurants/restaurants";
 
 import './App.css';
 

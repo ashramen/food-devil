@@ -1,12 +1,8 @@
-.title, .titleIndent {
+.title {
     text-align: left;
     margin-left: 15px;
     color: #003087;
     font-family: 'Open Sans';
     font-size: 36px;
     font-weight: 300;
-}
-
-.titleIndent {
-    margin-top: 120px;
 }

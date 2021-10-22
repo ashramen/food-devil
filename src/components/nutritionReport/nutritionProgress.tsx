@@ -8,6 +8,7 @@ export interface NutritionProgressProps {
     currentStats: number;
     DV: number;
     unit: string;
+    date: Date;
 };
 
 interface NutritionProgressStates {
@@ -18,7 +19,7 @@ class NutritionProgress extends React.Component<NutritionProgressProps, Nutritio
     constructor(props: NutritionProgressProps) {
         super(props);
         this.state = {
-            progress: 0,
+            progress: this.props.currentStats === 0? 100 : 0,
         };
     };
 
@@ -27,7 +28,7 @@ class NutritionProgress extends React.Component<NutritionProgressProps, Nutritio
         const barFillSpeed: number = 10;
         setInterval(() => { 
             this.setState({
-                progress: this.state.progress >= percentage - barFillSpeed? percentage : this.state.progress + barFillSpeed,
+                progress: this.props.currentStats === 0? 100 : this.state.progress >= percentage - barFillSpeed? percentage : this.state.progress + barFillSpeed,
             });
         }, 100);
     }
@@ -42,7 +43,7 @@ class NutritionProgress extends React.Component<NutritionProgressProps, Nutritio
             <Box sx={{ position: "relative", display: "inline-flex" }}>
                 <CircularProgress
                     variant="determinate"
-                    color={currentStats > DV? 'error' : 'success'}
+                    style={{color: currentStats > DV? '	#c00000' : currentStats === 0? 'gray' : '#006400'}}
                     size={130}
                     thickness={6}
                     value={this.state.progress} />
