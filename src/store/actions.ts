@@ -1,9 +1,10 @@
 import { ActionType } from './actionTypes';
 
-export const logIn = (username: string) => ({
+export const logIn = (username: string, token: string) => ({
     type: ActionType.LOG_IN,
     payload: {
-        username
+        username,
+        token
     }
 })
 

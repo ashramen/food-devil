@@ -1,7 +1,12 @@
 import React from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import TopAppBar from '../topAppBar/topAppBar';
-import { getAllFoods } from '../../API/getFoods';
+import { getAllFoods } from '../../api/getFoods';
+
+import { connect, ConnectedProps } from 'react-redux';
+import { State } from '../../store/index';
+import { logIn, logOut } from '../../store/actions';
 
 interface allFoods {
   _id: string;
@@ -25,7 +30,7 @@ interface allFoods {
   protein_g: number;
 }
 
-interface RecordMealProps {
+interface RecordMealProps extends PropsFromRedux, RouteComponentProps {
 
 };
 
@@ -36,15 +41,15 @@ interface RecordMealStates {
 class RecordMeal extends React.Component<RecordMealProps, RecordMealStates>{
 
   // call API
-  // async componentDidMount() {
-  //   const allFoods: allFoods[] = await getAllFoods() as allFoods[];
-  //   this.setState({
-  //     allFoods
-  //   })
+  async componentDidMount() {
+    const allFoods: allFoods[] = await getAllFoods(this.props.token) as allFoods[];
+    this.setState({
+      allFoods
+    })
 
-  //   // testing: expect to see array of length 3130
-  //   console.log(allFoods);
-  // }
+    // testing: expect to see array of length 3130
+    console.log(allFoods);
+  }
 
   render() {
     return (
@@ -56,4 +61,17 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates>{
   }
 }
 
-export default RecordMeal;
+const mapStateToProps = (state: State) => ({
+  loggedIn: state.logIn.loggedIn,
+  username: state.logIn.username,
+  token: state.logIn.token,
+});
+
+const mapDispatchToProps = {
+  logIn,
+  logOut
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+export default connector(withRouter(RecordMeal));
