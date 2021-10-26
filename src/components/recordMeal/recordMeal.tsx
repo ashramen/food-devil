@@ -2,6 +2,9 @@ import React from 'react';
 
 import TopAppBar from '../topAppBar/topAppBar';
 import { getAllFoods } from '../../API/getFoods';
+import { Box } from "@mui/material";
+import './recordMeal.css';
+import RestaurantsTable from "./restaurantsTable";
 
 interface allFoods {
   _id: string;
@@ -25,10 +28,6 @@ interface allFoods {
   protein_g: number;
 }
 
-import Sidebar from '../sidebar/sidebar';
-import { Box } from "@mui/material";
-import './recordMeal.css';
-import RestaurantsTable from "./restaurantsTable";
 
 interface RecordMealStates {
     allFoods: allFoods[];
@@ -54,7 +53,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates>{
     render() {
         return (
             <>
-                <Sidebar page='record meal'/>
+                <TopAppBar page='record meal'/>
                 <Box className="container">
                     <h1>Record Meal</h1>
                     <RestaurantsTable />
