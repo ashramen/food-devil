@@ -162,6 +162,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
 
 const mapStateToProps = (state: State) => ({
   loggedIn: state.logIn.loggedIn,
+  token: state.logIn.token,
 });
 
 const connector = connect(mapStateToProps);

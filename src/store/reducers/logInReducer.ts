@@ -3,11 +3,13 @@ import { ActionType, Action } from '../actionTypes';
 interface State {
     loggedIn: boolean;
     username: string | null;
+    token: string;
 };
 
 const initialState: State = {
     loggedIn: false,
     username: null,
+    token: '',
 };
 
 const logInReducer = (state: State = initialState, action: Action) => {
@@ -17,6 +19,7 @@ const logInReducer = (state: State = initialState, action: Action) => {
                 ...state,
                 loggedIn: true,
                 username: action.payload.username,
+                token: action.payload.token,
             };
         case ActionType.LOG_OUT:
             return {

@@ -2,7 +2,7 @@ import React from "react";
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import TopAppBar from '../topAppBar/topAppBar';
-import { signup, login } from '../../API/login';
+import { signup, login } from '../../api/login';
 
 import Alert from '@mui/material/Alert';
 import Button from "@mui/material/Button";
@@ -108,10 +108,11 @@ class Login extends React.Component<LoginProps, LoginStates> {
       }
     } else {
       const response = await login(username, password);
-      if (response.message === 'Auth failed') {
+      console.log(response);
+      if (response.message !== 'Auth successful') {
         this.setState({correctLogIn: false});
       } else {
-        this.props.logIn(username);
+        this.props.logIn(username, response.token);
         this.props.history.push('/');
       }
     }

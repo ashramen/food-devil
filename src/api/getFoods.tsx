@@ -1,10 +1,11 @@
 const basePath = 'https://food-devil-backend.herokuapp.com';
 
-export const getAllFoods = async () => {
+export const getAllFoods = async (token: string) => {
     const route = '/foods';
     const response = await fetch(basePath + route, {
       method: 'GET',
       headers: {
+        'Authorization': 'Bearer ' + token,
         'Content-Type': 'application/json'
       }
     });
