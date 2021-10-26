@@ -1,7 +1,8 @@
 import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { Box, List, ListItemButton, ListItemText } from "@mui/material";
+import { Box, CircularProgress, List, ListItemButton, ListItemText } from "@mui/material";
 
+import LockPage from '../lockPage/lockPage';
 import TopAppBar from '../topAppBar/topAppBar';
 
 import { connect, ConnectedProps } from 'react-redux';
@@ -47,20 +48,35 @@ interface RecordMealStates {
     expandedRestaurants: {
         [id: string]: boolean;
     };
+    loading: boolean;
 }
 
 class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
+    constructor(props: RecordMealProps) {
+        super(props);
+        this.state = {
+            restaurants: [],
+            expandedRestaurants: {},
+            loading: true,
+        };
+    }
 
     // call api
     async componentDidMount() {
-        let state: RecordMealStates = {
-            restaurants: [],
-            expandedRestaurants: {}
+        if (this.props.loggedIn) {
+            let state: RecordMealStates = {
+                restaurants: [],
+                expandedRestaurants: {},
+                loading: false,
+            }
+            const restaurants: RestaurantData[] = await getRestaurants(this.props.token) as RestaurantData[];
+            restaurants.sort((restaurantA: RestaurantData, restaurantB: RestaurantData) => {
+                return (restaurantA.name < restaurantB.name? -1 : 1)
+            });
+            state.restaurants = restaurants;
+            restaurants.forEach(restaurant => state.expandedRestaurants[restaurant._id] = false);
+            this.setState(state);
         }
-        const restaurants: RestaurantData[] = await getRestaurants(this.props.token) as RestaurantData[];
-        state.restaurants = restaurants;
-        restaurants.forEach(restaurant => state.expandedRestaurants[restaurant._id] = false);
-        this.setState(state);
     }
 
     selectRestaurant(id: string): void {
@@ -69,17 +85,29 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
         this.setState(newState);
     }
 
-    constructor(props: RecordMealProps) {
-        super(props);
-        this.state = { restaurants: [], expandedRestaurants: {} }
-    }
-
     render() {
         return (
             <>
-                <TopAppBar page='record meal'/>
+            <TopAppBar page='record meal'/>
+            {this.props.loggedIn?
+            <>
                 <Box className="container">
-                    <h1>Record Meal</h1>
+                    <div className='title'>Record Meal</div>
+                    {this.state.loading?
+                    <Box
+                        sx={{
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                            right: 0,
+                            position: "absolute",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                        }}
+                    >
+                        <CircularProgress size={100}/>
+                    </Box> : <div></div>}
                     <List>
                         {this.state.restaurants.map(restaurant => (
                             <ListItemButton divider={true}
@@ -90,6 +118,8 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                         ))}
                     </List>
                 </Box>
+            </>
+            : <LockPage/>}
             </>
         );
     }

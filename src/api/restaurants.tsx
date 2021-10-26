@@ -1,13 +1,5 @@
-const basePath = 'https://food-devil-backend.herokuapp.com';
+import { RESTAURANTS, fetchData } from './constants';
 
 export const getRestaurants = async (token: string) => {
-    const route = '/restaurants';
-    const response = await fetch(basePath + route, {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json'
-      }
-    });
-    return await response.json();
+    return fetchData(RESTAURANTS, 'GET', token);
 }

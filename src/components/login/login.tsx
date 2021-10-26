@@ -108,7 +108,6 @@ class Login extends React.Component<LoginProps, LoginStates> {
       }
     } else {
       const response = await login(username, password);
-      console.log(response);
       if (response.message !== 'Auth successful') {
         this.setState({correctLogIn: false});
       } else {
