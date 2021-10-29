@@ -7,6 +7,7 @@ interface LogInAction {
     type: typeof ActionType.LOG_IN;
     payload: {
         username: string;
+        userId: string;
         token: string;
     };
 };
