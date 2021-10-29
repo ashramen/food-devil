@@ -3,6 +3,7 @@ export const FOODS = '/foods';
 export const SIGNUP = '/users/signup';
 export const LOGIN = '/users/login';
 export const RESTAURANTS = '/restaurants';
+export const GET_USER_ID = (username: string) => '/users/' + username;
 
 export const fetchData = async (route: string, method: string, token?: string, body?: any) => {
     let headers: HeadersInit = {
