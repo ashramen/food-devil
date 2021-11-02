@@ -4,6 +4,11 @@ import LockPage from '../lockPage/lockPage';
 import NutritionCard from './nutritionCard';
 import NutritionGraph from './nutritionGraph';
 import TopAppBar from '../topAppBar/topAppBar';
+import { getAllFoods, getFood } from '../../api/foods';
+import { getMealByDays, postMeal, patchMeal, deleteMeal } from '../../api/meals';
+import { getRestaurants, getRestaurant } from '../../api/restaurants';
+import { getReviews, postReview, patchReview, deleteReview } from '../../api/reviews';
+
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Box from '@mui/material/Box';
@@ -56,6 +61,32 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
       reportDate: new Date(),
       historyStartDate: new Date(new Date().getTime() - (6 * 24 * 60 * 60 * 1000)),
       historyEndDate: new Date(),
+    }
+  }
+
+  async componentDidMount() {
+    /*
+    * Instructions for testing API:
+    * Uncomment each line ONE BY ONE to test whether a specific route works
+    * Follow comments at the end of each line
+    */
+    const { userId, token } = this.props;
+    if (this.props.loggedIn) {
+      // console.log(await getAllFoods(token));
+      // console.log(await getFood('616ad598d252dea11b903acc', token));
+      // console.log(await getMealByDays('6168ce2fe182727b2d0cfe17', token, [])); // DOESN'T WORK
+      // console.log(await postMeal('616cbb83970499fbab480854', [
+      //    "616ad598d252dea11b903acb",
+      //    "616ad598d252dea11b903acc"
+      // ], token));
+      // console.log(await patchMeal('6180b1d843d930001c5b5d56', ["616ad598d252dea11b903acb", "616ad598d252dea11b903acd"], token)); // Replace first argument with your meal id
+      // console.log(await deleteMeal('6180b1d843d930001c5b5d56', token)); // Replace first argument with your meal id
+      // console.log(await getRestaurants(token));
+      // console.log(await getRestaurant('616ad5d0d252dea11b9043c5', token));
+      // console.log(await postReview(userId!, '616ad5d0d252dea11b9043c5', 'test review', 5, true, token)); // Replace second argument with your review id
+      // console.log(await getReviews('616ad5d0d252dea11b9043c5', token)); // DOESN'T WORK
+      // console.log(await patchReview('6180b32e43d930001c5b5d5d', 'another test review', 3, true, token)); // Replace first argument with your review id
+      // console.log(await deleteReview('6180b32e43d930001c5b5d5d', token));
     }
   }
 
@@ -163,6 +194,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
 const mapStateToProps = (state: State) => ({
   loggedIn: state.logIn.loggedIn,
   token: state.logIn.token,
+  userId: state.logIn.userId,
 });
 
 const connector = connect(mapStateToProps);

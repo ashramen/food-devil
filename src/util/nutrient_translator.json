@@ -1,0 +1,12 @@
+{
+    "total_cal": "Calories",
+    "fat_g": "Fat",
+    "sat_fat_g": "Saturated Fat",
+    "trans_fat_g": "Trans Fat",
+    "cholesterol_mg": "Cholesterol",
+    "sodium_mg": "Sodium",
+    "carbs_g": "Carbohydrates",
+    "fiber_g": "Fiber",
+    "sugars_g": "Sugar",
+    "protein_g": "Protein"
+}

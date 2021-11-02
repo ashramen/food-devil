@@ -12,28 +12,6 @@ import './recordMeal.css';
 import { getRestaurants } from "../../api/restaurants";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
-interface allFoods {
-    _id: string;
-    restaurantId: string;
-    menu: string;
-    submenu: string;
-    name: string;
-    allergens: string[];
-    ingredients: string | null;
-    serving_size: string;
-    servings_per_container: string;
-    total_cal: number;
-    fat_g: number;
-    sat_fat_g: number;
-    trans_fat_g: number;
-    chloestrol_mg: number;
-    sodium_mg: number;
-    carbs_g: number;
-    fiber_g: number;
-    sugars_g: number;
-    protein_g: number;
-}
-
 interface RestaurantData {
     _id: string;
     name: string;
