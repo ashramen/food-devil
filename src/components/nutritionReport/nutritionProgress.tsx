@@ -23,14 +23,24 @@ class NutritionProgress extends React.Component<NutritionProgressProps, Nutritio
         };
     };
 
+    updateData() {
+        let percentage: number = Math.min(this.props.currentStats / this.props.DV * 100, 100);
+        if (this.props.currentStats === 0) {
+            percentage = 100;
+        }
+        this.setState({
+            progress: percentage
+        })
+    }
+
     componentDidMount() {
-        const percentage: number = Math.min(this.props.currentStats / this.props.DV * 100, 100);
-        const barFillSpeed: number = 10;
-        setInterval(() => { 
-            this.setState({
-                progress: this.props.currentStats === 0? 100 : this.state.progress >= percentage - barFillSpeed? percentage : this.state.progress + barFillSpeed,
-            });
-        }, 100);
+        this.updateData();
+    }
+
+    componentDidUpdate(prevProps: NutritionProgressProps) {
+        if (this.props.currentStats !== prevProps.currentStats) {
+            this.updateData();
+        }
     }
 
     render() {

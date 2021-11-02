@@ -1,10 +1,30 @@
-import { MEALS, GET_MEAL, fetchData } from './constants';
-import { NutritionStats } from '../util/translateData';
+import { MEALS, GET_MEAL, GET_USER_MEAL, fetchData } from './constants';
+import { getFood } from './foods';
+import { Food, NutritionStats, translateData } from '../util/translateData';
 
 export const getMealByDays = async (id: string, token: string, days: Date[]) => {
-    const data = fetchData(GET_MEAL(id), 'GET', token);
-    // TODO: Post-processing
-    return data;
+    const data = await fetchData(GET_USER_MEAL(id), 'GET', token);
+    const nutritionInfoPerDay: NutritionStats[] = [];
+    for (const date of days) {
+        const filteredData = data.filter((meal: any) => {
+            const mealDate: Date = new Date(meal.createdAt);
+            return (
+                mealDate.getDate() === date.getDate()
+                && mealDate.getMonth() === date.getMonth()
+                && mealDate.getFullYear() === date.getFullYear()
+            )
+        });
+        const allFoods = [];
+        for (const meal of filteredData) {
+            for (const foodId of meal.foods) {
+                const foodInfo: Food = await getFood(foodId, token) as Food;
+                allFoods.push(foodInfo);
+            }
+        }
+        const nutritionInfo: NutritionStats = translateData(allFoods);
+        nutritionInfoPerDay.push(nutritionInfo);
+    }
+    return nutritionInfoPerDay;
 }
 
 export const postMeal = async(userId: string, foods: string[], token: string) => {
