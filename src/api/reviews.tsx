@@ -1,7 +1,7 @@
-import { REVIEW, GET_REVIEW, fetchData } from './constants';
+import { REVIEWS, GET_REVIEW, GET_RESTAURANT_REVIEW, fetchData } from './constants';
 
 export const getReviews = async (id: string, token: string) => {
-    const data = fetchData(GET_REVIEW(id), 'GET', token);
+    const data = fetchData(GET_RESTAURANT_REVIEW(id), 'GET', token);
     return data;
 }
 
@@ -13,7 +13,7 @@ export const postReview = async(userId: string, restaurantId: string, desc: stri
         stars,
         is_anonymous: isAnon
     };
-    return fetchData(REVIEW, 'POST', token, body);
+    return fetchData(REVIEWS, 'POST', token, body);
 }
 
 export const patchReview = async(id: string, desc: string, stars: number, isAnon: boolean, token: string) => {

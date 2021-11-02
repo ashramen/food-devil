@@ -8,6 +8,7 @@ export interface NutritionGraphProps {
     nutrient: string;
     startDate: Date;
     endDate: Date;
+    intake: number[];
     DV: number;
     unit: string;
 };
@@ -27,6 +28,7 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
             nutrient,
             startDate,
             endDate,
+            intake,
             DV,
             unit
         } = this.props;
@@ -34,9 +36,6 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
         for (let date = new Date(startDate); date < new Date(endDate.getTime() + 24*60*60*1000); date.setDate(date.getDate() + 1)) {
             dateList.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
         }
-
-        // TODO: Change this to real data
-        const intake: number[] = [DV*0.6, DV*1.2, DV*0.8, DV, DV, DV*0.9, DV*1.2]
 
         const record = {
             x: dateList,

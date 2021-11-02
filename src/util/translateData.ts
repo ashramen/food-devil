@@ -26,7 +26,7 @@ interface nutrientData {
     "protein_g": string;
 }
 
-const translator = nutrientTranslator as nutrientData
+const translator = nutrientTranslator as nutrientData;
 const DV = nutrientDV as nutrientData;
 
 export const translateData = (foods: Food[]): NutritionStats => {
@@ -40,12 +40,7 @@ export const translateData = (foods: Food[]): NutritionStats => {
     }
     for (const food of foods) {
         for (const key of Object.keys(translator)) {
-            if (!Number.isFinite(food[key])) {
-                // TODO: Error handling
-                console.log('Data parse error');
-            } else {
-                translatedData[translator[key as keyof nutrientData]].intake += food[key] as number;
-            }
+            translatedData[translator[key as keyof nutrientData]].intake += food[key] as number;
         }
     }
     return translatedData;
