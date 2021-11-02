@@ -17,4 +17,4 @@ After you `cd` into the root folder, run `npm install` to install all dependenci
 
 You can now test the log in page by creating an account and logging in.
 
-To test other API routes, first log in and open the console on the home page. Then follow the instructions in `src/components/nutritionReport/nutritionReport.tsx` starting at line 67. You also want to open MongoDB cloud to keep track of the database changes.
+To test other API routes (only available in pull request #29), first log in and open the console on the home page. Then follow the instructions in `src/components/nutritionReport/nutritionReport.tsx` starting at line 67. You also want to open MongoDB cloud to keep track of the database changes.
