@@ -22,7 +22,7 @@ import { State } from '../../store/index';
 
 import './styles.css';
 
-interface NutritionReportProps extends PropsFromRedux {};
+interface NutritionReportProps extends PropsFromRedux { };
 interface NutritionReportStates {
   nutritionProgress: NutritionStats;
   nutritionGraph: NutritionStats[];
@@ -36,11 +36,13 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
   constructor(props: NutritionReportProps) {
     super(props);
     this.state = {
-      nutritionProgress: {'Calories': {
-        intake: 0,
-        DV: 2000,
-        unit: 'cal'
-      }},
+      nutritionProgress: {
+        'Calories': {
+          intake: 0,
+          DV: 2000,
+          unit: 'cal'
+        }
+      },
       nutritionGraph: [],
       nutrientGraphed: 'Calories',
       reportDate: new Date(),
@@ -55,8 +57,8 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
     const { reportDate, historyStartDate, historyEndDate } = this.state;
     const nutritionStats: NutritionStats[] = await getMealByDays('6168ce2fe182727b2d0cfe17', token, [reportDate]);
     const dateList: Date[] = [];
-    for (let date = new Date(historyStartDate.getTime()); date < new Date(historyEndDate.getTime() + 24*60*60*1000); date.setDate(date.getDate() + 1)) {
-        dateList.push(new Date(date.getTime()));
+    for (let date = new Date(historyStartDate.getTime()); date < new Date(historyEndDate.getTime() + 24 * 60 * 60 * 1000); date.setDate(date.getDate() + 1)) {
+      dateList.push(new Date(date.getTime()));
     };
     const nutritionGraph: NutritionStats[] = await getMealByDays('6168ce2fe182727b2d0cfe17', token, dateList);
     this.setState({
@@ -73,8 +75,8 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
 
   async componentDidUpdate(prevProps: NutritionReportProps, prevStates: NutritionReportStates) {
     if (this.state.reportDate !== prevStates.reportDate
-    || this.state.historyStartDate !== prevStates.historyStartDate
-    || this.state.historyEndDate !== prevStates.historyEndDate) {
+      || this.state.historyStartDate !== prevStates.historyStartDate
+      || this.state.historyEndDate !== prevStates.historyEndDate) {
       this.updateData();
     }
   }
@@ -89,9 +91,9 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
       historyEndDate,
     } = this.state;
     return (
-        <Box mx={2}>
-          <TopAppBar page='nutrition report'/>
-          {this.props.loggedIn?
+      <Box mx={2}>
+        <TopAppBar page='nutrition report' />
+        {this.props.loggedIn ?
           <>
             <Grid container mt={15}>
               <Grid item xs={6}>
@@ -104,19 +106,19 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                     value={reportDate}
                     maxDate={new Date()}
                     onChange={(newDate: Date | null) => {
-                      this.setState({reportDate: newDate? newDate : new Date()})
+                      this.setState({ reportDate: newDate ? newDate : new Date() })
                     }}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
               </Grid>
             </Grid>
-            <Divider variant='middle'/>
+            <Divider variant='middle' />
             <Grid container justifyContent='center'>
               {Object.keys(nutritionProgress).map((key: string) => {
                 const { intake, DV, unit } = nutritionProgress[key];
                 return (<Grid item xs={2}>
-                  <NutritionCard nutrient={key} currentStats={intake} DV={DV} unit={unit} date={reportDate}/>
+                  <NutritionCard nutrient={key} currentStats={intake} DV={DV} unit={unit} date={reportDate} />
                 </Grid>)
               })}
             </Grid>
@@ -132,8 +134,8 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                     maxDate={new Date()}
                     onChange={(newDate: Date | null) => {
                       this.setState({
-                        historyStartDate: newDate? newDate : new Date(),
-                        historyEndDate: newDate && newDate > historyEndDate? newDate : historyEndDate,
+                        historyStartDate: newDate ? newDate : new Date(),
+                        historyEndDate: newDate && newDate > historyEndDate ? newDate : historyEndDate,
                       })
                     }}
                     renderInput={(params) => <TextField {...params} />}
@@ -144,8 +146,8 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                     maxDate={new Date()}
                     onChange={(newDate: Date | null) => {
                       this.setState({
-                        historyEndDate: newDate? newDate : new Date(),
-                        historyStartDate: newDate && newDate < historyStartDate? newDate : historyStartDate,
+                        historyEndDate: newDate ? newDate : new Date(),
+                        historyStartDate: newDate && newDate < historyStartDate ? newDate : historyStartDate,
                       })
                     }}
                     renderInput={(params) => <TextField {...params} />}
@@ -153,35 +155,35 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                 </LocalizationProvider>
               </Grid>
             </Grid>
-            <Divider variant='middle'/>
+            <Divider variant='middle' />
             <Grid container justifyContent='left' alignItems='left'>
               <Tabs
                 variant='scrollable'
                 scrollButtons={true}
-                onChange={(event, value) => this.setState({nutrientGraphed: value})}
+                onChange={(event, value) => this.setState({ nutrientGraphed: value })}
                 value={nutrientGraphed}
               >
                 {Object.keys(nutritionProgress).map((key: string) => {
                   return (<Tab
-                      value={key}
-                      label={key}
-                      wrapped
-                      sx={{
-                        fontSize: 15,
-                      }}
+                    value={key}
+                    label={key}
+                    wrapped
+                    sx={{
+                      fontSize: 15,
+                    }}
                   />)
                 })}
               </Tabs>
             </Grid>
             <NutritionGraph nutrient={nutrientGraphed}
               startDate={historyStartDate}
-              endDate={historyEndDate} 
+              endDate={historyEndDate}
               intake={nutritionGraph.map((dailyInfo) => dailyInfo[nutrientGraphed].intake)}
-              DV={nutritionProgress[nutrientGraphed].DV} 
+              DV={nutritionProgress[nutrientGraphed].DV}
               unit={nutritionProgress[nutrientGraphed].unit}
             />
-          </>: <LockPage/>}
-        </Box>
+          </> : <LockPage />}
+      </Box>
     );
   }
 }
