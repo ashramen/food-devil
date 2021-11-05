@@ -1,6 +1,7 @@
 const BASEPATH = 'https://food-devil-backend.herokuapp.com';
 export const FOODS = '/foods';
 export const GET_FOOD = (id: string) => '/foods/' + id;
+export const GET_FOODS_BY_RESTAURANT = (id: string) => `/foods/restaurant/${id}`;
 export const SIGNUP = '/users/signup';
 export const LOGIN = '/users/login';
 export const MEALS = '/meals/';
