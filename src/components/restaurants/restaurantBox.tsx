@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from "react-router-dom";
+
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -23,16 +25,10 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
         this.state = {
             dialogOpen: false
         };
-
-        this.onLearnMoreClick = this.onLearnMoreClick.bind(this);
         this.onWriteAReviewClick = this.onWriteAReviewClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
     }
 
-
-    onLearnMoreClick() {
-        console.log("Clicked");
-    }
 
     onWriteAReviewClick() {
         this.setState({ dialogOpen: true });
@@ -57,7 +53,6 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
 
         return (
             <>
-
                 <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                     <Box sx={{ my: 3, mx: 2 }}>
                         <Grid container alignItems="center">
@@ -77,7 +72,7 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
                     <Box sx={{ mt: 3, ml: 1, mb: 1 }}>
                         <Grid container alignItems="center">
                             <Grid item xs>
-                                <Button onClick={() => this.onLearnMoreClick()}>Learn More</Button>
+                                <Link to={"/restaurants/" + name}> <Button >Learn More</Button> </Link>
                             </Grid>
                             <Grid item xs>
                                 <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
@@ -85,7 +80,6 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
                         </Grid>
                     </Box>
                 </Box>
-
                 <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={dialogOpen} />
             </>
         );
