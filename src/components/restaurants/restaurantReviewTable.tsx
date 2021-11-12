@@ -120,7 +120,7 @@ export default function RestaurantReviewTable(props: RestaurantReviewTableProps)
     const [orderBy, setOrderBy] = React.useState<keyof Data>('review');
     const [page, setPage] = React.useState(0);
     const [searched, setSearched] = React.useState<string>("");
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const requestSearch = (searchedVal: string) => {
         const filteredRows = dataRows.filter((row) => {

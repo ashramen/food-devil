@@ -10,7 +10,10 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
+import SearchBar from "material-ui-search-bar";
 
+import { connect, ConnectedProps } from 'react-redux';
+import { State } from '../../store/index';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -53,7 +56,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 
 
 interface Column {
-    id: 'review' | 'rating' | 'username' | 'date';
+    id: 'meal' | 'date';
     label: string;
     minWidth?: number;
     maxWidth?: number;
@@ -62,63 +65,61 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-    { id: 'review', label: 'Review', minWidth: 250, maxWidth: 300 },
-    { id: 'rating', label: 'Rating', minWidth: 10, maxWidth: 100 },
-    {
-        id: 'username',
-        label: 'Username',
-        minWidth: 170,
-        maxWidth: 200,
-        align: 'right'
-    },
-    {
-        id: 'date',
-        label: 'Date Posted',
-        minWidth: 170,
-        maxWidth: 200,
-        align: 'right'
-    }
+    { id: 'meal', label: 'Meal', minWidth: 250, maxWidth: 300 },
+    { id: 'date', label: 'Date', minWidth: 10, maxWidth: 100 }
 ];
 
 interface Data {
-    review: string;
-    rating: number;
-    username: string;
+    meal: string;
     date: string;
+    id: number;
 }
 
 function createData(
-    review: string,
-    rating: number,
-    username: string,
-    date: string
+    meal: string,
+    date: string,
+    id: number,
 ): Data {
-    return { review, rating, username, date };
+    return { meal, date, id };
 }
 
-const rows = [
-    createData('Next his only boy meet the fat rose when. Do repair at we misery wanted remove remain income. Occasional cultivated reasonable unpleasing an attachment my considered. Having ask and coming object seemed put did admire figure. Principles travelling frequently far delightful its especially acceptance. Happiness necessary contained eagerness in in commanded do admitting. Favourable continuing difficulty had her solicitude far. Nor doubt off widow all death aware offer. We will up', 2.5, "username", "11/10/2021"),
-    createData('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createData('Next his only boy meet the fat rose when', 1, "username", "11/10/2021"),
-    createData('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createData('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createData('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createData('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createData('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
+const dataRows: Data[] = [
+    createData("Egg and Cheese Burrito", "12/10/21", 1),
+    createData(" Cheese Burrito", "12/10/21", 2),
+    createData("Egg and Cheese Burrito", "12/10/21", 3),
+    createData("Egg  Burrito", "12/10/21", 4),
+    createData("Egg  Burrito", "12/10/21", 5),
+    createData("Sandwich", "12/10/21", 6)
 ];
 
 
-interface RestaurantReviewTableProps {
+interface MealsOrdered extends PropsFromRedux {
     name: string;
 }
 
-export default function RestaurantReviewTable(props: RestaurantReviewTableProps) {
+function MealsOrdered(props: MealsOrdered) {
+    const [rows, setRows] = React.useState<Data[]>(dataRows);
+
     const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('review');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('meal');
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [searched, setSearched] = React.useState<string>("");
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const requestSearch = (searchedVal: string) => {
+        const filteredRows = dataRows.filter((row) => {
+            return row.meal.toLowerCase().includes(searchedVal.toLowerCase());
+        });
+        setRows(filteredRows);
+    };
+
+    const cancelSearch = () => {
+        setSearched("");
+        requestSearch(searched);
+    };
 
     const handleChangePage = (event: unknown, newPage: number) => {
+        console.log(rows);
         setPage(newPage);
     };
 
@@ -143,6 +144,11 @@ export default function RestaurantReviewTable(props: RestaurantReviewTableProps)
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <SearchBar
+                value={searched}
+                onChange={(searchVal) => requestSearch(searchVal)}
+                onCancelSearch={() => cancelSearch()}
+            />
             <TableContainer sx={{ maxHeight: 800 }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
@@ -174,7 +180,7 @@ export default function RestaurantReviewTable(props: RestaurantReviewTableProps)
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => {
                                 return (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.username}>
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                                         {columns.map((column) => {
                                             const value = row[column.id];
                                             return (
@@ -203,3 +209,14 @@ export default function RestaurantReviewTable(props: RestaurantReviewTableProps)
         </Paper>
     );
 }
+
+const mapStateToProps = (state: State) => ({
+    loggedIn: state.logIn.loggedIn,
+    token: state.logIn.token,
+    userId: state.logIn.userId,
+});
+
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+export default connector(MealsOrdered);

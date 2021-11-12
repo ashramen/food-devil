@@ -13,6 +13,7 @@ import { Typography } from '@mui/material';
 
 
 import RestaurantReviewTable from './restaurantReviewTable';
+import MealsOrdered from './mealsOrdered';
 
 
 interface MatchParams {
@@ -65,7 +66,10 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, any> {
                                     2
                                 </Grid>
                                 <Grid item xs>
-                                    3
+                                    <div style={{ fontSize: 30 }}> Meals You've Ordered From Here </div>
+                                </Grid>
+                                <Grid item xs>
+                                    <MealsOrdered name={name} />
                                 </Grid>
                             </Grid>
                         </Grid>
