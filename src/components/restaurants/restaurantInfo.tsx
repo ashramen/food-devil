@@ -15,6 +15,7 @@ import { Typography } from '@mui/material';
 import RestaurantReviewTable from './restaurantReviewTable';
 import MealsOrdered from './mealsOrdered';
 
+import './styles.css';
 
 interface MatchParams {
     id: string;
@@ -52,7 +53,7 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, any> {
                         </Grid>
                     </Grid>
                     <Grid container>
-                        <Grid container direction="row" spacing={2}>
+                        <Grid container direction="row" spacing={2} alignItems="flex-start" >
                             <Grid item container direction="column" xs spacing={2}>
                                 <Grid item xs>
                                     <div style={{ fontSize: 30 }}> Previous Reviews </div>
@@ -63,7 +64,11 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, any> {
                             </Grid>
                             <Grid item container direction="column" xs spacing={2}>
                                 <Grid item xs>
-                                    2
+                                    <img
+                                        className='image'
+                                        src="https://eventservices.duke.edu/sites/default/files/styles/dws_feature_image/public/thumbnails/image/SazonLatinKitchen.jpg?itok=XRzHPxDz"
+                                        alt="new"
+                                    />
                                 </Grid>
                                 <Grid item xs>
                                     <div style={{ fontSize: 30 }}> Meals You've Ordered From Here </div>
