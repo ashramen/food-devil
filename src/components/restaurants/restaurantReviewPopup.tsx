@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
+import { postReview } from "../../api/reviews";
 
 interface RestaurantsReviewPopupProps extends PropsFromRedux {
     name: string;
@@ -23,6 +24,7 @@ interface RestaurantsReviewPopupState {
     stars: number | null;
     textField: string | null;
 }
+
 class RestaurantsReviewPopup extends React.Component<RestaurantsReviewPopupProps, RestaurantsReviewPopupState> {
 
     constructor(props: RestaurantsReviewPopupProps) {
@@ -51,9 +53,24 @@ class RestaurantsReviewPopup extends React.Component<RestaurantsReviewPopupProps
         }
     }
 
-    onSubmit() {
-        console.log("here");
+    async onSubmit() {
+        // TODO: need to replace hardcoded restaurant_id's with some other prop
+        // This other prop can be based 
+        //   on the current url (using `window.location.href`)
+        //   or using an id sent from 'restaurantBox.tsx`
+        const beyublue_id = 0x616ad5d1d252dea11b9043db;
+        let beyublue_id_string = beyublue_id.toString();
+
         console.log(this.state);
+        if (this.props.loggedIn) {
+            if (this.props.userId === null || this.state.textField === null || this.state.stars === null) {
+                console.log("review not submitted; at least one of `userId`, `textField`, or `stars` is null")
+            } else {
+                const posted_review = await postReview(this.props.userId, beyublue_id_string, this.state.textField, this.state.stars, false, this.props.token);
+                console.log("review has been posted successfully");
+                console.log(posted_review);
+            }
+        }
     }
 
     render() {

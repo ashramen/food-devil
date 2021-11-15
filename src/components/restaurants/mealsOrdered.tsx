@@ -93,11 +93,11 @@ const dataRows: Data[] = [
 ];
 
 
-interface MealsOrdered extends PropsFromRedux {
+interface IMealsOrdered extends PropsFromRedux {
     name: string;
 }
 
-function MealsOrdered(props: MealsOrdered) {
+function MealsOrdered(props: IMealsOrdered) {
     const [rows, setRows] = React.useState<Data[]>(dataRows);
 
     const [order, setOrder] = React.useState<Order>('asc');

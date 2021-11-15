@@ -27,10 +27,13 @@ interface RestaurantInfoProps extends PropsFromRedux, RouteComponentProps<MatchP
 
 
 
-class RestaurantInfo extends React.Component<RestaurantInfoProps, any> {
+class RestaurantInfo extends React.Component<RestaurantInfoProps> {
 
     constructor(props: RestaurantInfoProps) {
-        super(props)
+        super(props);
+        this.state = {
+            restaurants: [],
+        };
     }
 
     render() {
