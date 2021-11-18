@@ -99,28 +99,6 @@ function formatReviewData (review: IRawReviewData): IReviewData {
     }
 }
 
-// TODO: delete these 
-function createDataManual(
-    review: string,
-    rating: number,
-    username: string,
-    date: string
-): IReviewData {
-    return { review, rating, username, date };
-}
-
-const dataRowsManual: IReviewData[] = [
-    createDataManual('Next his only boy meet the fat rose when. Do repair at we misery wanted remove remain income. Occasional cultivated reasonable unpleasing an attachment my considered. Having ask and coming object seemed put did admire figure. Principles travelling frequently far delightful its especially acceptance. Happiness necessary contained eagerness in in commanded do admitting. Favourable continuing difficulty had her solicitude far. Nor doubt off widow all death aware offer. We will up', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 1, "aqibisbiqa", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-];
-
-
 interface RestaurantReviewTableProps extends PropsFromRedux{
     name: string;
 }

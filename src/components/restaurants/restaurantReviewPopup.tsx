@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
-import { getReviews, postReview } from "../../api/reviews";
+import { postReview } from "../../api/reviews";
 
 interface RestaurantsReviewPopupProps extends PropsFromRedux {
     name: string;
@@ -73,9 +73,8 @@ class RestaurantsReviewPopup extends React.Component<RestaurantsReviewPopupProps
                 if ( this.state.textField !== "" ){
                     posted_review = await postReview(this.props.userId, beyublue_id_string, this.state.textField, this.state.stars, false, this.props.token);
                 }
-                const p = await getReviews(beyublue_id_string, this.props.token);
                 console.log("review has been posted successfully");
-                console.log(p);
+                console.log(posted_review);
             }
         } else {
             // TODO: Let user know that they can't submit review without logging in
