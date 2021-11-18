@@ -16,44 +16,7 @@ import { visuallyHidden } from '@mui/utils';
 import SearchBar from "material-ui-search-bar";
 
 import { getReviews } from "../../api/reviews";
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key,
-): (
-        a: { [key in Key]: number | string },
-        b: { [key in Key]: number | string },
-    ) => number {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-        return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-}
+import { getComparator, stableSort, Order } from "./restaurantConstants";
 
 
 interface Column {
@@ -93,9 +56,10 @@ interface IRawReviewData {
     stars: number,
     updatedAt: string,
     user_id: string,
+    message: string,
 }
 
-interface Data {
+interface IReviewData {
     review: string;
     rating: number;
     username: string;
@@ -104,12 +68,19 @@ interface Data {
 
 
 
-async function getReviewData (restaurant_id: string, token: string): Promise<Data[]> {
+
+async function getReviewData (restaurant_id: string, token: string): Promise<IReviewData[]> {
     const beyublue_id = 0x616ad5d1d252dea11b9043db;
     let beyublue_id_string = beyublue_id.toString();
-    const reviews: IRawReviewData[] = await getReviews(beyublue_id_string, token) as IRawReviewData[];
+    const fetchData = await getReviews(beyublue_id_string, token);
+    console.log(fetchData);
+    if (fetchData.message === "Auth failed") {
+        console.log("Unable to fetch reviews");
+        return [];
+    }
     
-    const formattedReviews: Data[] = [];
+    const reviews = fetchData as IRawReviewData[];
+    const formattedReviews: IReviewData[] = [];
 
     for (const review of reviews) {
         formattedReviews.push(formatReviewData(review));
@@ -117,7 +88,7 @@ async function getReviewData (restaurant_id: string, token: string): Promise<Dat
     return formattedReviews;
 }
 
-function formatReviewData (review: IRawReviewData): Data {
+function formatReviewData (review: IRawReviewData): IReviewData {
     return {
         review: review.description,
         rating: review.stars,
@@ -132,11 +103,11 @@ function createDataManual(
     rating: number,
     username: string,
     date: string
-): Data {
+): IReviewData {
     return { review, rating, username, date };
 }
 
-const dataRowsManual: Data[] = [
+const dataRowsManual: IReviewData[] = [
     createDataManual('Next his only boy meet the fat rose when. Do repair at we misery wanted remove remain income. Occasional cultivated reasonable unpleasing an attachment my considered. Having ask and coming object seemed put did admire figure. Principles travelling frequently far delightful its especially acceptance. Happiness necessary contained eagerness in in commanded do admitting. Favourable continuing difficulty had her solicitude far. Nor doubt off widow all death aware offer. We will up', 2.5, "username", "11/10/2021"),
     createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
     createDataManual('Next his only boy meet the fat rose when', 1, "aqibisbiqa", "11/10/2021"),
@@ -153,26 +124,28 @@ interface RestaurantReviewTableProps extends PropsFromRedux{
 }
 
 function RestaurantReviewTable(props: RestaurantReviewTableProps) {
-    const [rows, setRows] = React.useState<Data[]>([]);
+    
+    const [rows, setRows] = React.useState<IReviewData[]>([]);
+    const [order, setOrder] = React.useState<Order>('asc');
+    const [orderBy, setOrderBy] = React.useState<keyof IReviewData>('review');
+    const [page, setPage] = React.useState(0);
+    const [searched, setSearched] = React.useState<string>("");
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     React.useEffect(() => {
-        const sample_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFxaWJpc2JpcWEiLCJ1c2VySWQiOiI2MTcyMTQ2NTM3Y2MwNDZjMzczZDg2YzIiLCJpYXQiOjE2MzY5MzQ5NDUsImV4cCI6MTYzNzAyMTM0NX0.TZcyRCzsAHB_Q_YYQ9429wh0Nm9Ftx9VTjiMjtM6Ppo";
-        
         // TODO: Should user have to be logged in to see review?
         // If so, then we use `props.token` as shown below:
         // But otherwise, we can just use a sample one
         /** getReviewData("", props.token).then(setRows); **/        
 
-        getReviewData("", sample_token).then(setRows);
-    }, []);
-
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('review');
-    const [page, setPage] = React.useState(0);
-    const [searched, setSearched] = React.useState<string>("");
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+        //getReviewData("", props.token).then(setRowsDummy);
+        if (searched === "") {
+            getReviewData("", props.token).then(setRows);
+        }
+    }, [props.token, searched]);
 
     const requestSearch = (searchedVal: string) => {
+        setSearched(searchedVal);
         const filteredRows = rows.filter((row) => {
             return row.review.toLowerCase().includes(searchedVal.toLowerCase());
         });
@@ -181,7 +154,6 @@ function RestaurantReviewTable(props: RestaurantReviewTableProps) {
 
     const cancelSearch = () => {
         setSearched("");
-        requestSearch(searched);
     };
 
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -195,7 +167,7 @@ function RestaurantReviewTable(props: RestaurantReviewTableProps) {
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
-        property: keyof Data,
+        property: keyof IReviewData,
     ) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -203,7 +175,7 @@ function RestaurantReviewTable(props: RestaurantReviewTableProps) {
     };
 
     const createSortHandler =
-        (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+        (property: keyof IReviewData) => (event: React.MouseEvent<unknown>) => {
             handleRequestSort(event, property);
         };
 
