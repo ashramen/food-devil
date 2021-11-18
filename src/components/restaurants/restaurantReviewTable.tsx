@@ -18,6 +18,7 @@ import SearchBar from "material-ui-search-bar";
 import { getReviews } from "../../api/reviews";
 import { getComparator, stableSort, Order } from "./restaurantConstants";
 
+
 interface Column {
     id: 'review' | 'rating' | 'username' | 'date';
     label: string;
@@ -45,9 +46,6 @@ const columns: readonly Column[] = [
         align: 'right'
     }
 ];
-
-
-
 
 interface IRawReviewData {
     _id: string,
