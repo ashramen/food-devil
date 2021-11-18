@@ -20,5 +20,4 @@ class RestaurantsGrid extends React.Component {
     }
 }
 
-
 export default RestaurantsGrid;

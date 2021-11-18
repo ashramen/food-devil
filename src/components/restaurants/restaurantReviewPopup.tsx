@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
-import { postReview } from "../../api/reviews";
+import { getReviews, postReview } from "../../api/reviews";
 
 interface RestaurantsReviewPopupProps extends PropsFromRedux {
     name: string;
@@ -64,18 +64,22 @@ class RestaurantsReviewPopup extends React.Component<RestaurantsReviewPopupProps
         console.log(this.state);
         console.log(this.props);
         if (this.props.loggedIn) {
-            console.log("review not submitted, user not logged in");
             if (this.state.textField === null || this.state.stars === null) {
                 console.log("review not submitted; at least one of `textField` or `stars` is null somehow");
             } else if (this.props.userId === null) {
                 console.log("review not submitted; user is logged in but the `userId` is null somehow");
             } else {
-                const posted_review = await postReview(this.props.userId, beyublue_id_string, this.state.textField, this.state.stars, false, this.props.token);
+                let posted_review = undefined;
+                if ( this.state.textField !== "" ){
+                    posted_review = await postReview(this.props.userId, beyublue_id_string, this.state.textField, this.state.stars, false, this.props.token);
+                }
+                const p = await getReviews(beyublue_id_string, this.props.token);
                 console.log("review has been posted successfully");
-                console.log(posted_review);
+                console.log(p);
             }
         } else {
             // TODO: Let user know that they can't submit review without logging in
+            console.log("review not submitted, user not logged in");
         }
     }
 
