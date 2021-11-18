@@ -12,6 +12,7 @@ import RestaurantsReviewPopup from './restaurantReviewPopup';
 interface RestaurantBoxProps {
     name: string;
     description: string;
+    id: number;
 };
 
 interface RestaurantBoxState {
