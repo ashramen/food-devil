@@ -62,14 +62,20 @@ class RestaurantsReviewPopup extends React.Component<RestaurantsReviewPopupProps
         let beyublue_id_string = beyublue_id.toString();
 
         console.log(this.state);
+        console.log(this.props);
         if (this.props.loggedIn) {
-            if (this.props.userId === null || this.state.textField === null || this.state.stars === null) {
-                console.log("review not submitted; at least one of `userId`, `textField`, or `stars` is null")
+            console.log("review not submitted, user not logged in");
+            if (this.state.textField === null || this.state.stars === null) {
+                console.log("review not submitted; at least one of `textField` or `stars` is null somehow");
+            } else if (this.props.userId === null) {
+                console.log("review not submitted; user is logged in but the `userId` is null somehow");
             } else {
                 const posted_review = await postReview(this.props.userId, beyublue_id_string, this.state.textField, this.state.stars, false, this.props.token);
                 console.log("review has been posted successfully");
                 console.log(posted_review);
             }
+        } else {
+            // TODO: Let user know that they can't submit review without logging in
         }
     }
 
