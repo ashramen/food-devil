@@ -56,8 +56,6 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 }
 
 
-
-
 interface Column {
     id: 'review' | 'rating' | 'username' | 'date';
     label: string;
@@ -86,9 +84,6 @@ const columns: readonly Column[] = [
     }
 ];
 
-
-
-
 interface IRawReviewData {
     _id: string,
     createdAt: string,
@@ -106,7 +101,6 @@ interface Data {
     username: string;
     date: string;
 }
-
 
 
 

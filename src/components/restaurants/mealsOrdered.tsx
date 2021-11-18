@@ -92,7 +92,6 @@ const dataRows: Data[] = [
     createData("Sandwich", "12/10/21", 6)
 ];
 
-
 interface IMealsOrdered extends PropsFromRedux {
     name: string;
 }
