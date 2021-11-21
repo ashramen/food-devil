@@ -23,7 +23,7 @@ function App() {
             <Route exact path="/restaurants">
               <Restaurants />
             </Route>
-            <Route exact path="/restaurants/:id" component={RestaurantInfo} />
+            <Route exact path="/restaurants/:name/:id" component={RestaurantInfo} />
             <Route exact path="/login">
               <div className='login'>
                 <div className='loginPage'>

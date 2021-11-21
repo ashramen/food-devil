@@ -12,14 +12,19 @@ import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
 import { getReviews, postReview } from "../../api/reviews";
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
+//this is a hack but I don't know how to fix it lmao
 interface RestaurantReviewFieldProps extends PropsFromRedux {
     name: string;
+    id: string;
 }
 
 interface RestaurantReviewFieldState {
     stars: number | null;
     textField: string | null;
+    anon: boolean
 }
 
 class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, RestaurantReviewFieldState> {
@@ -29,11 +34,17 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
 
         this.state = {
             stars: 3,
-            textField: ""
+            textField: "",
+            anon: false
         };
         this.onStarsChange = this.onStarsChange.bind(this);
         this.onTextFieldChange = this.onTextFieldChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onAnonChange = this.onAnonChange.bind(this);
+    }
+    onAnonChange() {
+        const anonPrev = this.state.anon;
+        this.setState({ anon: !anonPrev })
     }
 
     onTextFieldChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -55,9 +66,6 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
         // This other prop can be based 
         //   on the current url (using `window.location.href`)
         //   or using an id sent from 'restaurantBox.tsx`
-        const beyublue_id = 0x616ad5d1d252dea11b9043db;
-        let beyublue_id_string = beyublue_id.toString();
-
         console.log(this.state);
         console.log(this.props);
         if (this.props.loggedIn) {
@@ -68,9 +76,9 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
             } else {
                 let posted_review = undefined;
                 if (this.state.textField !== "") {
-                    posted_review = await postReview(this.props.userId, beyublue_id_string, this.state.textField, this.state.stars, false, this.props.token);
+                    posted_review = await postReview(this.props.userId, this.props.id, this.state.textField, this.state.stars, this.state.anon, this.props.token);
                 }
-                const p = await getReviews(beyublue_id_string, this.props.token);
+                const p = await getReviews(this.props.id, this.props.token);
                 console.log("review has been posted successfully");
                 console.log(p);
             }
@@ -85,7 +93,8 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
 
         const {
             textField,
-            stars
+            stars,
+            anon
         } = this.state;
 
         return (
@@ -129,6 +138,15 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
                         />
                     </Grid>
                     <Grid item xs={4}>
+                        <FormControlLabel
+                            label="Anonymous?"
+                            control={
+                                <Checkbox
+                                    checked={anon}
+                                    onChange={this.onAnonChange}
+                                    inputProps={{ 'aria-label': 'controlled' }}
+                                />}
+                        />
                         <Button variant="contained" onClick={this.onSubmit}>Submit</Button>
                     </Grid>
                 </Grid>

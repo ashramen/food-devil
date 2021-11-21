@@ -8,6 +8,7 @@ interface RestaurantsReviewPopupProps extends PropsFromRedux {
     name: string;
     handleClose: () => void;
     open: boolean;
+    id: number;
 }
 
 class RestaurantsReviewPopup extends React.Component<RestaurantsReviewPopupProps> {
@@ -18,11 +19,11 @@ class RestaurantsReviewPopup extends React.Component<RestaurantsReviewPopupProps
 
     render() {
 
-        const { handleClose, open, name } = this.props;
+        const { handleClose, open, name, id } = this.props;
 
         return (
             <Dialog onClose={handleClose} open={open}>
-                <RestaurantReviewField name={name} />
+                <RestaurantReviewField name={name} id={id.toString()} />
             </Dialog >
         );
     }
