@@ -1,4 +1,4 @@
-import { SIGNUP, LOGIN, GET_USER_ID, fetchData } from './constants';
+import { SIGNUP, LOGIN, GET_USER_ID, fetchData, GET_USERNAME } from './constants';
 
 export const signup = async (full_name: string, username: string, password: string) => {
     const body = {
