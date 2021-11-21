@@ -191,7 +191,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         return (
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <TextField
-                    name='search'
+                    label='Search food'
                     value={searched}
                     onChange={(e: any) => this.requestSearch(e)}
                 />
