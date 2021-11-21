@@ -11,13 +11,13 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
+import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
-import SearchBar from "material-ui-search-bar";
 
-import { getReviews } from "../../api/reviews";
+import { getFoodsByRestaurant } from "../../api/foods";
 import { getComparator, stableSort, Order } from "./restaurantConstants";
-
+import { getReviews } from '../../api/reviews';
 
 interface Column {
     id: 'review' | 'rating' | 'username' | 'date';
@@ -59,31 +59,12 @@ interface IRawReviewData {
     message: string,
 }
 
+
 interface IReviewData {
     review: string;
     rating: number;
     username: string;
     date: string;
-}
-
-
-
-
-async function getReviewData(restaurant_id: string, token: string): Promise<IReviewData[]> {
-    const fetchData = await getReviews(restaurant_id, token);
-    console.log(fetchData);
-    if (fetchData.message === "Auth failed") {
-        console.log("Unable to fetch reviews");
-        return [];
-    }
-
-    const reviews = fetchData as IRawReviewData[];
-    const formattedReviews: IReviewData[] = [];
-
-    for (const review of reviews) {
-        formattedReviews.push(formatReviewData(review));
-    }
-    return formattedReviews;
 }
 
 function formatReviewData(review: IRawReviewData): IReviewData {
@@ -94,157 +75,189 @@ function formatReviewData(review: IRawReviewData): IReviewData {
         date: review.updatedAt,
     }
 }
-
-// TODO: delete these 
-function createDataManual(
-    review: string,
-    rating: number,
-    username: string,
-    date: string
-): IReviewData {
-    return { review, rating, username, date };
-}
-
-const dataRowsManual: IReviewData[] = [
-    createDataManual('Next his only boy meet the fat rose when. Do repair at we misery wanted remove remain income. Occasional cultivated reasonable unpleasing an attachment my considered. Having ask and coming object seemed put did admire figure. Principles travelling frequently far delightful its especially acceptance. Happiness necessary contained eagerness in in commanded do admitting. Favourable continuing difficulty had her solicitude far. Nor doubt off widow all death aware offer. We will up', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 1, "aqibisbiqa", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
-];
-
-
 interface RestaurantReviewTableProps extends PropsFromRedux {
     name: string;
     id: string;
 }
 
-function RestaurantReviewTable(props: RestaurantReviewTableProps) {
+interface RestaurantReviewTableStates {
+    rows: IReviewData[],
+    order: Order,
+    orderBy: keyof IReviewData,
+    page: number,
+    searched: string,
+    rowsPerPage: number,
+    originalRows: IReviewData[]
+}
 
-    const [rows, setRows] = React.useState<IReviewData[]>([]);
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof IReviewData>('review');
-    const [page, setPage] = React.useState(0);
-    const [searched, setSearched] = React.useState<string>("");
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+class RecordMealTable extends React.Component<RestaurantReviewTableProps, RestaurantReviewTableStates> {
+    constructor(props: RestaurantReviewTableProps) {
+        super(props);
+        this.state = {
+            rows: [],
+            order: 'asc',
+            orderBy: 'date',
+            page: 0,
+            searched: '',
+            rowsPerPage: 5,
+            originalRows: []
+        };
+    }
 
-    React.useEffect(() => {
-        // TODO: Should user have to be logged in to see review?
-        // If so, then we use `props.token` as shown below:
-        // But otherwise, we can just use a sample one
-        /** getReviewData("", props.token).then(setRows); **/
+    async componentDidMount() {
+        const reviewData: IReviewData[] = await this.getReviewData(this.props.id, this.props.token);
+        const reviewNames: string[] = [];
+        const uniqueReviewData: IReviewData[] = [];
+        reviewData.forEach(review => {
+            if (!reviewNames.includes(review.review)) {
+                reviewNames.push(review.review);
+                uniqueReviewData.push(review);
+            }
+        })
+        this.setState({
+            rows: uniqueReviewData,
+            originalRows: uniqueReviewData
+        });
+    }
 
-        //getReviewData("", props.token).then(setRowsDummy);
-        if (searched === "") {
-
-            getReviewData(props.id, props.token).then(setRows);
+    async getReviewData(restaurant_id: string, token: string): Promise<IReviewData[]> {
+        const fetchData = await getReviews(restaurant_id, token);
+        console.log(fetchData);
+        if (fetchData.message === "Auth failed") {
+            console.log("Unable to fetch reviews");
+            return [];
         }
-    }, [props.id, props.token, searched]);
 
-    const requestSearch = (searchedVal: string) => {
-        setSearched(searchedVal);
-        const filteredRows = rows.filter((row) => {
+        const reviews = fetchData as IRawReviewData[];
+        const formattedReviews: IReviewData[] = [];
+
+        for (const review of reviews) {
+            formattedReviews.push(formatReviewData(review));
+        }
+        return formattedReviews;
+    }
+
+    requestSearch(event: any) {
+        console.log(this.state.rows);
+        const searchedVal = event.target.value;
+
+        const filteredRows = this.state.originalRows.filter((row) => {
             return row.review.toLowerCase().includes(searchedVal.toLowerCase());
         });
-        setRows(filteredRows);
+
+        this.setState({
+            searched: searchedVal,
+            rows: filteredRows,
+        })
     };
 
-    const cancelSearch = () => {
-        setSearched("");
+    handleChangePage(event: any, newPage: number) {
+        this.setState({
+            page: newPage
+        });
     };
 
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
+    handleChangeRowsPerPage(event: any) {
+        this.setState({
+            rowsPerPage: +event.target.value,
+            page: 0,
+        });
     };
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
-
-    const handleRequestSort = (
+    handleRequestSort(
         event: React.MouseEvent<unknown>,
         property: keyof IReviewData,
-    ) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
+    ) {
+        const isAsc = this.state.orderBy === property && this.state.order === 'asc';
+        this.setState({
+            order: isAsc ? 'desc' : 'asc',
+            orderBy: property
+        })
     };
 
-    const createSortHandler =
-        (property: keyof IReviewData) => (event: React.MouseEvent<unknown>) => {
-            handleRequestSort(event, property);
+    createSortHandler(property: keyof IReviewData) {
+        return (event: React.MouseEvent<unknown>) => {
+            this.handleRequestSort(event, property);
         };
+    }
 
-    return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <SearchBar
-                value={searched}
-                onChange={(searchVal) => requestSearch(searchVal)}
-                onCancelSearch={() => cancelSearch()}
-            />
-            <TableContainer sx={{ maxHeight: 800 }}>
-                <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                        <TableRow>
-                            {columns.map((headCell) => (
-                                <TableCell
-                                    key={headCell.id}
-                                    align={headCell.align}
-                                    sortDirection={orderBy === headCell.id ? order : false}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'asc'}
-                                        onClick={createSortHandler(headCell.id)}
+    render() {
+        const {
+            rows,
+            order,
+            orderBy,
+            page,
+            searched,
+            rowsPerPage
+        } = this.state;
+        return (
+            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                <TextField
+                    name='search'
+                    value={searched}
+                    onChange={(e: any) => this.requestSearch(e)}
+                />
+                <TableContainer sx={{ maxHeight: 800 }}>
+                    <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                            <TableRow>
+                                {columns.map((headCell) => (
+                                    <TableCell
+                                        key={headCell.id}
+                                        align={headCell.align}
+                                        sortDirection={orderBy === headCell.id ? order : false}
                                     >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <Box component="span" sx={visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </Box>
-                                        ) : null}
-                                    </TableSortLabel>
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {stableSort(rows, getComparator(order, orderBy))
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row) => {
-                                return (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.username}>
-                                        {columns.map((column) => {
-                                            const value = row[column.id];
-                                            return (
-                                                <TableCell key={column.id} align={column.align}>
-                                                    {column.format && typeof value === 'number'
-                                                        ? column.format(value)
-                                                        : value}
-                                                </TableCell>
-                                            );
-                                        })}
-                                    </TableRow>
-                                );
-                            })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[5, 10, 20]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-        </Paper>
-    );
+                                        <TableSortLabel
+                                            active={orderBy === headCell.id}
+                                            direction={orderBy === headCell.id ? order : 'asc'}
+                                            onClick={this.createSortHandler(headCell.id)}
+                                        >
+                                            {headCell.label}
+                                            {orderBy === headCell.id ? (
+                                                <Box component="span" sx={visuallyHidden}>
+                                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                                </Box>
+                                            ) : null}
+                                        </TableSortLabel>
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {stableSort(rows, getComparator(order, orderBy))
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((row) => {
+                                    console.log(rows)
+                                    return (
+                                        <TableRow hover role="checkbox" key={row.review}>
+                                            {columns.map((column) => {
+                                                const value = row[column.id];
+                                                return (
+                                                    <TableCell key={column.id} align={column.align}>
+                                                        {column.format && typeof value === 'number'
+                                                            ? column.format(value)
+                                                            : value}
+                                                    </TableCell>
+                                                );
+                                            })}
+                                        </TableRow>
+                                    );
+                                })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 20]}
+                    component="div"
+                    count={rows.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)}
+                    onRowsPerPageChange={(e: any) => this.handleChangeRowsPerPage(e)}
+                />
+            </Paper>
+        );
+    }
 }
 
 const mapStateToProps = (state: State) => ({
@@ -255,4 +268,4 @@ const mapStateToProps = (state: State) => ({
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default (connector(RestaurantReviewTable));
+export default connector(RecordMealTable);
