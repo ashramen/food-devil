@@ -20,3 +20,7 @@ export const login = async (username: string, password: string) => {
 export const getUserId = async (username: string) => {
     return fetchData(GET_USER_ID(username), 'GET');
 }
+
+export const getUsername = async (userid: string) => {
+    return fetchData(GET_USERNAME(userid), 'GET');
+}
