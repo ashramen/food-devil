@@ -102,7 +102,15 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
 
     async componentDidMount() {
         const foodData: IFoodTableData[] = await this.getFoodData(this.props.id, this.props.token);
-        this.setState({ rows: foodData });
+        const uniqueFoodNames: string[] = [];
+        const uniqueFoodData: IFoodTableData[] = [];
+        foodData.forEach(food => {
+            if (!uniqueFoodNames.includes(food.foodName)) {
+                uniqueFoodNames.push(food.foodName);
+                uniqueFoodData.push(food);
+            }
+        })
+        this.setState({ rows: uniqueFoodData });
     }
 
     async getFoodData(restaurant_id: string, token: string): Promise<IFoodTableData[]> {
@@ -211,8 +219,9 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
+                                    console.log(rows)
                                     return (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.foodName}>
+                                        <TableRow hover role="checkbox" key={row.foodName}>
                                             {columns.map((column) => {
                                                 const value = row[column.id];
                                                 return (
