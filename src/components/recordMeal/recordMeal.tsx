@@ -4,13 +4,13 @@ import { Box, CircularProgress, Collapse, List, ListItemButton, ListItemText } f
 
 import LockPage from '../lockPage/lockPage';
 import TopAppBar from '../topAppBar/topAppBar';
+import RecordMealTable from './recordMealTable';
 
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 import { logIn, logOut } from '../../store/actions';
 import './recordMeal.css';
 import { getRestaurants } from "../../api/restaurants";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { getFoodsByRestaurant } from "../../api/foods";
 
 interface RestaurantData {
@@ -98,6 +98,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
     }
 
     restaurantDropdown(restaurant: RestaurantData) {
+        /**
         return (<>
             <ListItemButton divider={true}
                             onClick={() => this.selectRestaurant(restaurant._id)}>
@@ -114,6 +115,8 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                 </List>
             </Collapse>
         </>)
+        */
+       return (<RecordMealTable id={restaurant._id}/>)
     }
 
     render() {
