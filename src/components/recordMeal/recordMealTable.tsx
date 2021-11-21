@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
+import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -63,15 +64,7 @@ interface IFoodData {
 interface IFoodTableData {
     foodName: string;
     allergens: string;
-    record: string;
-}
-
-function formatFoodData (food: IFoodData): IFoodTableData {
-    return {
-        foodName: food.name,
-        allergens: food.allergens!,
-        record: '',
-    }
+    record: any;
 }
 
 interface FoodTableProps extends PropsFromRedux{
@@ -80,6 +73,7 @@ interface FoodTableProps extends PropsFromRedux{
 
 interface FoodTableStates {
     rows: IFoodTableData[],
+    filteredRows: IFoodTableData[],
     order: Order,
     orderBy: keyof IFoodTableData,
     page: number,
@@ -92,11 +86,12 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         super(props);
         this.state = {
             rows: [],
+            filteredRows: [],
             order: 'asc',
             orderBy: 'foodName',
             page: 0,
             searched: '',
-            rowsPerPage: 5,
+            rowsPerPage: 10,
         };
     }
 
@@ -110,7 +105,10 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                 uniqueFoodData.push(food);
             }
         })
-        this.setState({ rows: uniqueFoodData });
+        this.setState({
+            rows: uniqueFoodData,
+            filteredRows: uniqueFoodData
+        });
     }
 
     async getFoodData(restaurant_id: string, token: string): Promise<IFoodTableData[]> {
@@ -124,13 +122,20 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         const formattedFoods: IFoodTableData[] = [];
     
         for (const food of foods) {
-            formattedFoods.push(formatFoodData(food));
+            formattedFoods.push(this.formatFoodData(food));
         }
         return formattedFoods;
     }
 
+    formatFoodData(food: IFoodData): IFoodTableData {
+        return {
+            foodName: food.name,
+            allergens: food.allergens === null? 'None' : food.allergens,
+            record: <Button variant="contained">Record</Button>,
+        }
+    }
+
     requestSearch(event: any) {
-        console.log(this.state.rows);
         const searchedVal = event.target.value;
         
         const filteredRows = this.state.rows.filter((row) => {
@@ -139,7 +144,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         
         this.setState({
             searched: searchedVal,
-            rows: filteredRows,
+            filteredRows: filteredRows,
         })
     };
 
@@ -176,6 +181,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
     render() {
         const {
             rows,
+            filteredRows,
             order,
             orderBy,
             page,
@@ -216,7 +222,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {stableSort(rows, getComparator(order, orderBy))
+                            {stableSort(filteredRows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
                                     console.log(rows)

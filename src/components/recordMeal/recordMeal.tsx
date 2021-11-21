@@ -12,6 +12,7 @@ import { logIn, logOut } from '../../store/actions';
 import './recordMeal.css';
 import { getRestaurants } from "../../api/restaurants";
 import { getFoodsByRestaurant } from "../../api/foods";
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 interface RestaurantData {
     _id: string;
@@ -98,7 +99,6 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
     }
 
     restaurantDropdown(restaurant: RestaurantData) {
-        /**
         return (<>
             <ListItemButton divider={true}
                             onClick={() => this.selectRestaurant(restaurant._id)}>
@@ -106,17 +106,9 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                 {this.state.expandedRestaurants[restaurant._id] ? <ExpandLess/> : <ExpandMore/>}
             </ListItemButton>
             <Collapse in={this.state.expandedRestaurants[restaurant._id]}>
-                <List>
-                    {this.state.foods[restaurant._id].map(food => (
-                        <ListItemButton sx={{ padding: "0 16px" }}>
-                            <ListItemText sx={{ fontSize: "12px" }} primary={food.name}/>
-                        </ListItemButton>
-                    ))}
-                </List>
+                <RecordMealTable id={restaurant._id}/>
             </Collapse>
         </>)
-        */
-       return (<RecordMealTable id={restaurant._id}/>)
     }
 
     render() {
