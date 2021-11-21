@@ -13,16 +13,19 @@ import { Typography } from '@mui/material';
 
 
 import RestaurantReviewTable from './restaurantReviewTable';
+import RestaurantReviewField from './restaurantReviewField';
 import MealsOrdered from './mealsOrdered';
 
 import './styles.css';
 
 interface MatchParams {
+    name: string;
     id: string;
 }
 
 interface RestaurantInfoProps extends PropsFromRedux, RouteComponentProps<MatchParams> {
     name: string;
+    id: string;
 }
 
 
@@ -38,14 +41,14 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps> {
 
     render() {
 
-        const { name } = this.props;
+        const { name, id } = this.props.match.params;
         return (
             <Box mx={2}>
                 <>
                     <TopAppBar page='restaurants' />
                     <Grid container mt={15}>
                         <Grid item xs={6}>
-                            <div className='title'>{this.props.match.params.id} (2.5 stars)</div>
+                            <div className='title'>{name} (2.5 stars)</div>
                         </Grid>
                         <Grid item xs={6} >
                             <Typography align="right">
@@ -62,7 +65,14 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps> {
                                     <div style={{ fontSize: 30 }}> Previous Reviews </div>
                                 </Grid>
                                 <Grid item xs>
-                                    <RestaurantReviewTable name={name} />
+                                    <RestaurantReviewTable name={name} id={id} />
+                                </Grid>
+
+                                <Grid item xs>
+                                    <div style={{ fontSize: 30 }}> Write A Review </div>
+                                </Grid>
+                                <Grid item xs>
+                                    <RestaurantReviewField name={name} id={id} />
                                 </Grid>
                             </Grid>
                             <Grid item container direction="column" xs spacing={2}>

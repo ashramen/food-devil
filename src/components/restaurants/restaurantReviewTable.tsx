@@ -69,16 +69,14 @@ interface IReviewData {
 
 
 
-async function getReviewData (restaurant_id: string, token: string): Promise<IReviewData[]> {
-    const beyublue_id = 0x616ad5d1d252dea11b9043db;
-    let beyublue_id_string = beyublue_id.toString();
-    const fetchData = await getReviews(beyublue_id_string, token);
+async function getReviewData(restaurant_id: string, token: string): Promise<IReviewData[]> {
+    const fetchData = await getReviews(restaurant_id, token);
     console.log(fetchData);
     if (fetchData.message === "Auth failed") {
         console.log("Unable to fetch reviews");
         return [];
     }
-    
+
     const reviews = fetchData as IRawReviewData[];
     const formattedReviews: IReviewData[] = [];
 
@@ -88,7 +86,7 @@ async function getReviewData (restaurant_id: string, token: string): Promise<IRe
     return formattedReviews;
 }
 
-function formatReviewData (review: IRawReviewData): IReviewData {
+function formatReviewData(review: IRawReviewData): IReviewData {
     return {
         review: review.description,
         rating: review.stars,
@@ -97,12 +95,35 @@ function formatReviewData (review: IRawReviewData): IReviewData {
     }
 }
 
-interface RestaurantReviewTableProps extends PropsFromRedux{
+// TODO: delete these 
+function createDataManual(
+    review: string,
+    rating: number,
+    username: string,
+    date: string
+): IReviewData {
+    return { review, rating, username, date };
+}
+
+const dataRowsManual: IReviewData[] = [
+    createDataManual('Next his only boy meet the fat rose when. Do repair at we misery wanted remove remain income. Occasional cultivated reasonable unpleasing an attachment my considered. Having ask and coming object seemed put did admire figure. Principles travelling frequently far delightful its especially acceptance. Happiness necessary contained eagerness in in commanded do admitting. Favourable continuing difficulty had her solicitude far. Nor doubt off widow all death aware offer. We will up', 2.5, "username", "11/10/2021"),
+    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
+    createDataManual('Next his only boy meet the fat rose when', 1, "aqibisbiqa", "11/10/2021"),
+    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
+    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
+    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
+    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
+    createDataManual('Next his only boy meet the fat rose when', 2.5, "username", "11/10/2021"),
+];
+
+
+interface RestaurantReviewTableProps extends PropsFromRedux {
     name: string;
+    id: string;
 }
 
 function RestaurantReviewTable(props: RestaurantReviewTableProps) {
-    
+
     const [rows, setRows] = React.useState<IReviewData[]>([]);
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof IReviewData>('review');
@@ -114,13 +135,14 @@ function RestaurantReviewTable(props: RestaurantReviewTableProps) {
         // TODO: Should user have to be logged in to see review?
         // If so, then we use `props.token` as shown below:
         // But otherwise, we can just use a sample one
-        /** getReviewData("", props.token).then(setRows); **/        
+        /** getReviewData("", props.token).then(setRows); **/
 
         //getReviewData("", props.token).then(setRowsDummy);
         if (searched === "") {
-            getReviewData("", props.token).then(setRows);
+
+            getReviewData(props.id, props.token).then(setRows);
         }
-    }, [props.token, searched]);
+    }, [props.id, props.token, searched]);
 
     const requestSearch = (searchedVal: string) => {
         setSearched(searchedVal);

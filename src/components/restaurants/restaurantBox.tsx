@@ -45,7 +45,8 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
     render() {
         const {
             name,
-            description
+            description,
+            id
         } = this.props;
 
         const {
@@ -73,7 +74,7 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
                     <Box sx={{ mt: 3, ml: 1, mb: 1 }}>
                         <Grid container alignItems="center">
                             <Grid item xs>
-                                <Link to={"/restaurants/" + name}> <Button >Learn More</Button> </Link>
+                                <Link to={"/restaurants/" + name + "/" + id.toString()}> <Button >Learn More</Button> </Link>
                             </Grid>
                             <Grid item xs>
                                 <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
@@ -81,7 +82,7 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
                         </Grid>
                     </Box>
                 </Box>
-                <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={dialogOpen} />
+                <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={dialogOpen} id={id} />
             </>
         );
     }
