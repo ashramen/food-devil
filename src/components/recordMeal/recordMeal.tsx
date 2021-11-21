@@ -4,14 +4,15 @@ import { Box, CircularProgress, Collapse, List, ListItemButton, ListItemText } f
 
 import LockPage from '../lockPage/lockPage';
 import TopAppBar from '../topAppBar/topAppBar';
+import RecordMealTable from './recordMealTable';
 
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 import { logIn, logOut } from '../../store/actions';
 import './recordMeal.css';
 import { getRestaurants } from "../../api/restaurants";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { getFoodsByRestaurant } from "../../api/foods";
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 interface RestaurantData {
     _id: string;
@@ -105,13 +106,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                 {this.state.expandedRestaurants[restaurant._id] ? <ExpandLess/> : <ExpandMore/>}
             </ListItemButton>
             <Collapse in={this.state.expandedRestaurants[restaurant._id]}>
-                <List>
-                    {this.state.foods[restaurant._id].map(food => (
-                        <ListItemButton sx={{ padding: "0 16px" }}>
-                            <ListItemText sx={{ fontSize: "12px" }} primary={food.name}/>
-                        </ListItemButton>
-                    ))}
-                </List>
+                <RecordMealTable id={restaurant._id}/>
             </Collapse>
         </>)
     }
