@@ -15,7 +15,7 @@ class Restaurants extends React.Component {
           <TopAppBar page='restaurants' />
           <Grid container mt={15}>
             <Grid item xs={6}>
-              <div className='title'>Restaurants</div>
+              <div className='title'>Browse Restaurants</div>
             </Grid>
           </Grid>
           <RestaurantsGrid />

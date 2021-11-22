@@ -1,14 +1,16 @@
 import React from 'react';
-import { Link } from "react-router-dom";
+import { withRouter, RouteComponentProps } from "react-router-dom";
 
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
-import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import RestaurantsReviewPopup from './restaurantReviewPopup';
 
-interface RestaurantBoxProps {
+interface RestaurantBoxProps extends RouteComponentProps {
     name: string;
     description: string;
     id: number;
@@ -18,8 +20,41 @@ interface RestaurantBoxState {
     dialogOpen: boolean;
 }
 
-class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxState> {
+interface nameToImage {
+    [x: string]: string;
+}
 
+const nameToImage: nameToImage = {
+    "Beyu Blue Coffee": "/images/beyu_blue.png",
+    "Beyu Cafe at Duke Law": "/images/beyu_cafe_duke_law.png",
+    "Bseisu Coffee Bar": "/images/bseisu.jpg",
+    "Cafe": "/images/cafe.png",
+    "Cafe 300": "/images/cafe_300.jpg",
+    "Freeman Cafe": "/images/freeman.jpg",
+    "Ginger + Soy": "/images/ginger.png",
+    "Gyotaku": "/images/gyotaku.png",
+    "Il Forno": "/images/il_forno.png",
+    "J.B.'s Roast & Chops": "/images/jbs.png",
+    "Marketplace": "/images/marketplace.jpg",
+    "McDonald's": "/images/mcdonalds.png",
+    "Panda Express": "/images/panda.jpeg",
+    "Panera Bread Company": "/images/panera.jpg",
+    "Red Mango": "/images/red_mango.png",
+    "Saladalia @ The Perk": "/images/saladelia.jpg",
+    "Sanford Deli": "/images/sanford.jpg",
+    "Sazon": "/images/sazon.png",
+    "Sprout": "/images/sprout.png",
+    "Tandoor Indian Cuisine": "/images/tandoor.png",
+    "The Devils Krafthouse": "/images/krafthouse.png",
+    "The Farmstead": "/images/farmstead.png",
+    "The Loop Pizza Grill": "/images/loop.png",
+    "The Pitchfork": "/images/pitchfork.png",
+    "The Skillet": "/images/skillet.png",
+    "Trinity Cafe": "/images/trinity.png",
+    "Twinnie's": "/images/twinnie.png",
+}
+
+class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxState> {
     constructor(props: RestaurantBoxProps) {
         super(props);
         this.state = {
@@ -39,8 +74,6 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
         this.setState({ dialogOpen: false })
     }
 
-
-
     render() {
         const {
             name,
@@ -54,33 +87,30 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
 
         return (
             <>
-                <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                    <Box sx={{ my: 3, mx: 2 }}>
-                        <Grid container alignItems="center">
-                            <Grid item xs>
-                                <Typography gutterBottom variant="h4" component="div">
-                                    {name}
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                        <Typography color="text.secondary" variant="body2">
-                            {description}
-
+                <Card sx={{ maxWidth: 360 }}>
+                    <CardMedia
+                        component="img"
+                        height="140"
+                        image={nameToImage[name]}
+                        alt={name}
+                    />
+                    <CardContent>
+                        <Typography gutterBottom fontFamily="Open Sans" variant="h5" component="div">
+                        {name}
                         </Typography>
-                    </Box>
-                    <Divider variant="middle" />
-
-                    <Box sx={{ mt: 3, ml: 1, mb: 1 }}>
-                        <Grid container alignItems="center">
-                            <Grid item xs>
-                                <Link to={"/restaurants/" + name + "/" + id.toString()}> <Button >Learn More</Button> </Link>
-                            </Grid>
-                            <Grid item xs>
+                        <Typography variant="body2" color="text.secondary">
+                        {description}
+                        </Typography>
+                    </CardContent>
+                    <Grid container alignItems='center' justifyContent='center'>
+                        <Grid item>
+                            <CardActions>
+                                <Button onClick={() => {this.props.history.push("/restaurants/" + name + "/" + id.toString())}}>Learn More</Button>
                                 <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
-                            </Grid>
+                            </CardActions>
                         </Grid>
-                    </Box>
-                </Box>
+                    </Grid>
+                </Card>
                 <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={dialogOpen} id={id} />
             </>
         );
@@ -88,4 +118,4 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
 }
 
 
-export default RestaurantBox;
+export default withRouter(RestaurantBox);
