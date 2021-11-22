@@ -68,6 +68,9 @@ interface IReviewData {
 }
 
 function formatReviewData(review: IRawReviewData): IReviewData {
+    if (review.is_anonymous) {
+        review.user_id = "Anonymous";
+    }
     return {
         review: review.description,
         rating: review.stars,
