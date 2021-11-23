@@ -96,7 +96,9 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
                 font: {
                     size: 14
                 }
-            }
+            },
+            plot_bgcolor: "#f5f5f5",
+            paper_bgcolor:"#f5f5f5",
         };
 
         return (

@@ -12,7 +12,8 @@ export const GET_RESTAURANT = (id: string) => '/restaurants/' + id;
 export const REVIEWS = '/reviews/';
 export const GET_REVIEW = (id: string) => '/reviews/' + id;
 export const GET_RESTAURANT_REVIEW = (id: string) => '/reviews/getRestaurantReviews/' + id;
-export const GET_USER_ID = (username: string) => '/users/' + username;
+export const GET_USER_ID = (username: string) => '/users/' + username
+export const GET_USERNAME = (userid: string) => '/users/get_username/' + userid;
 
 export const fetchData = async (route: string, method: string, token?: string, body?: any) => {
     let headers: HeadersInit = {
