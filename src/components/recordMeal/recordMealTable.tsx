@@ -13,6 +13,8 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
 import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
 
@@ -39,7 +41,7 @@ const columns: readonly Column[] = [
     }
 ];
 
-interface IFoodData {
+interface IRawFoodData {
     _id: string;
     restaurantId: string,
     menu: string,
@@ -57,14 +59,24 @@ interface IFoodData {
     carbs_g: number,
     fiber_g: number,
     sugars_g: number,
-    protein_g: number
+    protein_g: number,
     cholesterol_mg: number
 }
 
-interface IFoodTableData {
+interface IFormattedFoodData {
     foodName: string;
     allergens: string;
     record: any;
+    total_cal: number,
+    fat_g: number,
+    sat_fat_g: number,
+    trans_fat_g: number,
+    sodium_mg: number,
+    carbs_g: number,
+    fiber_g: number,
+    sugars_g: number,
+    protein_g: number,
+    cholesterol_mg: number
 }
 
 interface FoodTableProps extends PropsFromRedux{
@@ -72,10 +84,10 @@ interface FoodTableProps extends PropsFromRedux{
 }
 
 interface FoodTableStates {
-    rows: IFoodTableData[],
-    filteredRows: IFoodTableData[],
+    rows: IFormattedFoodData[],
+    filteredRows: IFormattedFoodData[],
     order: Order,
-    orderBy: keyof IFoodTableData,
+    orderBy: keyof IFormattedFoodData,
     page: number,
     searched: string,
     rowsPerPage: number
@@ -96,9 +108,9 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
     }
 
     async componentDidMount() {
-        const foodData: IFoodTableData[] = await this.getFoodData(this.props.id, this.props.token);
+        const foodData: IFormattedFoodData[] = await this.getFoodData(this.props.id, this.props.token);
         const uniqueFoodNames: string[] = [];
-        const uniqueFoodData: IFoodTableData[] = [];
+        const uniqueFoodData: IFormattedFoodData[] = [];
         foodData.forEach(food => {
             if (!uniqueFoodNames.includes(food.foodName)) {
                 uniqueFoodNames.push(food.foodName);
@@ -111,15 +123,16 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         });
     }
 
-    async getFoodData(restaurant_id: string, token: string): Promise<IFoodTableData[]> {
+    async getFoodData(restaurant_id: string, token: string): Promise<IFormattedFoodData[]> {
         const fetchData = await getFoodsByRestaurant(restaurant_id, token);
+        // const fetchData = await getAllFoods(token);
         if (fetchData.message === "Auth failed") {
             console.log("Unable to fetch reviews");
             return [];
         }
         
-        const foods = fetchData as IFoodData[];
-        const formattedFoods: IFoodTableData[] = [];
+        const foods = fetchData as IRawFoodData[];
+        const formattedFoods: IFormattedFoodData[] = [];
     
         for (const food of foods) {
             formattedFoods.push(this.formatFoodData(food));
@@ -127,11 +140,21 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         return formattedFoods;
     }
 
-    formatFoodData(food: IFoodData): IFoodTableData {
+    formatFoodData(food: IRawFoodData): IFormattedFoodData {
         return {
             foodName: food.name,
             allergens: food.allergens === null? 'None' : food.allergens,
             record: <Button variant="contained">Record</Button>,
+            total_cal: food.total_cal,
+            fat_g: food.fat_g,
+            sat_fat_g: food.sat_fat_g,
+            trans_fat_g: food.trans_fat_g,
+            sodium_mg: food.sodium_mg,
+            carbs_g: food.carbs_g,
+            fiber_g: food.fiber_g,
+            sugars_g: food.sugars_g,
+            protein_g: food.protein_g,
+            cholesterol_mg: food.cholesterol_mg,
         }
     }
 
@@ -163,7 +186,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
 
     handleRequestSort(
         event: React.MouseEvent<unknown>,
-        property: keyof IFoodTableData,
+        property: keyof IFormattedFoodData,
     ) {
         const isAsc = this.state.orderBy === property && this.state.order === 'asc';
         this.setState({
@@ -172,10 +195,44 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         })
     };
 
-    createSortHandler(property: keyof IFoodTableData) {
+    createSortHandler(property: keyof IFormattedFoodData) {
         return (event: React.MouseEvent<unknown>) => {
             this.handleRequestSort(event, property);
         };
+    }
+
+    displayFoodRow(row: IFormattedFoodData) {
+        return (
+            <TableRow hover role="checkbox" key={row.foodName}>
+                {columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                        <TableCell key={column.id} align={column.align}>
+                            {column.format && typeof value === 'number'
+                                ? column.format(value)
+                                : value}
+                        </TableCell>
+                    );
+                })}
+            </TableRow>
+        );
+    }
+
+    displayFoodRowNutrition(row: IFormattedFoodData) {
+        return (
+            <span style={{ whiteSpace: 'pre-line' }}>
+                {"Total Calories: " + row.total_cal + "\n" +
+                "Fat: " + row.fat_g + "\n" +
+                "Saturated Fat: " + row.sat_fat_g + "\n" +
+                "Trans Fat: " + row.trans_fat_g + "\n" +
+                "Sodium: " + row.sodium_mg + "\n" +
+                "Carbohydrates: " + row.carbs_g + "\n" +
+                "Fiber: " + row.fiber_g + "\n" +
+                "Sugar: " + row.sugars_g + "\n" +
+                "Protein: " + row.protein_g + "\n" +
+                "Cholesterol: " + row.cholesterol_mg}
+            </span>
+        );
     }
 
     render() {
@@ -227,18 +284,14 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                                 .map((row) => {
                                     console.log(rows)
                                     return (
-                                        <TableRow hover role="checkbox" key={row.foodName}>
-                                            {columns.map((column) => {
-                                                const value = row[column.id];
-                                                return (
-                                                    <TableCell key={column.id} align={column.align}>
-                                                        {column.format && typeof value === 'number'
-                                                            ? column.format(value)
-                                                            : value}
-                                                    </TableCell>
-                                                );
-                                            })}
-                                        </TableRow>
+                                        <Tooltip 
+                                            TransitionComponent={Zoom} 
+                                            title={this.displayFoodRowNutrition(row as IFormattedFoodData)} 
+                                            arrow 
+                                            followCursor={true} 
+                                            placement="top-start">
+                                                {this.displayFoodRow(row as IFormattedFoodData)}
+                                        </Tooltip>
                                     );
                                 })}
                         </TableBody>
