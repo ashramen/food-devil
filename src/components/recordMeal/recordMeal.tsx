@@ -51,6 +51,9 @@ interface RecordMealStates {
     foods: {
         [id: string]: FoodData[]
     };
+    displayedRestaurants: {
+        [id: string]: boolean;
+    };
     expandedRestaurants: {
         [id: string]: boolean;
     };
@@ -62,6 +65,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
         super(props);
         this.state = {
             restaurants: [],
+            displayedRestaurants: {},
             expandedRestaurants: {},
             foods: {},
             loading: true,
@@ -73,6 +77,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
         if (this.props.loggedIn) {
             let state: RecordMealStates = {
                 restaurants: [],
+                displayedRestaurants: {},
                 expandedRestaurants: {},
                 foods: {},
                 loading: false,
@@ -87,6 +92,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
             }
             state.restaurants = restaurants;
             state.foods = foods;
+            restaurants.forEach(restaurant => state.displayedRestaurants[restaurant._id] = true);
             restaurants.forEach(restaurant => state.expandedRestaurants[restaurant._id] = false);
             this.setState(state);
         }
@@ -135,8 +141,11 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                                     <CircularProgress size={100}/>
                                 </Box> : <div></div>}
                             <List>
-                                {/* {this.state.restaurants.map(restaurant => this.restaurantDropdown(restaurant))} */}
-                                <RecordMealTable id={"0"}/>
+                                {this.state.restaurants.map(
+                                    restaurant => 
+                                        this.state.displayedRestaurants[restaurant._id] 
+                                        ? this.restaurantDropdown(restaurant)
+                                        : <div/>)}
                             </List>
                         </Box>
                     </>
