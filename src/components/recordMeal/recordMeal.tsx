@@ -135,7 +135,8 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                                     <CircularProgress size={100}/>
                                 </Box> : <div></div>}
                             <List>
-                                {this.state.restaurants.map(restaurant => this.restaurantDropdown(restaurant))}
+                                {/* {this.state.restaurants.map(restaurant => this.restaurantDropdown(restaurant))} */}
+                                <RecordMealTable id={"0"}/>
                             </List>
                         </Box>
                     </>

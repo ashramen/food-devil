@@ -16,7 +16,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
 
-import { getFoodsByRestaurant } from "../../api/foods";
+import { getAllFoods } from "../../api/foods";
 import { getComparator, stableSort, Order } from "./recordMealConstants";
 
 interface Column {
@@ -112,7 +112,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
     }
 
     async getFoodData(restaurant_id: string, token: string): Promise<IFoodTableData[]> {
-        const fetchData = await getFoodsByRestaurant(restaurant_id, token);
+        // const fetchData = await getFoodsByRestaurant(restaurant_id, token);
+        const fetchData = await getAllFoods(token);
         if (fetchData.message === "Auth failed") {
             console.log("Unable to fetch reviews");
             return [];
