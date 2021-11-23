@@ -15,8 +15,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
 
-import { getFoodsByRestaurant } from "../../api/foods";
-import { getComparator, stableSort, Order } from "./restaurantConstants";
+import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
 import { getReviews } from '../../api/reviews';
 
 interface Column {
@@ -51,7 +50,7 @@ interface IRawReviewData {
     _id: string,
     createdAt: string,
     description: string,
-    is_anonymous: Boolean,
+    is_anonymous: boolean,
     restaurant_id: string,
     stars: number,
     updatedAt: string,
@@ -75,7 +74,7 @@ function formatReviewData(review: IRawReviewData): IReviewData {
         review: review.description,
         rating: review.stars,
         username: review.user_id,   // TODO: this is the user_id, not the username; need new api method
-        date: review.updatedAt,
+        date: getFormattedDate(new Date(review.updatedAt)),
     }
 }
 interface RestaurantReviewTableProps extends PropsFromRedux {
