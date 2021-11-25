@@ -28,6 +28,7 @@ interface Column {
     maxWidth?: number;
     align?: 'right';
     format?: (value: number) => string;
+    sortDisabled?: boolean;
 }
 
 const columns: readonly Column[] = [
@@ -35,9 +36,11 @@ const columns: readonly Column[] = [
     { id: 'allergens', label: 'Allergens', minWidth: 250, maxWidth: 300 },
     {
         id: 'record',
-        label: 'Record Meal',
+        label: '',
         minWidth: 100,
         maxWidth: 100,
+        align: 'right',
+        sortDisabled: true,
     }
 ];
 
@@ -81,6 +84,7 @@ interface IFormattedFoodData {
 
 interface FoodTableProps extends PropsFromRedux{
     id: string;
+    addItemEvent: (id: string, name: string, restaurantId: string) => void;
 }
 
 interface FoodTableStates {
@@ -144,7 +148,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         return {
             foodName: food.name,
             allergens: food.allergens === null? 'None' : food.allergens,
-            record: <Button variant="contained">Record</Button>,
+            record: <Button variant="outlined" onClick={() => this.addItem(food._id, food.name, food.restaurantId)}>Add</Button>,
             total_cal: food.total_cal,
             fat_g: food.fat_g,
             sat_fat_g: food.sat_fat_g,
@@ -156,6 +160,10 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             protein_g: food.protein_g,
             cholesterol_mg: food.cholesterol_mg,
         }
+    }
+
+    addItem(id: string, name: string, restaurantId: string) {
+        this.props.addItemEvent(id, name, restaurantId);
     }
 
     requestSearch(event: any) {
@@ -246,10 +254,11 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             rowsPerPage
         } = this.state;
         return (
-            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <Paper sx={{ width: '100%', overflow: 'hidden', padding: '18px 12px 0px 12px' }}>
                 <TextField
                     label='Search food'
                     value={searched}
+                    size='small'
                     onChange={(e: any) => this.requestSearch(e)}
                 />
                 <TableContainer sx={{ maxHeight: 800 }}>
@@ -262,18 +271,20 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                                         align={headCell.align}
                                         sortDirection={orderBy === headCell.id ? order : false}
                                     >
+                                    {headCell.sortDisabled ? <></> :
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
                                             direction={orderBy === headCell.id ? order : 'asc'}
                                             onClick={this.createSortHandler(headCell.id)}
                                         >
-                                            {headCell.label}
-                                            {orderBy === headCell.id ? (
-                                                <Box component="span" sx={visuallyHidden}>
-                                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                                </Box>
-                                            ) : null}
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <Box component="span" sx={visuallyHidden}>
+                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </Box>
+                                        ) : null}
                                         </TableSortLabel>
+                                    }
                                     </TableCell>
                                 ))}
                             </TableRow>
@@ -282,7 +293,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                             {stableSort(filteredRows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
-                                    console.log(rows)
+                                    // console.log(rows)
                                     return (
                                         <Tooltip 
                                             TransitionComponent={Zoom} 
