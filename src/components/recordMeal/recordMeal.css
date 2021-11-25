@@ -2,3 +2,12 @@
     margin-top: 120px;
     padding: 0 16px;
 }
+
+.meal-cart--title {
+    color: #003087;
+    font-family: 'Open Sans';
+    font-size: 24px;
+    font-weight: 300;
+    margin-left: 0px;
+    margin-bottom: 5px;
+}
