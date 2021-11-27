@@ -30,7 +30,7 @@ export const getMealByDays = async (id: string, token: string, days: Date[]) => 
 export const postMeal = async(userId: string, foods: string[], token: string) => {
     const body = {
         user_id: userId,
-        foods
+        foods,
     };
     return fetchData(MEALS, 'POST', token, body);
 }
