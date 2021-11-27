@@ -2,8 +2,14 @@ import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
+import { styled, alpha } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -15,11 +21,11 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
-import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
 
 import { getFoodsByRestaurant } from "../../api/foods";
 import { getComparator, stableSort, Order } from "./recordMealConstants";
+import { RestaurantData } from './recordMeal';
 
 interface Column {
     id: 'foodName' | 'allergens' | 'record';
@@ -82,8 +88,101 @@ interface IFormattedFoodData {
     cholesterol_mg: number
 }
 
+interface IRestaurantMenu {
+    onClick: any;
+    restaurantName: string;
+    allRestaurants: string[];
+};
+
+const RestaurantMenuList = styled((props: MenuProps) => (
+    <Menu
+      elevation={0}
+      anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+      }}
+      transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+      }}
+      {...props}
+    />
+))(({ theme }) => ({
+    '& .MuiPaper-root': {
+      borderRadius: 0,
+      marginTop: theme.spacing(1),
+      minWidth: 100,
+      maxHeight: 300,
+      color:
+        theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+      boxShadow:
+        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+      '& .MuiMenu-list': {
+        padding: '4px 0',
+      },
+      '& .MuiMenuItem-root': {
+        '& .MuiSvgIcon-root': {
+          fontSize: 18,
+          color: theme.palette.text.secondary,
+          marginRight: theme.spacing(1.5),
+        },
+        '&:active': {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            theme.palette.action.selectedOpacity,
+          ),
+        },
+      },
+    },
+}));
+
+function RestaurantMenu(props: IRestaurantMenu) {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    return (
+        <div>
+            <Button
+                id="logged-in-button"
+                aria-controls="logged-in-menu"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                variant="text"
+                sx={{
+                    color: '#003087',
+                }}
+                onClick={handleClick}
+                endIcon={<KeyboardArrowDownIcon />}
+            >
+                {props.restaurantName}
+            </Button>
+            <RestaurantMenuList
+                id="logged-in-menu"
+                MenuListProps={{
+                    'aria-labelledby': 'logged-in-button',
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+            >
+                {props.allRestaurants.map((restaurant: string) => 
+                    <MenuItem id={restaurant} onClick={(e) => {props.onClick(e); handleClose()}} disableRipple>
+                        {restaurant}
+                    </MenuItem>
+                )}
+            </RestaurantMenuList>
+        </div>   
+    )
+}
+
 interface FoodTableProps extends PropsFromRedux{
-    id: string;
+    allRestaurants: RestaurantData[];
     addItemEvent: (id: string, name: string, restaurantId: string) => void;
 }
 
@@ -94,7 +193,8 @@ interface FoodTableStates {
     orderBy: keyof IFormattedFoodData,
     page: number,
     searched: string,
-    rowsPerPage: number
+    rowsPerPage: number,
+    selectedRestaurant: string,
 }
 
 class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
@@ -108,11 +208,12 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             page: 0,
             searched: '',
             rowsPerPage: 10,
+            selectedRestaurant: 'Beyu Blue Coffee'
         };
     }
 
-    async componentDidMount() {
-        const foodData: IFormattedFoodData[] = await this.getFoodData(this.props.id, this.props.token);
+    async fillTable(id: string) {
+        const foodData: IFormattedFoodData[] = await this.getFoodData(id, this.props.token);
         const uniqueFoodNames: string[] = [];
         const uniqueFoodData: IFormattedFoodData[] = [];
         foodData.forEach(food => {
@@ -125,6 +226,18 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             rows: uniqueFoodData,
             filteredRows: uniqueFoodData
         });
+    }
+
+    async componentDidMount() {
+        const beyuId: string = this.props.allRestaurants.filter((restaurant) => restaurant.name === 'Beyu Blue Coffee')[0]._id;
+        this.fillTable(beyuId);
+    }
+
+    async componentDidUpdate(prevProps: FoodTableProps, prevStates: FoodTableStates) {
+        if (prevStates.selectedRestaurant !== this.state.selectedRestaurant) {
+            const newId: string = this.props.allRestaurants.filter((restaurant) => restaurant.name === this.state.selectedRestaurant)[0]._id;
+            this.fillTable(newId);
+        }
     }
 
     async getFoodData(restaurant_id: string, token: string): Promise<IFormattedFoodData[]> {
@@ -229,16 +342,16 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
     displayFoodRowNutrition(row: IFormattedFoodData) {
         return (
             <span style={{ whiteSpace: 'pre-line' }}>
-                {"Total Calories: " + row.total_cal + "\n" +
-                "Fat: " + row.fat_g + "\n" +
-                "Saturated Fat: " + row.sat_fat_g + "\n" +
-                "Trans Fat: " + row.trans_fat_g + "\n" +
-                "Sodium: " + row.sodium_mg + "\n" +
-                "Carbohydrates: " + row.carbs_g + "\n" +
-                "Fiber: " + row.fiber_g + "\n" +
-                "Sugar: " + row.sugars_g + "\n" +
-                "Protein: " + row.protein_g + "\n" +
-                "Cholesterol: " + row.cholesterol_mg}
+                {"Total Calories: " + row.total_cal + " cal\n" +
+                "Fat: " + row.fat_g + " g\n" +
+                "Saturated Fat: " + row.sat_fat_g + " g\n" +
+                "Trans Fat: " + row.trans_fat_g + " g\n" +
+                "Sodium: " + row.sodium_mg + " mg\n" +
+                "Carbohydrates: " + row.carbs_g + " g\n" +
+                "Fiber: " + row.fiber_g + " g\n" +
+                "Sugar: " + row.sugars_g + " g\n" +
+                "Protein: " + row.protein_g + " g\n" +
+                "Cholesterol: " + row.cholesterol_mg + " mg"}
             </span>
         );
     }
@@ -251,16 +364,27 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             orderBy,
             page,
             searched,
-            rowsPerPage
+            rowsPerPage,
+            selectedRestaurant
         } = this.state;
         return (
             <Paper sx={{ width: '100%', overflow: 'hidden', padding: '18px 12px 0px 12px' }}>
-                <TextField
-                    label='Search food'
-                    value={searched}
-                    size='small'
-                    onChange={(e: any) => this.requestSearch(e)}
-                />
+                <Grid container>
+                    <Grid item xs={9}>
+                    <TextField
+                        label='Search food'
+                        value={searched}
+                        size='small'
+                        onChange={(e: any) => this.requestSearch(e)}
+                        sx={{
+                            width: '100%'
+                        }}
+                    />
+                    </Grid>
+                    <Grid item xs={3} style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
+                    </Grid>
+                </Grid>
                 <TableContainer sx={{ maxHeight: 800 }}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
@@ -293,7 +417,6 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                             {stableSort(filteredRows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
-                                    // console.log(rows)
                                     return (
                                         <Tooltip 
                                             TransitionComponent={Zoom} 
@@ -311,7 +434,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20]}
                     component="div"
-                    count={rows.length}
+                    count={filteredRows.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)}

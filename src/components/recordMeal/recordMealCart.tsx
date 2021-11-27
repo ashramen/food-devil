@@ -1,11 +1,15 @@
 import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+
 import { State } from '../../store/index';
+import { postMeal } from '../../api/meals';
+
 import { Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface CartProps extends PropsFromRedux {
-    cartItems: { _id: string, name: string, restaurant: string, count: number }[]
+    cartItems: { _id: string, name: string, restaurant: string, count: number }[];
+    onClear: () => void;
     deleteItemEvent: (foodId: string) => void;
 }
 
@@ -20,10 +24,15 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
     }
 
     async recordMeal() {
-        // @ts-ignore
-        // const postedMeal = await postMeal(this.props.userId, this.props.cartItems.map(item => item._id), this.props.token);
-        // console.log(postedMeal);
-        console.log(this.props.cartItems.map(item => item._id));
+        const {
+            cartItems,
+            onClear,
+            userId,
+            token
+        } = this.props;
+        const mealIdList: string[] = cartItems.map(item => item._id);
+        await postMeal(userId!, mealIdList, token);
+        onClear();
     }
 
     render() {
@@ -52,7 +61,7 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
                         )
                     })}
                 </List>
-                <Button variant='contained' onClick={() => this.recordMeal()}>
+                <Button variant='contained' onClick={() => this.recordMeal()} disabled={this.props.cartItems.length === 0}>
                     Record Meal
                 </Button>
             </Box>

@@ -95,7 +95,7 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
                         alt={name}
                     />
                     <CardContent>
-                        <Typography gutterBottom fontFamily="Open Sans" variant="h5" component="div">
+                        <Typography gutterBottom variant="h5" component="div">
                         {name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">

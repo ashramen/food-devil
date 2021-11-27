@@ -15,7 +15,7 @@ import { getFoodsByRestaurant } from "../../api/foods";
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import RecordMealCart from "./recordMealCart";
 
-interface RestaurantData {
+export interface RestaurantData {
     _id: string;
     name: string;
     food: FoodData[];
@@ -108,19 +108,6 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
         this.setState(newState);
     }
 
-    restaurantDropdown(restaurant: RestaurantData) {
-        return (<>
-            <ListItemButton divider={true}
-                            onClick={() => this.selectRestaurant(restaurant._id)}>
-                <ListItemText primary={restaurant.name}/>
-                {this.state.expandedRestaurants[restaurant._id] ? <ExpandLess/> : <ExpandMore/>}
-            </ListItemButton>
-            <Collapse in={this.state.expandedRestaurants[restaurant._id]}>
-                <RecordMealTable id={restaurant._id} addItemEvent={(id, name, restaurantId) => this.addItem(id, name, restaurantId)}/>
-            </Collapse>
-        </>)
-    }
-
     addItem(id: string, name: string, restaurantId: string) {
         const cartItems = this.state.cartItems.slice();
         for (const item of cartItems) {
@@ -149,6 +136,10 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
         }
     }
 
+    onClear() {
+        this.setState({ cartItems: [] });
+    }
+
     render() {
         return (
             <>
@@ -173,17 +164,11 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                                     <CircularProgress size={100}/>
                                 </Box> :
                                 <Grid container spacing={2}>
-                                    <Grid item xs={8}>
-                                        <List>
-                                            {this.state.restaurants.map(
-                                                restaurant =>
-                                                    this.state.displayedRestaurants[restaurant._id]
-                                                        ? this.restaurantDropdown(restaurant)
-                                                        : <div/>)}
-                                        </List>
+                                    <Grid item xs={10}>
+                                        <RecordMealTable addItemEvent={(id, name, restaurantId) => this.addItem(id, name, restaurantId)} allRestaurants={this.state.restaurants}/>
                                     </Grid>
-                                    <Grid item xs={4}>
-                                        <RecordMealCart cartItems={this.state.cartItems} deleteItemEvent={foodId => this.deleteItem(foodId)}/>
+                                    <Grid item xs={2}>
+                                        <RecordMealCart cartItems={this.state.cartItems} onClear={() => this.onClear()} deleteItemEvent={foodId => this.deleteItem(foodId)}/>
                                     </Grid>
                                 </Grid>
                             }
