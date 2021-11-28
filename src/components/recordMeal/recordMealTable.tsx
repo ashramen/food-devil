@@ -4,6 +4,8 @@ import { State } from '../../store/index';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -195,6 +197,7 @@ interface FoodTableStates {
     searched: string,
     rowsPerPage: number,
     selectedRestaurant: string,
+    showNutrition: boolean,
 }
 
 class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
@@ -208,7 +211,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             page: 0,
             searched: '',
             rowsPerPage: 10,
-            selectedRestaurant: 'Beyu Blue Coffee'
+            selectedRestaurant: 'Beyu Blue Coffee',
+            showNutrition: true,
         };
     }
 
@@ -365,7 +369,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             page,
             searched,
             rowsPerPage,
-            selectedRestaurant
+            selectedRestaurant,
+            showNutrition,
         } = this.state;
         return (
             <Paper sx={{ width: '100%', overflow: 'hidden', padding: '18px 12px 0px 12px' }}>
@@ -382,7 +387,18 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                     />
                     </Grid>
                     <Grid item xs={3} style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
+                        <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
+                    </Grid>
+                    <Grid item xs={12} style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <FormControlLabel
+                            label="Show Nutrition"
+                            control={<Checkbox 
+                                defaultChecked 
+                                checked={showNutrition} 
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.setState({ showNutrition: !showNutrition})}
+                            />}
+                            labelPlacement="start"
+                        />
                     </Grid>
                 </Grid>
                 <TableContainer sx={{ maxHeight: 800 }}>
@@ -418,7 +434,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
                                     return (
-                                        <Tooltip 
+                                        showNutrition 
+                                        ? <Tooltip 
                                             TransitionComponent={Zoom} 
                                             title={this.displayFoodRowNutrition(row as IFormattedFoodData)} 
                                             arrow 
@@ -426,6 +443,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                                             placement="top-start">
                                                 {this.displayFoodRow(row as IFormattedFoodData)}
                                         </Tooltip>
+                                        : this.displayFoodRow(row as IFormattedFoodData)
                                     );
                                 })}
                         </TableBody>
