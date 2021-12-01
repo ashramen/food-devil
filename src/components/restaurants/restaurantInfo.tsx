@@ -9,9 +9,9 @@ import TopAppBar from '../topAppBar/topAppBar';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { Typography } from '@mui/material';
+import { CardMedia, Typography } from '@mui/material';
 
-
+import { nameToImage } from './restaurantBox';
 import RestaurantReviewTable from './restaurantReviewTable';
 import RestaurantReviewField from './restaurantReviewField';
 import MealsOrdered from './mealsOrdered';
@@ -28,15 +28,24 @@ interface RestaurantInfoProps extends PropsFromRedux, RouteComponentProps<MatchP
     id: string;
 }
 
+interface RestaurantInfoState {
+    averageRating: number
+}
 
-
-class RestaurantInfo extends React.Component<RestaurantInfoProps> {
+class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfoState> {
 
     constructor(props: RestaurantInfoProps) {
         super(props);
         this.state = {
-            restaurants: [],
+            averageRating: 0
         };
+        // this.handleAverageRatingChange = this.handleAverageRatingChange.bind(this);
+    }
+
+    handleAverageRatingChange(newValue: number) {
+        this.setState({
+            averageRating: newValue
+        })
     }
 
     render() {
@@ -48,7 +57,10 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps> {
                     <TopAppBar page='restaurants' />
                     <Grid container mt={15}>
                         <Grid item xs={6}>
-                            <div className='title'>{name} (2.5 stars)</div>
+                            {this.state.averageRating > 0
+                                ? <div className='title'>{name} {this.state.averageRating} Stars</div>
+                                : <div className='title'>{name} (no average rating)</div>
+                            }
                         </Grid>
                         <Grid item xs={6} >
                             <Typography align="right">
@@ -65,7 +77,7 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps> {
                                     <div style={{ fontSize: 30 }}> Previous Reviews </div>
                                 </Grid>
                                 <Grid item xs>
-                                    <RestaurantReviewTable name={name} id={id} />
+                                    <RestaurantReviewTable name={name} id={id} handleAverageRatingChange={newValue => this.handleAverageRatingChange(newValue)} />
                                 </Grid>
 
                                 <Grid item xs>
@@ -77,10 +89,11 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps> {
                             </Grid>
                             <Grid item container direction="column" xs spacing={2}>
                                 <Grid item xs>
-                                    <img
-                                        className='image'
-                                        src="https://eventservices.duke.edu/sites/default/files/styles/dws_feature_image/public/thumbnails/image/SazonLatinKitchen.jpg?itok=XRzHPxDz"
-                                        alt="new"
+                                    <CardMedia
+                                        component="img"
+                                        height="200"
+                                        image={nameToImage[name]}
+                                        alt={name}
                                     />
                                 </Grid>
                                 <Grid item xs>

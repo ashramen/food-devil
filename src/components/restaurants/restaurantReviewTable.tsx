@@ -80,6 +80,7 @@ function formatReviewData(review: IRawReviewData): IReviewData {
 interface RestaurantReviewTableProps extends PropsFromRedux {
     name: string;
     id: string;
+    handleAverageRatingChange: (averageRating: number) => void;
 }
 
 interface RestaurantReviewTableStates {
@@ -92,7 +93,7 @@ interface RestaurantReviewTableStates {
     originalRows: IReviewData[]
 }
 
-class RecordMealTable extends React.Component<RestaurantReviewTableProps, RestaurantReviewTableStates> {
+class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, RestaurantReviewTableStates> {
     constructor(props: RestaurantReviewTableProps) {
         super(props);
         this.state = {
@@ -110,12 +111,15 @@ class RecordMealTable extends React.Component<RestaurantReviewTableProps, Restau
         const reviewData: IReviewData[] = await this.getReviewData(this.props.id, this.props.token);
         const reviewNames: string[] = [];
         const uniqueReviewData: IReviewData[] = [];
+        let sumOfRatings = 0.0
         reviewData.forEach(review => {
             if (!reviewNames.includes(review.review)) {
                 reviewNames.push(review.review);
                 uniqueReviewData.push(review);
             }
+            sumOfRatings += review.rating;
         })
+        this.props.handleAverageRatingChange(sumOfRatings / uniqueReviewData.length)
         this.setState({
             rows: uniqueReviewData,
             originalRows: uniqueReviewData
@@ -124,12 +128,10 @@ class RecordMealTable extends React.Component<RestaurantReviewTableProps, Restau
 
     async getReviewData(restaurant_id: string, token: string): Promise<IReviewData[]> {
         const fetchData = await getReviews(restaurant_id, token);
-        console.log(fetchData);
         if (fetchData.message === "Auth failed") {
             console.log("Unable to fetch reviews");
             return [];
         }
-
         const reviews = fetchData as IRawReviewData[];
         const formattedReviews: IReviewData[] = [];
 
@@ -140,7 +142,6 @@ class RecordMealTable extends React.Component<RestaurantReviewTableProps, Restau
     }
 
     requestSearch(event: any) {
-        console.log(this.state.rows);
         const searchedVal = event.target.value;
 
         const filteredRows = this.state.originalRows.filter((row) => {
@@ -229,7 +230,6 @@ class RecordMealTable extends React.Component<RestaurantReviewTableProps, Restau
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
-                                    console.log(rows)
                                     return (
                                         <TableRow hover role="checkbox" key={row.review}>
                                             {columns.map((column) => {
@@ -270,4 +270,4 @@ const mapStateToProps = (state: State) => ({
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(RecordMealTable);
+export default connector(RestaurantReviewTable);

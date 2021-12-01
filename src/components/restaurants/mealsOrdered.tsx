@@ -120,7 +120,6 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
 
     async getReviewData(user_id: string, token: string): Promise<IMealData[]> {
         const fetchData = await getMealByRestaurant(user_id, this.props.id, token);
-        console.log(fetchData);
         if (fetchData.message === "Auth failed") {
             console.log("Unable to fetch reviews");
             return [];
@@ -151,7 +150,6 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
 
 
     requestSearch(event: any) {
-        console.log(this.state.rows);
         const searchedVal = event.target.value;
 
         const filteredRows = this.state.originalRows.filter((row) => {
@@ -240,7 +238,6 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
-                                    console.log(rows)
                                     return (
                                         <TableRow hover role="checkbox" key={row.id}>
                                             {columns.map((column) => {

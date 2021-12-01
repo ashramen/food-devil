@@ -52,8 +52,5 @@ export const getMealByRestaurant = async (userId: string, restaurantId: string, 
         user_id: userId,
         restaurantId: restaurantId
     };
-
-    console.log("HERE");
-    console.log(body);
     return fetchData(GET_MEALS_BY_RESTAURANT, 'POST', token, body);
 }

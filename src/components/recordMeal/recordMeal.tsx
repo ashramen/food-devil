@@ -106,6 +106,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
         let newState: RecordMealStates = { ...this.state };
         newState.expandedRestaurants[id] = !newState.expandedRestaurants[id];
         this.setState(newState);
+
     }
 
     addItem(id: string, name: string, restaurantId: string) {
@@ -143,7 +144,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
     render() {
         return (
             <>
-                <TopAppBar page='record meal'/>
+                <TopAppBar page='record meal' />
                 {this.props.loggedIn ?
                     <>
                         <Box className="container">
@@ -161,20 +162,20 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                                         justifyContent: "center"
                                     }}
                                 >
-                                    <CircularProgress size={100}/>
+                                    <CircularProgress size={100} />
                                 </Box> :
                                 <Grid container spacing={2}>
                                     <Grid item xs={10}>
-                                        <RecordMealTable addItemEvent={(id, name, restaurantId) => this.addItem(id, name, restaurantId)} allRestaurants={this.state.restaurants}/>
+                                        <RecordMealTable addItemEvent={(id, name, restaurantId) => this.addItem(id, name, restaurantId)} allRestaurants={this.state.restaurants} />
                                     </Grid>
                                     <Grid item xs={2}>
-                                        <RecordMealCart cartItems={this.state.cartItems} onClear={() => this.onClear()} deleteItemEvent={foodId => this.deleteItem(foodId)}/>
+                                        <RecordMealCart cartItems={this.state.cartItems} onClear={() => this.onClear()} deleteItemEvent={foodId => this.deleteItem(foodId)} />
                                     </Grid>
                                 </Grid>
                             }
                         </Box>
                     </>
-                    : <LockPage/>}
+                    : <LockPage />}
             </>
         );
     }

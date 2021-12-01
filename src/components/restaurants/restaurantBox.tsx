@@ -24,7 +24,7 @@ interface nameToImage {
     [x: string]: string;
 }
 
-const nameToImage: nameToImage = {
+export const nameToImage: nameToImage = {
     "Beyu Blue Coffee": "/images/beyu_blue.png",
     "Beyu Cafe at Duke Law": "/images/beyu_cafe_duke_law.png",
     "Bseisu Coffee Bar": "/images/bseisu.jpg",
@@ -67,7 +67,6 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
 
     onWriteAReviewClick() {
         this.setState({ dialogOpen: true });
-        console.log(this.props.name);
     }
 
     handleClose() {
