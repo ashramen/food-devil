@@ -87,7 +87,7 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps> {
                                     <div style={{ fontSize: 30 }}> Meals You've Ordered From Here </div>
                                 </Grid>
                                 <Grid item xs>
-                                    <MealsOrdered name={name} />
+                                    <MealsOrdered id={id} name={name} />
                                 </Grid>
                             </Grid>
                         </Grid>

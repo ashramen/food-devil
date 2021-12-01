@@ -17,7 +17,7 @@ import { visuallyHidden } from '@mui/utils';
 
 import { getFoodsByRestaurant } from "../../api/foods";
 import { getComparator, stableSort, Order } from "./restaurantConstants";
-import { getReviews } from '../../api/reviews';
+import { getMealByRestaurant } from '../../api/meals';
 
 interface Column {
     id: 'meal' | 'date';
@@ -33,11 +33,27 @@ const columns: readonly Column[] = [
     { id: 'date', label: 'Date', minWidth: 10, maxWidth: 100 }
 ];
 
+interface IFoodRawData {
+    _id: string,
+    name: string
+}
+interface IRawMealData {
+    _id: string,
+    user_id: string,
+    foods: IFoodRawData[],
+    restaurant_id: string,
+    createdAt: string,
+    updatedAt: string,
+    __v: number
+}
+
 interface IMealData {
     meal: string;
     date: string;
     id: number;
 }
+
+
 
 
 
@@ -60,6 +76,7 @@ const dataRows: IMealData[] = [
 
 interface MealsOrderedProps extends PropsFromRedux {
     name: string;
+    id: string;
 }
 
 interface MealsOrderedState {
@@ -73,7 +90,7 @@ interface MealsOrderedState {
 }
 
 
-class RecordMealTable extends React.Component<MealsOrderedProps, MealsOrderedState> {
+class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState> {
     constructor(props: MealsOrderedProps) {
         super(props);
         this.state = {
@@ -86,6 +103,51 @@ class RecordMealTable extends React.Component<MealsOrderedProps, MealsOrderedSta
             originalRows: dataRows,
         };
     }
+
+
+    async componentDidMount() {
+        if (!this.props.userId) {
+            console.log("user not logged in");
+            return;
+        }
+        const userIdUnboxed = this.props.userId;
+        const mealData: IMealData[] = await this.getReviewData(userIdUnboxed, this.props.token);
+        this.setState({
+            rows: mealData,
+            originalRows: mealData
+        });
+    }
+
+    async getReviewData(user_id: string, token: string): Promise<IMealData[]> {
+        const fetchData = await getMealByRestaurant(user_id, this.props.id, token);
+        console.log(fetchData);
+        if (fetchData.message === "Auth failed") {
+            console.log("Unable to fetch reviews");
+            return [];
+        }
+
+        const mealItems = fetchData as IRawMealData[];
+        let id = 0;
+
+        const formattedMeals: IMealData[] = [];
+
+        for (const meal of mealItems) {
+            const currentFoods: IFoodRawData[] = meal.foods;
+
+            for (const food of currentFoods) {
+                const currentEntry: IMealData = {
+                    meal: food.name,
+                    date: meal.createdAt,
+                    id: id
+                }
+                formattedMeals.push(currentEntry);
+                id += 1
+            }
+        }
+
+        return formattedMeals;
+    }
+
 
 
     requestSearch(event: any) {
@@ -219,4 +281,4 @@ const mapStateToProps = (state: State) => ({
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(RecordMealTable);
+export default connector(MealsOrdered);

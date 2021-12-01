@@ -13,7 +13,7 @@ import RestaurantsReviewPopup from './restaurantReviewPopup';
 interface RestaurantBoxProps extends RouteComponentProps {
     name: string;
     description: string;
-    id: number;
+    id: string;
 };
 
 interface RestaurantBoxState {
@@ -96,16 +96,16 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
-                        {name}
+                            {name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                        {description}
+                            {description}
                         </Typography>
                     </CardContent>
                     <Grid container alignItems='center' justifyContent='center'>
                         <Grid item>
                             <CardActions>
-                                <Button onClick={() => {this.props.history.push("/restaurants/" + name + "/" + id.toString())}}>Learn More</Button>
+                                <Button onClick={() => { this.props.history.push("/restaurants/" + name + "/" + id.toString()) }}>Learn More</Button>
                                 <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
                             </CardActions>
                         </Grid>

@@ -1,4 +1,4 @@
-import { MEALS, GET_MEAL, GET_USER_MEAL, fetchData } from './constants';
+import { MEALS, GET_MEAL, GET_USER_MEAL, fetchData, GET_MEALS_BY_RESTAURANT } from './constants';
 import { getFood } from './foods';
 import { Food, NutritionStats, translateData } from '../util/translateData';
 
@@ -27,7 +27,7 @@ export const getMealByDays = async (id: string, token: string, days: Date[]) => 
     return nutritionInfoPerDay;
 }
 
-export const postMeal = async(userId: string, foods: string[], token: string) => {
+export const postMeal = async (userId: string, foods: string[], token: string) => {
     const body = {
         user_id: userId,
         foods,
@@ -35,13 +35,25 @@ export const postMeal = async(userId: string, foods: string[], token: string) =>
     return fetchData(MEALS, 'POST', token, body);
 }
 
-export const patchMeal = async(id: string, foods: string[], token: string) => {
+export const patchMeal = async (id: string, foods: string[], token: string) => {
     const body = {
         foods
     };
     return fetchData(GET_MEAL(id), 'PATCH', token, body);
 }
 
-export const deleteMeal = async(id: string, token: string) => {
+export const deleteMeal = async (id: string, token: string) => {
     return fetchData(GET_MEAL(id), 'DELETE', token);
+}
+
+
+export const getMealByRestaurant = async (userId: string, restaurantId: string, token: string) => {
+    const body = {
+        user_id: userId,
+        restaurantId: restaurantId
+    };
+
+    console.log("HERE");
+    console.log(body);
+    return fetchData(GET_MEALS_BY_RESTAURANT, 'POST', token, body);
 }
