@@ -16,7 +16,7 @@ import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
 
 import { getFoodsByRestaurant } from "../../api/foods";
-import { getComparator, stableSort, Order } from "./restaurantConstants";
+import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
 import { getMealByRestaurant } from '../../api/meals';
 
 interface Column {
@@ -136,7 +136,7 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
             for (const food of currentFoods) {
                 const currentEntry: IMealData = {
                     meal: food.name,
-                    date: meal.createdAt,
+                    date: getFormattedDate(new Date(meal.createdAt)),
                     id: id
                 }
                 formattedMeals.push(currentEntry);

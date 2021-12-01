@@ -12,6 +12,7 @@ export const GET_RESTAURANT = (id: string) => '/restaurants/' + id;
 export const GET_MEALS_BY_RESTAURANT = '/meals/getUserRestaurantMeals';
 export const REVIEWS = '/reviews/';
 export const GET_REVIEW = (id: string) => '/reviews/' + id;
+export const GET_REVIEW_UPVOTE = (id: string) => '/reviews/upvote/' + id;
 export const GET_RESTAURANT_REVIEW = (id: string) => '/reviews/getRestaurantReviews/' + id;
 export const GET_USER_ID = (username: string) => '/users/' + username
 export const GET_USERNAME = (userid: string) => '/users/get_username/' + userid;
