@@ -75,14 +75,11 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
                 console.log("review not submitted; user is logged in but the `userId` is null somehow");
             } else {
                 let posted_review = undefined;
-                console.log(this.props.userId);
                 if (this.state.textField !== "") {
                     posted_review = await postReview(this.props.userId, this.props.id, this.state.textField, this.state.stars, this.state.anon, this.props.token);
                 }
-                console.log(posted_review);
                 const p = await getReviews(this.props.id, this.props.token);
                 console.log("review has been posted successfully");
-                console.log(p);
             }
         } else {
             // TODO: Let user know that they can't submit review without logging in
