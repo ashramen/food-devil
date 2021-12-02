@@ -10,6 +10,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { CardMedia, Typography } from '@mui/material';
+import Rating from '@mui/material/Rating';
 
 import { nameToImage } from './restaurantBox';
 import RestaurantReviewTable from './restaurantReviewTable';
@@ -51,15 +52,20 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
     render() {
 
         const { name, id } = this.props.match.params;
+        const averageRating = this.state.averageRating;
         return (
             <Box mx={2}>
                 <>
                     <TopAppBar page='restaurants' />
                     <Grid container mt={15}>
                         <Grid item xs={6}>
-                            {this.state.averageRating > 0
-                                ? <div className='title'>{name} ({this.state.averageRating} Stars)</div>
-                                : <div className='title'>{name} (no average rating)</div>
+                            {averageRating > 0
+                                ? <div className='title'>
+                                    {name} (<Rating name='restaurant-average-rating' value={averageRating} precision={0.1} size="large" readOnly/>)
+                                </div>
+                                : <div className='title'>
+                                    {name} (no average rating)
+                                </div>
                             }
                         </Grid>
                         <Grid item xs={6} >
