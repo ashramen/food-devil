@@ -4,6 +4,8 @@ import { State } from '../../store/index';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -26,6 +28,7 @@ import { visuallyHidden } from '@mui/utils';
 import { getFoodsByRestaurant } from "../../api/foods";
 import { getComparator, stableSort, Order } from "./recordMealConstants";
 import { RestaurantData } from './recordMeal';
+import { IRawFoodData } from './recordMeal';
 
 interface Column {
     id: 'foodName' | 'allergens' | 'record';
@@ -49,28 +52,6 @@ const columns: readonly Column[] = [
         sortDisabled: true,
     }
 ];
-
-interface IRawFoodData {
-    _id: string;
-    restaurantId: string,
-    menu: string,
-    submenu: string,
-    name: string,
-    allergens: string | null,
-    ingredients: string,
-    serving_size: string,
-    servings_per_container: number,
-    total_cal: number,
-    fat_g: number,
-    sat_fat_g: number,
-    trans_fat_g: number,
-    sodium_mg: number,
-    carbs_g: number,
-    fiber_g: number,
-    sugars_g: number,
-    protein_g: number,
-    cholesterol_mg: number
-}
 
 interface IFormattedFoodData {
     foodName: string;
@@ -183,7 +164,7 @@ function RestaurantMenu(props: IRestaurantMenu) {
 
 interface FoodTableProps extends PropsFromRedux{
     allRestaurants: RestaurantData[];
-    addItemEvent: (id: string, name: string, restaurantId: string) => void;
+    addItemEvent: (food: IRawFoodData) => void;
 }
 
 interface FoodTableStates {
@@ -195,6 +176,7 @@ interface FoodTableStates {
     searched: string,
     rowsPerPage: number,
     selectedRestaurant: string,
+    showNutrition: boolean,
 }
 
 class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
@@ -208,7 +190,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             page: 0,
             searched: '',
             rowsPerPage: 10,
-            selectedRestaurant: 'Beyu Blue Coffee'
+            selectedRestaurant: 'Beyu Blue Coffee',
+            showNutrition: true,
         };
     }
 
@@ -261,7 +244,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         return {
             foodName: food.name,
             allergens: food.allergens === null? 'None' : food.allergens,
-            record: <Button variant="outlined" onClick={() => this.addItem(food._id, food.name, food.restaurantId)}>Add</Button>,
+            record: <Button variant="outlined" onClick={() => this.addItem(food)}>Add</Button>,
             total_cal: food.total_cal,
             fat_g: food.fat_g,
             sat_fat_g: food.sat_fat_g,
@@ -275,8 +258,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         }
     }
 
-    addItem(id: string, name: string, restaurantId: string) {
-        this.props.addItemEvent(id, name, restaurantId);
+    addItem(food: IRawFoodData) {
+        this.props.addItemEvent(food);
     }
 
     requestSearch(event: any) {
@@ -358,14 +341,14 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
 
     render() {
         const {
-            rows,
             filteredRows,
             order,
             orderBy,
             page,
             searched,
             rowsPerPage,
-            selectedRestaurant
+            selectedRestaurant,
+            showNutrition,
         } = this.state;
         return (
             <Paper sx={{ width: '100%', overflow: 'hidden', padding: '18px 12px 0px 12px' }}>
@@ -382,7 +365,18 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                     />
                     </Grid>
                     <Grid item xs={3} style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
+                        <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
+                    </Grid>
+                    <Grid item xs={12} style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <FormControlLabel
+                            label="Show Nutrition"
+                            control={<Checkbox 
+                                defaultChecked 
+                                checked={showNutrition} 
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.setState({ showNutrition: !showNutrition})}
+                            />}
+                            labelPlacement="start"
+                        />
                     </Grid>
                 </Grid>
                 <TableContainer sx={{ maxHeight: 800 }}>
@@ -418,7 +412,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
                                     return (
-                                        <Tooltip 
+                                        showNutrition 
+                                        ? <Tooltip 
                                             TransitionComponent={Zoom} 
                                             title={this.displayFoodRowNutrition(row as IFormattedFoodData)} 
                                             arrow 
@@ -426,6 +421,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                                             placement="top-start">
                                                 {this.displayFoodRow(row as IFormattedFoodData)}
                                         </Tooltip>
+                                        : this.displayFoodRow(row as IFormattedFoodData)
                                     );
                                 })}
                         </TableBody>

@@ -123,9 +123,6 @@ function LogOutMenu(props: ILogInOutMenu) {
                 <MenuItem onClick={props.onClick} disableRipple>
                     Log Out
                 </MenuItem>
-                <MenuItem onClick={handleClose} disableRipple>
-                    Other Items We Wanna Add
-                </MenuItem>
             </LogOutMenuList>
         </div>   
     )
