@@ -127,10 +127,10 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
             <Divider variant='middle' />
             {loadingReport? <CircularProgress size={100} sx={{ marginTop: 27.25, marginBottom: 27.25}}/> :
             <Grid container justifyContent='center'>
-              {Object.keys(nutritionProgress).map((key: string) => {
+              {Object.keys(nutritionProgress).map((key: string, index: number) => {
                 const { intake, DV, unit } = nutritionProgress[key];
                 return (<Grid item xs={2}>
-                  <NutritionCard nutrient={key} currentStats={intake} DV={DV} unit={unit} date={reportDate} />
+                  <NutritionCard nutrient={key} currentStats={intake} DV={DV} unit={unit} date={reportDate} index={index} />
                 </Grid>)
               })}
             </Grid>}
@@ -143,6 +143,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                   <DatePicker
                     label='Start Date'
                     value={historyStartDate}
+                    minDate={new Date(historyEndDate.getTime() - (14 * 24 * 60 * 60 * 1000))}
                     maxDate={new Date()}
                     onChange={(newDate: Date | null) => {
                       this.setState({
@@ -155,7 +156,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                   <DatePicker
                     label='End Date'
                     value={historyEndDate}
-                    maxDate={new Date()}
+                    maxDate={new Date() > new Date(historyStartDate.getTime() + (14 * 24 * 60 * 60 * 1000))? new Date(historyStartDate.getTime() + (30 * 24 * 60 * 60 * 1000)) : new Date()}
                     onChange={(newDate: Date | null) => {
                       this.setState({
                         historyEndDate: newDate ? newDate : new Date(),
