@@ -18,6 +18,7 @@ import { visuallyHidden } from '@mui/utils';
 
 import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
 import { getReviews, upvoteReview } from '../../api/reviews';
+import { getUsername } from '../../api/login';
 import Button from '@mui/material/Button';
 
 interface Column {
@@ -142,7 +143,19 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         const formattedReviews: IReviewData[] = [];
 
         for (const review of reviews) {
-            formattedReviews.push(this.formatReviewData(review));
+            const formattedReview = this.formatReviewData(review);
+            if (!review.is_anonymous) {
+                const actualUsername = await getUsername(formattedReview.username);
+                if (typeof actualUsername !== "object") {
+                    /**
+                     * this is a bit of a hack
+                     * DB will send a string if it finds a valid username from user_id
+                     * but will instead send an object with an error message if not
+                     */
+                    formattedReview.username = actualUsername;
+                }
+            }
+            formattedReviews.push(formattedReview);
         }
         return formattedReviews;
     }
