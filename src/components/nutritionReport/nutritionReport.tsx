@@ -52,7 +52,6 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
   }
 
   async updateData() {
-    // TODO: Replace 6168ce2fe182727b2d0cfe17 with actual user id
     const { userId, token } = this.props;
     const { reportDate, historyStartDate, historyEndDate } = this.state;
     const nutritionStats: NutritionStats[] = await getMealByDays(userId!, token, [reportDate]);
