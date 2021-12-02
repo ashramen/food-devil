@@ -28,6 +28,7 @@ import { visuallyHidden } from '@mui/utils';
 import { getFoodsByRestaurant } from "../../api/foods";
 import { getComparator, stableSort, Order } from "./recordMealConstants";
 import { RestaurantData } from './recordMeal';
+import { IRawFoodData } from './recordMeal';
 
 interface Column {
     id: 'foodName' | 'allergens' | 'record';
@@ -51,28 +52,6 @@ const columns: readonly Column[] = [
         sortDisabled: true,
     }
 ];
-
-interface IRawFoodData {
-    _id: string;
-    restaurantId: string,
-    menu: string,
-    submenu: string,
-    name: string,
-    allergens: string | null,
-    ingredients: string,
-    serving_size: string,
-    servings_per_container: number,
-    total_cal: number,
-    fat_g: number,
-    sat_fat_g: number,
-    trans_fat_g: number,
-    sodium_mg: number,
-    carbs_g: number,
-    fiber_g: number,
-    sugars_g: number,
-    protein_g: number,
-    cholesterol_mg: number
-}
 
 interface IFormattedFoodData {
     foodName: string;
@@ -185,7 +164,7 @@ function RestaurantMenu(props: IRestaurantMenu) {
 
 interface FoodTableProps extends PropsFromRedux{
     allRestaurants: RestaurantData[];
-    addItemEvent: (id: string, name: string, restaurantId: string) => void;
+    addItemEvent: (food: IRawFoodData) => void;
 }
 
 interface FoodTableStates {
@@ -265,7 +244,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         return {
             foodName: food.name,
             allergens: food.allergens === null? 'None' : food.allergens,
-            record: <Button variant="outlined" onClick={() => this.addItem(food._id, food.name, food.restaurantId)}>Add</Button>,
+            record: <Button variant="outlined" onClick={() => this.addItem(food)}>Add</Button>,
             total_cal: food.total_cal,
             fat_g: food.fat_g,
             sat_fat_g: food.sat_fat_g,
@@ -279,8 +258,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         }
     }
 
-    addItem(id: string, name: string, restaurantId: string) {
-        this.props.addItemEvent(id, name, restaurantId);
+    addItem(food: IRawFoodData) {
+        this.props.addItemEvent(food);
     }
 
     requestSearch(event: any) {
@@ -362,7 +341,6 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
 
     render() {
         const {
-            rows,
             filteredRows,
             order,
             orderBy,
