@@ -58,7 +58,7 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                     <Grid container mt={15}>
                         <Grid item xs={6}>
                             {this.state.averageRating > 0
-                                ? <div className='title'>{name} {this.state.averageRating} Stars</div>
+                                ? <div className='title'>{name} ({this.state.averageRating} Stars)</div>
                                 : <div className='title'>{name} (no average rating)</div>
                             }
                         </Grid>
@@ -97,7 +97,7 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                                     />
                                 </Grid>
                                 <Grid item xs>
-                                    <div style={{ fontSize: 30 }}> Meals You've Ordered From Here </div>
+                                    <div style={{ fontSize: 30 }}> Meals You've Ordered From {name} </div>
                                 </Grid>
                                 <Grid item xs>
                                     <MealsOrdered id={id} name={name} />

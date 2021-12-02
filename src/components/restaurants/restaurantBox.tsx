@@ -20,11 +20,11 @@ interface RestaurantBoxState {
     dialogOpen: boolean;
 }
 
-interface nameToImage {
+interface InameToImage {
     [x: string]: string;
 }
 
-export const nameToImage: nameToImage = {
+export const nameToImage: InameToImage = {
     "Beyu Blue Coffee": "/images/beyu_blue.png",
     "Beyu Cafe at Duke Law": "/images/beyu_cafe_duke_law.png",
     "Bseisu Coffee Bar": "/images/bseisu.jpg",

@@ -222,6 +222,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
                     name='search'
                     value={searched}
                     onChange={(e: any) => this.requestSearch(e)}
+                    sx={{ padding: '16px' }}
                 />
                 <TableContainer sx={{ maxHeight: 800 }}>
                     <Table stickyHeader aria-label="sticky table">
