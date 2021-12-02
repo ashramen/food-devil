@@ -55,12 +55,12 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
     // TODO: Replace 6168ce2fe182727b2d0cfe17 with actual user id
     const { userId, token } = this.props;
     const { reportDate, historyStartDate, historyEndDate } = this.state;
-    const nutritionStats: NutritionStats[] = await getMealByDays('6168ce2fe182727b2d0cfe17', token, [reportDate]);
+    const nutritionStats: NutritionStats[] = await getMealByDays(userId!, token, [reportDate]);
     const dateList: Date[] = [];
     for (let date = new Date(historyStartDate.getTime()); date < new Date(historyEndDate.getTime() + 24 * 60 * 60 * 1000); date.setDate(date.getDate() + 1)) {
       dateList.push(new Date(date.getTime()));
     };
-    const nutritionGraph: NutritionStats[] = await getMealByDays('6168ce2fe182727b2d0cfe17', token, dateList);
+    const nutritionGraph: NutritionStats[] = await getMealByDays(userId!, token, dateList);
     this.setState({
       nutritionProgress: nutritionStats[0],
       nutritionGraph,
