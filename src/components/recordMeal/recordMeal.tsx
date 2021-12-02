@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Box, CircularProgress, Collapse, Grid, List, ListItemButton, ListItemText } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 
 import LockPage from '../lockPage/lockPage';
 import TopAppBar from '../topAppBar/topAppBar';
@@ -11,8 +11,6 @@ import { State } from '../../store/index';
 import { logIn, logOut } from '../../store/actions';
 import './recordMeal.css';
 import { getRestaurants } from "../../api/restaurants";
-import { getFoodsByRestaurant } from "../../api/foods";
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import RecordMealCart from "./recordMealCart";
 
 export interface RestaurantData {
@@ -21,7 +19,20 @@ export interface RestaurantData {
     food: FoodData[];
 }
 
-interface FoodData {
+export interface Nutrients {
+    total_cal: number,
+    fat_g: number,
+    sat_fat_g: number,
+    trans_fat_g: number,
+    sodium_mg: number,
+    carbs_g: number,
+    fiber_g: number,
+    sugars_g: number,
+    protein_g: number,
+    cholesterol_mg: number
+}
+
+interface FoodData extends Nutrients {
     _id: string;
     restaurantId: string,
     menu: string,
@@ -31,17 +42,25 @@ interface FoodData {
     ingredients: string,
     serving_size: string,
     servings_per_container: number,
-    total_cal: number,
-    fat_g: number,
-    sat_fat_g: number,
-    trans_fat_g: number,
-    sodium_mg: number,
-    carbs_g: number,
-    fiber_g: number,
-    sugars_g: number,
-    protein_g: number
-    cholesterol_mg: number
 }
+
+export interface IRawFoodData extends Nutrients {
+    _id: string;
+    restaurantId: string,
+    menu: string,
+    submenu: string,
+    name: string,
+    allergens: string | null,
+    ingredients: string,
+    serving_size: string,
+    servings_per_container: number
+}
+
+export interface CartItems extends Omit<IRawFoodData, 'restaurantId'> {
+    restaurant: string;
+    count: number;
+}
+
 
 interface RecordMealProps extends PropsFromRedux, RouteComponentProps {
 
@@ -49,17 +68,9 @@ interface RecordMealProps extends PropsFromRedux, RouteComponentProps {
 
 interface RecordMealStates {
     restaurants: RestaurantData[];
-    foods: {
-        [id: string]: FoodData[]
-    };
-    displayedRestaurants: {
-        [id: string]: boolean;
-    };
-    expandedRestaurants: {
-        [id: string]: boolean;
-    };
     loading: boolean;
-    cartItems: { _id: string, name: string, restaurant: string, count: number }[]
+    cartItems: CartItems[]
+    cartNutrients: Nutrients
 }
 
 class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
@@ -67,66 +78,58 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
         super(props);
         this.state = {
             restaurants: [],
-            displayedRestaurants: {},
-            expandedRestaurants: {},
-            foods: {},
             loading: true,
             cartItems: [],
+            cartNutrients: {
+                total_cal: 0,
+                fat_g: 0,
+                sat_fat_g: 0,
+                trans_fat_g: 0,
+                sodium_mg: 0,
+                carbs_g: 0,
+                fiber_g: 0,
+                sugars_g: 0,
+                protein_g: 0,
+                cholesterol_mg: 0
+            }
         };
     }
 
     // call api
     async componentDidMount() {
         if (this.props.loggedIn) {
-            let state: RecordMealStates = {
-                restaurants: [],
-                displayedRestaurants: {},
-                expandedRestaurants: {},
-                foods: {},
-                loading: false,
-                cartItems: [],
-            }
             const restaurants: RestaurantData[] = await getRestaurants(this.props.token) as RestaurantData[];
             restaurants.sort((restaurantA: RestaurantData, restaurantB: RestaurantData) => {
                 return (restaurantA.name < restaurantB.name ? -1 : 1)
             });
-            const foods: { [id: string]: FoodData[] } = {};
-            for (const restaurant of restaurants) {
-                foods[restaurant._id] = await getFoodsByRestaurant(restaurant._id, this.props.token) as FoodData[];
-            }
-            state.restaurants = restaurants;
-            state.foods = foods;
-            restaurants.forEach(restaurant => state.displayedRestaurants[restaurant._id] = true);
-            restaurants.forEach(restaurant => state.expandedRestaurants[restaurant._id] = false);
-            this.setState(state);
+            this.setState({ restaurants, loading: false });
         }
     }
 
-    selectRestaurant(id: string): void {
-        let newState: RecordMealStates = { ...this.state };
-        newState.expandedRestaurants[id] = !newState.expandedRestaurants[id];
-        this.setState(newState);
-
-    }
-
-    addItem(id: string, name: string, restaurantId: string) {
-        const cartItems = this.state.cartItems.slice();
+    addItem(food: IRawFoodData) {
+        const { restaurants, cartItems, cartNutrients } = this.state;
+        for (const nutrient of Object.keys(cartNutrients)) {
+            cartNutrients[nutrient as keyof Nutrients] += food[nutrient as keyof Nutrients];
+        }
         for (const item of cartItems) {
-            if (item._id === id) {
+            if (item._id === food._id) {
                 item.count += 1;
-                this.setState({ ...this.state, cartItems: cartItems });
+                this.setState({ cartItems });
                 return;
             }
         }
-        cartItems.push({ _id: id, name: name, restaurant: this.state.restaurants.filter(restaurant => restaurant._id === restaurantId)[0].name, count: 1 });
-        this.setState({ ...this.state, cartItems: cartItems });
+        cartItems.push({ ...food, restaurant: restaurants.filter(restaurant => restaurant._id === food.restaurantId)[0].name, count: 1 });
+        this.setState({ cartItems, cartNutrients });
     }
 
-    deleteItem(foodId: string) {
-        const cartItems = this.state.cartItems.slice();
+    deleteItem(food: CartItems) {
+        const { cartItems, cartNutrients } = this.state;
+        for (const nutrient of Object.keys(cartNutrients)) {
+            cartNutrients[nutrient as keyof Nutrients] -= food[nutrient as keyof Nutrients];
+        }
         // @ts-ignore
         for (const [index, item] of cartItems.entries()) {
-            if (item._id === foodId) {
+            if (item._id === food._id) {
                 item.count -= 1;
                 if (item.count === 0) {
                     cartItems.splice(index, 1);
@@ -166,10 +169,10 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                                 </Box> :
                                 <Grid container spacing={2}>
                                     <Grid item xs={10}>
-                                        <RecordMealTable addItemEvent={(id, name, restaurantId) => this.addItem(id, name, restaurantId)} allRestaurants={this.state.restaurants} />
+                                        <RecordMealTable addItemEvent={(food) => this.addItem(food)} allRestaurants={this.state.restaurants} />
                                     </Grid>
                                     <Grid item xs={2}>
-                                        <RecordMealCart cartItems={this.state.cartItems} onClear={() => this.onClear()} deleteItemEvent={foodId => this.deleteItem(foodId)} />
+                                        <RecordMealCart cartItems={this.state.cartItems} onClear={() => this.onClear()} deleteItemEvent={food => this.deleteItem(food)} nutrients={this.state.cartNutrients}/>
                                     </Grid>
                                 </Grid>
                             }
