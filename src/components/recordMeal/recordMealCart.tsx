@@ -4,7 +4,9 @@ import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 import { postMeal } from '../../api/meals';
 
-import { Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Zoom } from "@mui/material";
+import { Box, Button, Collapse, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Zoom } from "@mui/material";
+import { TransitionGroup } from 'react-transition-group';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Nutrients, CartItems } from './recordMeal';
 import RecordMealSuccessPopup from "./recordMealSuccessPopup";
@@ -68,26 +70,30 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
             <Box>
                 <div className='meal-cart--title'>Meal Items</div>
                 {this.props.cartItems.length > 0? <List dense={true}>
-                    {this.props.cartItems.map(item => {
-                        return (
-                            <ListItem
-                                secondaryAction={
-                                    <IconButton edge="end" aria-label="delete"
-                                                onClick={() => this.props.deleteItemEvent(item)}>
-                                        <DeleteIcon/>
-                                    </IconButton>
-                                }
-                            >
-                                <ListItemAvatar>
-                                    {`x${item.count}`}`
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={item.name}
-                                    secondary={item.restaurant}
-                                />
-                            </ListItem>
-                        )
-                    })}
+                    <TransitionGroup>
+                        {this.props.cartItems.map(item => {
+                            return (
+                                <Collapse key={item._id}>
+                                {<ListItem
+                                    secondaryAction={
+                                        <IconButton edge="end" aria-label="delete"
+                                                    onClick={() => this.props.deleteItemEvent(item)}>
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    }
+                                >
+                                    <ListItemAvatar>
+                                        {`x${item.count}`}`
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={item.name}
+                                        secondary={item.restaurant}
+                                    />
+                                </ListItem>}
+                                </Collapse>
+                            )
+                        })}
+                    </TransitionGroup>
                 </List> : <div className='meal-cart--subtitle'>You don't have anything yet. Add foods to your meal!</div>}
                 {this.props.cartItems.length > 0? <>
                     <Tooltip 
