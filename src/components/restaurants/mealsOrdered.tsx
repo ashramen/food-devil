@@ -201,12 +201,16 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
             searched,
             rowsPerPage
         } = this.state;
+        if (rows.length === 0) {
+            return (<div>{"You haven't ordered any meals from here yet"}</div>);
+        }
         return (
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <TextField
                     name='search'
                     value={searched}
                     onChange={(e: any) => this.requestSearch(e)}
+                    sx={{ padding: '16px' }}
                 />
                 <TableContainer sx={{ maxHeight: 800 }}>
                     <Table stickyHeader aria-label="sticky table">
