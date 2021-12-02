@@ -69,8 +69,8 @@ interface RecordMealProps extends PropsFromRedux, RouteComponentProps {
 interface RecordMealStates {
     restaurants: RestaurantData[];
     loading: boolean;
-    cartItems: CartItems[]
-    cartNutrients: Nutrients
+    cartItems: CartItems[];
+    cartNutrients: Nutrients;
 }
 
 class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {

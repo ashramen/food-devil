@@ -13,6 +13,7 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { visuallyHidden } from '@mui/utils';
 
 import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
@@ -218,12 +219,17 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         } = this.state;
         return (
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                <TextField
-                    name='search'
-                    value={searched}
-                    onChange={(e: any) => this.requestSearch(e)}
-                    sx={{ padding: '16px' }}
-                />
+                <Grid container sx={{ padding: '16px' }} alignItems='center' justifyContent='center'>
+                    <Grid item>
+                        <TextField
+                            name='search'
+                            label='Search for Keyword'
+                            variant='outlined'
+                            value={searched}
+                            onChange={(e: any) => this.requestSearch(e)}
+                        />
+                    </Grid>
+                </Grid>
                 <TableContainer sx={{ maxHeight: 800 }}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>

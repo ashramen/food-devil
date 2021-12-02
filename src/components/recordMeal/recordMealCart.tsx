@@ -7,6 +7,7 @@ import { postMeal } from '../../api/meals';
 import { Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Zoom } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Nutrients, CartItems } from './recordMeal';
+import RecordMealSuccessPopup from "./recordMealSuccessPopup";
 
 
 interface CartProps extends PropsFromRedux {
@@ -17,13 +18,15 @@ interface CartProps extends PropsFromRedux {
 }
 
 interface CartStates {
-
+    recordSuccessDialogOpen: boolean;
 }
 
 class RecordMealCart extends React.Component<CartProps, CartStates> {
     constructor(props: CartProps) {
         super(props);
-        this.state = {};
+        this.state = {
+            recordSuccessDialogOpen: false,
+        };
     }
 
     async recordMeal() {
@@ -34,7 +37,13 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
             token
         } = this.props;
         const mealIdList: string[] = cartItems.map(item => item._id);
-        await postMeal(userId!, mealIdList, token);
+        const postedMeal = await postMeal(userId!, mealIdList, token);
+        if (postedMeal.message === "Auth failed") {
+            console.log(postedMeal);
+        } else {
+            console.log("do a popup");
+            console.log(this.state);
+        }
         onClear();
     }
 
@@ -79,13 +88,12 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
                             </ListItem>
                         )
                     })}
-                </List> : <div className='meal-cart--subtitle'>You don't have anything yet. Add a meal!</div>}
+                </List> : <div className='meal-cart--subtitle'>You don't have anything yet. Add foods to your meal!</div>}
                 {this.props.cartItems.length > 0? <>
                     <Tooltip 
                         TransitionComponent={Zoom} 
                         title={this.displayNutrition()} 
                         arrow 
-                        followCursor={true} 
                         placement="left-start">
                             {<Button sx={{color: '#003087', marginBottom: 1}}>View Meal Nutrition</Button>}
                     </Tooltip>
