@@ -16,20 +16,23 @@ import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
 
 import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
-import { getReviews } from '../../api/reviews';
+import { getReviews, upvoteReview } from '../../api/reviews';
+import Button from '@mui/material/Button';
 
 interface Column {
-    id: 'review' | 'rating' | 'username' | 'date';
+    id: 'review' | 'rating' | 'helpful' | 'username' | 'date' | 'upvote';
     label: string;
     minWidth?: number;
     maxWidth?: number;
     align?: 'right';
     format?: (value: number) => string;
+    sortDisabled?: boolean;
 }
 
 const columns: readonly Column[] = [
     { id: 'review', label: 'Review', minWidth: 250, maxWidth: 300 },
     { id: 'rating', label: 'Rating', minWidth: 10, maxWidth: 100 },
+    { id: 'helpful', label: 'Helpful', minWidth: 10, maxWidth: 100 },
     {
         id: 'username',
         label: 'Username',
@@ -43,6 +46,14 @@ const columns: readonly Column[] = [
         minWidth: 170,
         maxWidth: 200,
         align: 'right'
+    },
+    {
+        id: 'upvote',
+        label: '',
+        minWidth: 100,
+        maxWidth: 100,
+        align: 'right',
+        sortDisabled: true,
     }
 ];
 
@@ -53,6 +64,7 @@ interface IRawReviewData {
     is_anonymous: boolean,
     restaurant_id: string,
     stars: number,
+    helpful: number,
     updatedAt: string,
     user_id: string,
     message: string,
@@ -62,24 +74,18 @@ interface IRawReviewData {
 interface IReviewData {
     review: string;
     rating: number;
+    helpful: number;
     username: string;
     date: string;
+    upvote: any;
 }
 
-function formatReviewData(review: IRawReviewData): IReviewData {
-    if (review.is_anonymous) {
-        review.user_id = "Anonymous";
-    }
-    return {
-        review: review.description,
-        rating: review.stars,
-        username: review.user_id,   // TODO: this is the user_id, not the username; need new api method
-        date: getFormattedDate(new Date(review.updatedAt)),
-    }
-}
+
+
 interface RestaurantReviewTableProps extends PropsFromRedux {
     name: string;
     id: string;
+    handleAverageRatingChange: (averageRating: number) => void;
 }
 
 interface RestaurantReviewTableStates {
@@ -92,7 +98,7 @@ interface RestaurantReviewTableStates {
     originalRows: IReviewData[]
 }
 
-class RecordMealTable extends React.Component<RestaurantReviewTableProps, RestaurantReviewTableStates> {
+class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, RestaurantReviewTableStates> {
     constructor(props: RestaurantReviewTableProps) {
         super(props);
         this.state = {
@@ -110,12 +116,15 @@ class RecordMealTable extends React.Component<RestaurantReviewTableProps, Restau
         const reviewData: IReviewData[] = await this.getReviewData(this.props.id, this.props.token);
         const reviewNames: string[] = [];
         const uniqueReviewData: IReviewData[] = [];
+        let sumOfRatings = 0.0
         reviewData.forEach(review => {
             if (!reviewNames.includes(review.review)) {
                 reviewNames.push(review.review);
                 uniqueReviewData.push(review);
             }
+            sumOfRatings += review.rating;
         })
+        this.props.handleAverageRatingChange(sumOfRatings / uniqueReviewData.length)
         this.setState({
             rows: uniqueReviewData,
             originalRows: uniqueReviewData
@@ -124,23 +133,38 @@ class RecordMealTable extends React.Component<RestaurantReviewTableProps, Restau
 
     async getReviewData(restaurant_id: string, token: string): Promise<IReviewData[]> {
         const fetchData = await getReviews(restaurant_id, token);
-        console.log(fetchData);
         if (fetchData.message === "Auth failed") {
             console.log("Unable to fetch reviews");
             return [];
         }
-
         const reviews = fetchData as IRawReviewData[];
         const formattedReviews: IReviewData[] = [];
 
         for (const review of reviews) {
-            formattedReviews.push(formatReviewData(review));
+            formattedReviews.push(this.formatReviewData(review));
         }
         return formattedReviews;
     }
 
+    formatReviewData(review: IRawReviewData): IReviewData {
+        if (review.is_anonymous) {
+            review.user_id = "Anonymous";
+        }
+        return {
+            review: review.description,
+            rating: review.stars,
+            helpful: review.helpful,
+            username: review.user_id,   // TODO: this is the user_id, not the username; need new api method
+            date: getFormattedDate(new Date(review.updatedAt)),
+            upvote: <Button variant="outlined" onClick={() => this.upvoteReview(review._id)}>Upvote</Button>
+        }
+    }
+
+    upvoteReview(id: string) {
+        upvoteReview(id, this.props.token);
+    }
+
     requestSearch(event: any) {
-        console.log(this.state.rows);
         const searchedVal = event.target.value;
 
         const filteredRows = this.state.originalRows.filter((row) => {
@@ -209,18 +233,20 @@ class RecordMealTable extends React.Component<RestaurantReviewTableProps, Restau
                                         align={headCell.align}
                                         sortDirection={orderBy === headCell.id ? order : false}
                                     >
-                                        <TableSortLabel
-                                            active={orderBy === headCell.id}
-                                            direction={orderBy === headCell.id ? order : 'asc'}
-                                            onClick={this.createSortHandler(headCell.id)}
-                                        >
-                                            {headCell.label}
-                                            {orderBy === headCell.id ? (
-                                                <Box component="span" sx={visuallyHidden}>
-                                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                                </Box>
-                                            ) : null}
-                                        </TableSortLabel>
+                                        {headCell.sortDisabled ? <></> :
+                                            <TableSortLabel
+                                                active={orderBy === headCell.id}
+                                                direction={orderBy === headCell.id ? order : 'asc'}
+                                                onClick={this.createSortHandler(headCell.id)}
+                                            >
+                                                {headCell.label}
+                                                {orderBy === headCell.id ? (
+                                                    <Box component="span" sx={visuallyHidden}>
+                                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                                    </Box>
+                                                ) : null}
+                                            </TableSortLabel>
+                                        }
                                     </TableCell>
                                 ))}
                             </TableRow>
@@ -229,7 +255,6 @@ class RecordMealTable extends React.Component<RestaurantReviewTableProps, Restau
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => {
-                                    console.log(rows)
                                     return (
                                         <TableRow hover role="checkbox" key={row.review}>
                                             {columns.map((column) => {
@@ -270,4 +295,4 @@ const mapStateToProps = (state: State) => ({
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(RecordMealTable);
+export default connector(RestaurantReviewTable);
