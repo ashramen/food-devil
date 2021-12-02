@@ -41,8 +41,7 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
     displayNutrition() {
         const { nutrients } = this.props;
         return (<span style={{ whiteSpace: 'pre-line' }}>
-            {"Nutrition Stats:\n" +
-                "Total Calories: " + nutrients.total_cal + " cal\n" +
+            {"Total Calories: " + nutrients.total_cal + " cal\n" +
                 "Fat: " + nutrients.fat_g + " g\n" +
                 "Saturated Fat: " + nutrients.sat_fat_g + " g\n" +
                 "Trans Fat: " + nutrients.trans_fat_g + " g\n" +
@@ -59,7 +58,7 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
         return (
             <Box>
                 <div className='meal-cart--title'>Meal Items</div>
-                <List dense={true}>
+                {this.props.cartItems.length > 0? <List dense={true}>
                     {this.props.cartItems.map(item => {
                         return (
                             <ListItem
@@ -80,17 +79,20 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
                             </ListItem>
                         )
                     })}
-                </List>
-                <Tooltip 
-                    TransitionComponent={Zoom} 
-                    title={this.displayNutrition()} 
-                    arrow 
-                    placement="left-start">
-                        {<Button sx={{color: '#003087'}}>View Meal Nutrition</Button>}
-                </Tooltip>
-                <Button variant='contained' onClick={() => this.recordMeal()} sx={{bgcolor: '#003087'}} disabled={this.props.cartItems.length === 0}>
-                    Record Meal
-                </Button>
+                </List> : <div className='meal-cart--subtitle'>You don't have anything yet. Add a meal!</div>}
+                {this.props.cartItems.length > 0? <>
+                    <Tooltip 
+                        TransitionComponent={Zoom} 
+                        title={this.displayNutrition()} 
+                        arrow 
+                        followCursor={true} 
+                        placement="left-start">
+                            {<Button sx={{color: '#003087', marginBottom: 1}}>View Meal Nutrition</Button>}
+                    </Tooltip>
+                    <Button variant='contained' onClick={() => this.recordMeal()} sx={{bgcolor: '#003087'}} disabled={this.props.cartItems.length === 0}>
+                        Record Meal
+                    </Button>
+                </> : <div></div>}
             </Box>
         )
     }

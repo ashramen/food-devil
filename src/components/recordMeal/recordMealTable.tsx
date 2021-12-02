@@ -22,6 +22,7 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import Zoom from '@mui/material/Zoom';
 import { visuallyHidden } from '@mui/utils';
 
@@ -39,6 +40,8 @@ interface Column {
     format?: (value: number) => string;
     sortDisabled?: boolean;
 }
+
+const allAllergens = ['Gluten', 'Eggs', 'Milk', 'Soy', 'Tree Nuts', 'Wheat', 'Peanut', 'Fish', 'Sesame', 'Shellfish'].sort();
 
 const columns: readonly Column[] = [
     { id: 'foodName', label: 'Food', minWidth: 10, maxWidth: 100 },
@@ -130,11 +133,11 @@ function RestaurantMenu(props: IRestaurantMenu) {
     return (
         <div>
             <Button
+                variant="text"
                 id="logged-in-button"
                 aria-controls="logged-in-menu"
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
-                variant="text"
                 sx={{
                     color: '#003087',
                 }}
@@ -176,6 +179,7 @@ interface FoodTableStates {
     searched: string,
     rowsPerPage: number,
     selectedRestaurant: string,
+    allergens: string[]
     showNutrition: boolean,
 }
 
@@ -191,6 +195,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             searched: '',
             rowsPerPage: 10,
             selectedRestaurant: 'Beyu Blue Coffee',
+            allergens: [],
             showNutrition: true,
         };
     }
@@ -205,9 +210,12 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                 uniqueFoodData.push(food);
             }
         })
+        const filteredRows = uniqueFoodData.filter((row) => {
+            return this.checkFilter(row) && this.checkAllergens(row);
+        });
         this.setState({
             rows: uniqueFoodData,
-            filteredRows: uniqueFoodData
+            filteredRows
         });
     }
 
@@ -266,12 +274,13 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         const searchedVal = event.target.value;
         
         const filteredRows = this.state.rows.filter((row) => {
-            return row.foodName.toLowerCase().includes(searchedVal.toLowerCase());
+            return this.checkFilter(row, searchedVal) && this.checkAllergens(row);
         });
         
         this.setState({
             searched: searchedVal,
             filteredRows: filteredRows,
+            page: 0
         })
     };
 
@@ -322,6 +331,54 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         );
     }
 
+    checkAllergens(row: IFormattedFoodData) {
+        for (const allergen of this.state.allergens) {
+            for (const rowAllergen of row.allergens) {
+                if (rowAllergen.toLowerCase().includes(allergen.toLowerCase())) {
+                    return false;
+                }
+            } 
+        }
+        return true;
+    }
+
+    checkFilter(row: IFormattedFoodData, searchedVal?: string) {
+        if (searchedVal) {
+            return row.foodName.toLowerCase().includes(searchedVal.toLowerCase());
+        }
+        if (searchedVal === '') {
+            return true
+        }
+        return row.foodName.toLowerCase().includes(this.state.searched.toLowerCase());
+    }
+
+    createCheckBox(allergen: string) {
+        const { rows, allergens } = this.state;
+        return (
+            <>
+                <Checkbox
+                    onChange={(e: any) => {
+                        if (e.target.checked) {
+                            allergens.push(allergen);
+                            this.setState({ allergens })
+                        } else {
+                            const index = allergens.indexOf(allergen);
+                            if (index > -1) {
+                                allergens.splice(index, 1);
+                                this.setState({ allergens });
+                            }
+                        }
+                        const filteredRows = rows.filter((row) => {
+                            return this.checkFilter(row) && this.checkAllergens(row);
+                        });
+                        this.setState({ filteredRows, page: 0 });
+                    }}
+                />
+                <Typography>{allergen}</Typography>
+            </>
+        );
+    }
+
     displayFoodRowNutrition(row: IFormattedFoodData) {
         return (
             <span style={{ whiteSpace: 'pre-line' }}>
@@ -353,21 +410,21 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         return (
             <Paper sx={{ width: '100%', overflow: 'hidden', padding: '18px 12px 0px 12px' }}>
                 <Grid container>
-                    <Grid item xs={9}>
-                    <TextField
-                        label='Search food'
-                        value={searched}
-                        size='small'
-                        onChange={(e: any) => this.requestSearch(e)}
-                        sx={{
-                            width: '100%'
-                        }}
-                    />
+                    <Grid item xs={3}>
+                        <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id, page: 0 })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
                     </Grid>
-                    <Grid item xs={3} style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
+                    <Grid item xs={7}  style={{ display: "flex", justifyContent: "flex-start" }}>
+                        <TextField
+                            label='Search food'
+                            value={searched}
+                            size='small'
+                            onChange={(e: any) => this.requestSearch(e)}
+                            sx={{
+                                width: '100%'
+                            }}
+                        />
                     </Grid>
-                    <Grid item xs={12} style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Grid item xs={2} style={{ display: "flex", justifyContent: "flex-end" }}>
                         <FormControlLabel
                             label="Show Nutrition"
                             control={<Checkbox 
@@ -378,6 +435,12 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                             labelPlacement="start"
                         />
                     </Grid>
+                </Grid>
+                <Grid container>
+                    <Grid item xs={1}>
+                        <Typography mt={3}>Allergies?</Typography>
+                    </Grid>
+                    {allAllergens.map((allergen) => <Grid item xs={1}>{this.createCheckBox(allergen)}</Grid>)}
                 </Grid>
                 <TableContainer sx={{ maxHeight: 800 }}>
                     <Table stickyHeader aria-label="sticky table">
