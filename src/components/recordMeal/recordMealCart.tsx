@@ -56,7 +56,6 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
     }
 
     render() {
-        const { nutrients } = this.props;
         return (
             <Box>
                 <div className='meal-cart--title'>Meal Items</div>
@@ -86,8 +85,7 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
                     TransitionComponent={Zoom} 
                     title={this.displayNutrition()} 
                     arrow 
-                    followCursor={true} 
-                    placement="top-start">
+                    placement="left-start">
                         {<Button sx={{color: '#003087'}}>View Meal Nutrition</Button>}
                 </Tooltip>
                 <Button variant='contained' onClick={() => this.recordMeal()} sx={{bgcolor: '#003087'}} disabled={this.props.cartItems.length === 0}>
