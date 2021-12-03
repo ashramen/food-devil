@@ -69,8 +69,8 @@ interface RecordMealProps extends PropsFromRedux, RouteComponentProps {
 interface RecordMealStates {
     restaurants: RestaurantData[];
     loading: boolean;
-    cartItems: CartItems[]
-    cartNutrients: Nutrients
+    cartItems: CartItems[];
+    cartNutrients: Nutrients;
 }
 
 class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
@@ -167,7 +167,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                                 >
                                     <CircularProgress size={100} />
                                 </Box> :
-                                <Grid container spacing={2}>
+                                <Grid container spacing={2} mt={1}>
                                     <Grid item xs={10}>
                                         <RecordMealTable addItemEvent={(food) => this.addItem(food)} allRestaurants={this.state.restaurants} />
                                     </Grid>

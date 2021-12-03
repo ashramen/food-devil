@@ -4,9 +4,12 @@ import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 import { postMeal } from '../../api/meals';
 
-import { Box, Button, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Zoom } from "@mui/material";
+import { Box, Button, Collapse, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Zoom } from "@mui/material";
+import { TransitionGroup } from 'react-transition-group';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Nutrients, CartItems } from './recordMeal';
+import RecordMealSuccessPopup from "./recordMealSuccessPopup";
 
 
 interface CartProps extends PropsFromRedux {
@@ -17,13 +20,15 @@ interface CartProps extends PropsFromRedux {
 }
 
 interface CartStates {
-
+    recordSuccessDialogOpen: boolean;
 }
 
 class RecordMealCart extends React.Component<CartProps, CartStates> {
     constructor(props: CartProps) {
         super(props);
-        this.state = {};
+        this.state = {
+            recordSuccessDialogOpen: false,
+        };
     }
 
     async recordMeal() {
@@ -34,15 +39,20 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
             token
         } = this.props;
         const mealIdList: string[] = cartItems.map(item => item._id);
-        await postMeal(userId!, mealIdList, token);
+        const postedMeal = await postMeal(userId!, mealIdList, token);
+        if (postedMeal.message === "Auth failed") {
+            console.log(postedMeal);
+        } else {
+            console.log("do a popup");
+            console.log(this.state);
+        }
         onClear();
     }
 
     displayNutrition() {
         const { nutrients } = this.props;
         return (<span style={{ whiteSpace: 'pre-line' }}>
-            {"Nutrition Stats:\n" +
-                "Total Calories: " + nutrients.total_cal + " cal\n" +
+            {"Total Calories: " + nutrients.total_cal + " cal\n" +
                 "Fat: " + nutrients.fat_g + " g\n" +
                 "Saturated Fat: " + nutrients.sat_fat_g + " g\n" +
                 "Trans Fat: " + nutrients.trans_fat_g + " g\n" +
@@ -56,43 +66,47 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
     }
 
     render() {
-        const { nutrients } = this.props;
         return (
             <Box>
                 <div className='meal-cart--title'>Meal Items</div>
-                <List dense={true}>
-                    {this.props.cartItems.map(item => {
-                        return (
-                            <ListItem
-                                secondaryAction={
-                                    <IconButton edge="end" aria-label="delete"
-                                                onClick={() => this.props.deleteItemEvent(item)}>
-                                        <DeleteIcon/>
-                                    </IconButton>
-                                }
-                            >
-                                <ListItemAvatar>
-                                    {`x${item.count}`}`
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={item.name}
-                                    secondary={item.restaurant}
-                                />
-                            </ListItem>
-                        )
-                    })}
-                </List>
-                <Tooltip 
-                    TransitionComponent={Zoom} 
-                    title={this.displayNutrition()} 
-                    arrow 
-                    followCursor={true} 
-                    placement="top-start">
-                        {<Button sx={{color: '#003087'}}>View Meal Nutrition</Button>}
-                </Tooltip>
-                <Button variant='contained' onClick={() => this.recordMeal()} sx={{bgcolor: '#003087'}} disabled={this.props.cartItems.length === 0}>
-                    Record Meal
-                </Button>
+                {this.props.cartItems.length > 0? <List dense={true}>
+                    <TransitionGroup>
+                        {this.props.cartItems.map(item => {
+                            return (
+                                <Collapse key={item._id}>
+                                {<ListItem
+                                    secondaryAction={
+                                        <IconButton edge="end" aria-label="delete"
+                                                    onClick={() => this.props.deleteItemEvent(item)}>
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    }
+                                >
+                                    <ListItemAvatar>
+                                        {`x${item.count}`}`
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={item.name}
+                                        secondary={item.restaurant}
+                                    />
+                                </ListItem>}
+                                </Collapse>
+                            )
+                        })}
+                    </TransitionGroup>
+                </List> : <div className='meal-cart--subtitle'>You don't have anything yet. Add foods to your meal!</div>}
+                {this.props.cartItems.length > 0? <>
+                    <Tooltip 
+                        TransitionComponent={Zoom} 
+                        title={this.displayNutrition()} 
+                        arrow 
+                        placement="left-start">
+                            {<Button sx={{color: '#003087', marginBottom: 1}}>View Meal Nutrition</Button>}
+                    </Tooltip>
+                    <Button variant='contained' onClick={() => this.recordMeal()} sx={{bgcolor: '#003087'}} disabled={this.props.cartItems.length === 0}>
+                        Record Meal
+                    </Button>
+                </> : <div></div>}
             </Box>
         )
     }

@@ -9,6 +9,7 @@ export interface NutritionProgressProps {
     DV: number;
     unit: string;
     date: Date;
+    index: number;
 };
 
 interface NutritionProgressStates {
@@ -34,7 +35,7 @@ class NutritionProgress extends React.Component<NutritionProgressProps, Nutritio
     }
 
     componentDidMount() {
-        this.updateData();
+        setTimeout(() => this.updateData(), 150 * this.props.index);
     }
 
     componentDidUpdate(prevProps: NutritionProgressProps) {

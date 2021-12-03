@@ -10,9 +10,9 @@ class RestaurantsGrid extends React.Component {
     render() {
         return (
             <Grid container spacing={2} pb={2}>
-                {RestaurantInfo.map(info =>
+                {RestaurantInfo.map((info, index) =>
                     <Grid item xs={3}>
-                        <RestaurantBox name={info.name} description={info.location} id={info.id} />
+                        <RestaurantBox name={info.name} description={info.location} id={info.id} index={index} />
                     </Grid>
                 )
                 }

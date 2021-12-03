@@ -6,18 +6,24 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import Fade from '@mui/material/Fade';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import RestaurantsReviewPopup from './restaurantReviewPopup';
+import { CardActionArea } from '@mui/material';
 
 interface RestaurantBoxProps extends RouteComponentProps {
     name: string;
     description: string;
     id: string;
+    index: number;
 };
 
 interface RestaurantBoxState {
-    dialogOpen: boolean;
+    reviewDialogOpen: boolean;
+    raised: boolean;
+    shadow: number;
+    fade: boolean;
 }
 
 interface InameToImage {
@@ -58,59 +64,76 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
     constructor(props: RestaurantBoxProps) {
         super(props);
         this.state = {
-            dialogOpen: false
+            reviewDialogOpen: false,
+            raised: false,
+            shadow: 1,
+            fade: false,
         };
         this.onWriteAReviewClick = this.onWriteAReviewClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
     }
 
+    componentDidMount() {
+        setTimeout(() => this.setState({ fade: true }), 150 * this.props.index);
+    }
 
     onWriteAReviewClick() {
-        this.setState({ dialogOpen: true });
+        this.setState({ reviewDialogOpen: true });
     }
 
     handleClose() {
-        this.setState({ dialogOpen: false })
+        this.setState({ reviewDialogOpen: false })
     }
 
     render() {
         const {
             name,
             description,
-            id
+            id,
         } = this.props;
 
         const {
-            dialogOpen
+            reviewDialogOpen,
+            raised,
+            shadow,
+            fade
         } = this.state;
 
         return (
             <>
-                <Card sx={{ maxWidth: 360 }}>
-                    <CardMedia
-                        component="img"
-                        height="140"
-                        image={nameToImage[name]}
-                        alt={name}
-                    />
-                    <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                            {name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {description}
-                        </Typography>
-                    </CardContent>
-                    <Grid container alignItems='center' justifyContent='center'>
-                        <Grid item>
-                            <CardActions>
-                                <Button onClick={() => { this.props.history.push("/restaurants/" + name + "/" + id.toString()) }}>Learn More</Button>
-                                <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
-                            </CardActions>
+                <Fade in={fade} timeout={300}>
+                    <Card sx={{ maxWidth: 360 }}
+                    onMouseOver={()=>this.setState({ raised: true, shadow:20})}
+                    onMouseOut={()=>this.setState({ raised: false, shadow:1})}
+                    raised={raised}
+                    elevation={shadow}
+                    >
+                        <CardActionArea onClick={() => { this.props.history.push("/restaurants/" + name + "/" + id.toString()) }}>
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={nameToImage[name]}
+                                alt={name}
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="div" onClick={() => { this.props.history.push("/restaurants/" + name + "/" + id.toString()) }}>
+                                    {name}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {description}
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>                    
+                        <Grid container alignItems='center' justifyContent='center'>
+                            <Grid item>
+                                <CardActions>
+                                    <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
+                                </CardActions>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </Card>
-                <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={dialogOpen} id={id} />
+                    </Card>
+                </Fade>
+                <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={reviewDialogOpen} id={id} />
             </>
         );
     }

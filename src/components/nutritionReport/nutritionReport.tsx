@@ -9,6 +9,7 @@ import { getMealByDays } from '../../api/meals';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import DatePicker from '@mui/lab/DatePicker';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
@@ -30,6 +31,8 @@ interface NutritionReportStates {
   reportDate: Date;
   historyStartDate: Date;
   historyEndDate: Date;
+  loadingReport: boolean;
+  loadingGraph: boolean;
 };
 
 class NutritionReport extends React.Component<NutritionReportProps, NutritionReportStates>{
@@ -48,36 +51,42 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
       reportDate: new Date(),
       historyStartDate: new Date(new Date().getTime() - (6 * 24 * 60 * 60 * 1000)),
       historyEndDate: new Date(),
+      loadingReport: true,
+      loadingGraph: true
     }
   }
 
-  async updateData() {
-    // TODO: Replace 6168ce2fe182727b2d0cfe17 with actual user id
+  async updateData(updating: string) {
     const { userId, token } = this.props;
     const { reportDate, historyStartDate, historyEndDate } = this.state;
-    const nutritionStats: NutritionStats[] = await getMealByDays(userId!, token, [reportDate]);
-    const dateList: Date[] = [];
-    for (let date = new Date(historyStartDate.getTime()); date < new Date(historyEndDate.getTime() + 24 * 60 * 60 * 1000); date.setDate(date.getDate() + 1)) {
-      dateList.push(new Date(date.getTime()));
-    };
-    const nutritionGraph: NutritionStats[] = await getMealByDays(userId!, token, dateList);
-    this.setState({
-      nutritionProgress: nutritionStats[0],
-      nutritionGraph,
-    });
+    if (updating === 'report' || updating === 'both') {
+      this.setState({ loadingReport: true });
+      const nutritionStats: NutritionStats[] = await getMealByDays(userId!, token, [reportDate]);
+      this.setState({ nutritionProgress: nutritionStats[0], loadingReport: false });
+    }
+    if (updating === 'graph' || updating === 'both') {
+      this.setState({ loadingGraph: true });
+      const dateList: Date[] = [];
+      for (let date = new Date(historyStartDate.getTime()); date < new Date(historyEndDate.getTime() + 24 * 60 * 60 * 1000); date.setDate(date.getDate() + 1)) {
+        dateList.push(new Date(date.getTime()));
+      };
+      const nutritionGraph: NutritionStats[] = await getMealByDays(userId!, token, dateList);
+      this.setState({ nutritionGraph, loadingGraph: false });
+    }
   }
 
   async componentDidMount() {
     if (this.props.loggedIn) {
-      await this.updateData();
+      await this.updateData('both');
     }
   }
 
   async componentDidUpdate(prevProps: NutritionReportProps, prevStates: NutritionReportStates) {
-    if (this.state.reportDate !== prevStates.reportDate
-      || this.state.historyStartDate !== prevStates.historyStartDate
+    if (this.state.reportDate !== prevStates.reportDate) {
+      this.updateData('report')
+    } else if (this.state.historyStartDate !== prevStates.historyStartDate
       || this.state.historyEndDate !== prevStates.historyEndDate) {
-      this.updateData();
+      this.updateData('graph');
     }
   }
 
@@ -89,6 +98,8 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
       reportDate,
       historyStartDate,
       historyEndDate,
+      loadingReport,
+      loadingGraph
     } = this.state;
     return (
       <Box mx={2}>
@@ -114,14 +125,15 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
               </Grid>
             </Grid>
             <Divider variant='middle' />
+            {loadingReport? <CircularProgress size={100} sx={{ marginTop: 27.25, marginBottom: 27.25}}/> :
             <Grid container justifyContent='center'>
-              {Object.keys(nutritionProgress).map((key: string) => {
+              {Object.keys(nutritionProgress).map((key: string, index: number) => {
                 const { intake, DV, unit } = nutritionProgress[key];
                 return (<Grid item xs={2}>
-                  <NutritionCard nutrient={key} currentStats={intake} DV={DV} unit={unit} date={reportDate} />
+                  <NutritionCard nutrient={key} currentStats={intake} DV={DV} unit={unit} date={reportDate} index={index} />
                 </Grid>)
               })}
-            </Grid>
+            </Grid>}
             <Grid container mt={2}>
               <Grid item xs={6}>
                 <div className='title'>Nutrition History</div>
@@ -131,6 +143,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                   <DatePicker
                     label='Start Date'
                     value={historyStartDate}
+                    minDate={new Date(historyEndDate.getTime() - (14 * 24 * 60 * 60 * 1000))}
                     maxDate={new Date()}
                     onChange={(newDate: Date | null) => {
                       this.setState({
@@ -143,7 +156,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                   <DatePicker
                     label='End Date'
                     value={historyEndDate}
-                    maxDate={new Date()}
+                    maxDate={new Date() > new Date(historyStartDate.getTime() + (14 * 24 * 60 * 60 * 1000))? new Date(historyStartDate.getTime() + (30 * 24 * 60 * 60 * 1000)) : new Date()}
                     onChange={(newDate: Date | null) => {
                       this.setState({
                         historyEndDate: newDate ? newDate : new Date(),
@@ -175,13 +188,14 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                 })}
               </Tabs>
             </Grid>
+            {loadingGraph? <CircularProgress size={100} sx={{ marginTop: 24, marginBottom: 24}}/> :
             <NutritionGraph nutrient={nutrientGraphed}
               startDate={historyStartDate}
               endDate={historyEndDate}
               intake={nutritionGraph.map((dailyInfo) => dailyInfo[nutrientGraphed].intake)}
               DV={nutritionProgress[nutrientGraphed].DV}
               unit={nutritionProgress[nutrientGraphed].unit}
-            />
+            />}
           </> : <LockPage />}
       </Box>
     );
