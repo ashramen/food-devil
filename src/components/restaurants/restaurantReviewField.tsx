@@ -80,6 +80,10 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
                 }
                 const p = await getReviews(this.props.id, this.props.token);
                 console.log("review has been posted successfully");
+
+                this.setState({
+                    textField: ""
+                })
             }
         } else {
             // TODO: Let user know that they can't submit review without logging in
