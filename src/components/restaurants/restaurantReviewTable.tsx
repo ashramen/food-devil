@@ -105,8 +105,8 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         super(props);
         this.state = {
             rows: [],
-            order: 'asc',
-            orderBy: 'date',
+            order: 'desc',
+            orderBy: 'rating',
             page: 0,
             searched: '',
             rowsPerPage: 5,
