@@ -248,7 +248,7 @@ export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> 
                         </IconButton>
                     </DrawerHeader>
                     <List>
-                        <ListItemButton style={this.sidebarButtonStyle('nutrition report')} onClick={() => {this.props.history.push('/')}}>
+                        <ListItemButton disabled={!this.props.loggedIn} style={this.sidebarButtonStyle('nutrition report')} onClick={() => {this.props.history.push('/')}}>
                             <AssessmentIcon sx={this.sidebarItemStyle('nutrition report')}/>
                             <ListItemText primary={'Nutrition Report'} sx={this.sidebarItemStyle('nutrition report')}/>
                         </ListItemButton>
