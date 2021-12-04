@@ -173,9 +173,15 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             helpful: review.helpful,
             username: review.user_id,   // TODO: this is the user_id, not the username; need new api method
             date: getFormattedDate(new Date(review.updatedAt)),
-            upvote: <IconButton color="default" onClick={() => this.upvoteReview(review._id, formattedReview)}>
-                    <ThumbUpIcon />
-                </IconButton>,
+            upvote: this.props.loggedIn ? (
+                    <IconButton color="default" onClick={() => this.upvoteReview(review._id, formattedReview)}>
+                        <ThumbUpIcon />
+                    </IconButton>
+                ) : (
+                    <IconButton disabled>
+                        <ThumbUpIcon />
+                    </IconButton>
+                ),
             hasUpvote: false,
         }
         return formattedReview;
