@@ -1,5 +1,6 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
+import HomePage from "./components/homePage/HomePage";
 import RecordMeal from "./components/recordMeal/recordMeal";
 import NutritionReport from "./components/nutritionReport/nutritionReport";
 import Login from "./components/login/login";
@@ -15,6 +16,9 @@ function App() {
         <BrowserRouter>
           <Switch>
             <Route exact path="/">
+              <HomePage />
+            </Route>
+            <Route exact path="/nutritionreport">
               <NutritionReport />
             </Route>
             <Route exact path="/recordmeal">

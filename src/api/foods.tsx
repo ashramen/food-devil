@@ -8,6 +8,6 @@ export const getFood = async (id: string, token: string) => {
     return fetchData(GET_FOOD(id), 'GET', token);
 }
 
-export const getFoodsByRestaurant = async(id: string, token: string) => {
-    return fetchData(GET_FOODS_BY_RESTAURANT(id), 'GET', token)
+export const getFoodsByRestaurant = async(id: string) => {
+    return fetchData(GET_FOODS_BY_RESTAURANT(id), 'GET')
 }
