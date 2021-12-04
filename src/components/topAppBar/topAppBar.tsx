@@ -21,7 +21,9 @@ import MuiListItemText from '@mui/material/ListItemText';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { styled, alpha } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import Zoom from '@mui/material/Zoom';
 
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
@@ -248,10 +250,19 @@ export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> 
                         </IconButton>
                     </DrawerHeader>
                     <List>
-                        <ListItemButton disabled={!this.props.loggedIn} style={this.sidebarButtonStyle('nutrition report')} onClick={() => {this.props.history.push('/')}}>
+                        {this.props.loggedIn? <ListItemButton style={this.sidebarButtonStyle('nutrition report')} onClick={() => {this.props.history.push('/')}}>
                             <AssessmentIcon sx={this.sidebarItemStyle('nutrition report')}/>
                             <ListItemText primary={'Nutrition Report'} sx={this.sidebarItemStyle('nutrition report')}/>
-                        </ListItemButton>
+                        </ListItemButton> : <Tooltip 
+                            TransitionComponent={Zoom} 
+                            title={<span style={{ whiteSpace: 'pre-line' }}>Please log in to use this feature.</span>} 
+                            arrow 
+                            placement="right">
+                                {<div><ListItemButton disabled={true} style={this.sidebarButtonStyle('nutrition report')} onClick={() => {this.props.history.push('/')}}>
+                                    <AssessmentIcon sx={this.sidebarItemStyle('nutrition report')}/>
+                                    <ListItemText primary={'Nutrition Report'} sx={this.sidebarItemStyle('nutrition report')}/>
+                                </ListItemButton></div>}
+                        </Tooltip>}
                         <ListItemButton style={this.sidebarButtonStyle('record meal')} onClick={() => {this.props.history.push('/recordmeal')}}>
                             <FastfoodIcon sx={this.sidebarItemStyle('record meal')}/>
                             <ListItemText primary={'Record Meal'} sx={this.sidebarItemStyle('record meal')}/>
