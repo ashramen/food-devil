@@ -2,7 +2,6 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Box, CircularProgress, Grid } from "@mui/material";
 
-import LockPage from '../lockPage/lockPage';
 import TopAppBar from '../topAppBar/topAppBar';
 import RecordMealTable from './recordMealTable';
 
@@ -71,6 +70,7 @@ interface RecordMealStates {
     loading: boolean;
     cartItems: CartItems[];
     cartNutrients: Nutrients;
+    messageOpen: boolean;
 }
 
 class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
@@ -91,19 +91,18 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                 sugars_g: 0,
                 protein_g: 0,
                 cholesterol_mg: 0
-            }
+            },
+            messageOpen: true,
         };
     }
 
     // call api
     async componentDidMount() {
-        if (this.props.loggedIn) {
-            const restaurants: RestaurantData[] = await getRestaurants(this.props.token) as RestaurantData[];
-            restaurants.sort((restaurantA: RestaurantData, restaurantB: RestaurantData) => {
-                return (restaurantA.name < restaurantB.name ? -1 : 1)
-            });
-            this.setState({ restaurants, loading: false });
-        }
+        const restaurants: RestaurantData[] = await getRestaurants() as RestaurantData[];
+        restaurants.sort((restaurantA: RestaurantData, restaurantB: RestaurantData) => {
+            return (restaurantA.name < restaurantB.name ? -1 : 1)
+        });
+        this.setState({ restaurants, loading: false });
     }
 
     addItem(food: IRawFoodData) {
@@ -148,37 +147,35 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
         return (
             <>
                 <TopAppBar page='record meal' />
-                {this.props.loggedIn ?
-                    <>
-                        <Box className="container">
-                            <div className='title'>Record Meal</div>
-                            {this.state.loading ?
-                                <Box
-                                    sx={{
-                                        top: 0,
-                                        left: 0,
-                                        bottom: 0,
-                                        right: 0,
-                                        position: "absolute",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center"
-                                    }}
-                                >
-                                    <CircularProgress size={100} />
-                                </Box> :
-                                <Grid container spacing={2} mt={1}>
-                                    <Grid item xs={10}>
-                                        <RecordMealTable addItemEvent={(food) => this.addItem(food)} allRestaurants={this.state.restaurants} />
-                                    </Grid>
-                                    <Grid item xs={2}>
-                                        <RecordMealCart cartItems={this.state.cartItems} onClear={() => this.onClear()} deleteItemEvent={food => this.deleteItem(food)} nutrients={this.state.cartNutrients}/>
-                                    </Grid>
+                <>
+                    <Box className="container">
+                        <div className='title'>Record Meal</div>
+                        {this.state.loading ?
+                            <Box
+                                sx={{
+                                    top: 0,
+                                    left: 0,
+                                    bottom: 0,
+                                    right: 0,
+                                    position: "absolute",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <CircularProgress size={100} />
+                            </Box> :
+                            <Grid container spacing={2} mt={1}>
+                                <Grid item xs={10}>
+                                    <RecordMealTable addItemEvent={(food) => this.addItem(food)} allRestaurants={this.state.restaurants} />
                                 </Grid>
-                            }
-                        </Box>
-                    </>
-                    : <LockPage />}
+                                <Grid item xs={2}>
+                                    <RecordMealCart cartItems={this.state.cartItems} onClear={() => this.onClear()} deleteItemEvent={food => this.deleteItem(food)} nutrients={this.state.cartNutrients}/>
+                                </Grid>
+                            </Grid>
+                        }
+                    </Box>
+                </>
             </>
         );
     }
