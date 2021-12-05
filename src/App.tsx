@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import RecordMeal from "./components/recordMeal/recordMeal";
 import NutritionReport from "./components/nutritionReport/nutritionReport";
 import Login from "./components/login/login";
+import ProfilePage from "./components/profile/profile"
 import Restaurants from "./components/restaurants/restaurants";
 import RestaurantInfo from "./components/restaurants/restaurantInfo";
 
@@ -16,6 +17,9 @@ function App() {
           <Switch>
             <Route exact path="/">
               <NutritionReport />
+            </Route>
+            <Route exact path="/profile">
+              <ProfilePage />
             </Route>
             <Route exact path="/recordmeal">
               <RecordMeal />

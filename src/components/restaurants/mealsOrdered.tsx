@@ -15,7 +15,6 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
 
-import { getFoodsByRestaurant } from "../../api/foods";
 import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
 import { getMealByRestaurant } from '../../api/meals';
 
