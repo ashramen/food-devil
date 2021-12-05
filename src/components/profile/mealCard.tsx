@@ -18,58 +18,10 @@ import Fade from '@mui/material/Fade';
 import { getComparator, stableSort, Order, getFormattedDate } from "../restaurants/restaurantConstants";
 import { getMealByRestaurant } from '../../api/meals';
 
-interface MealCardProps extends PropsFromRedux {
-    name: string;
-    description: string;
-    id: string;
-    index: number;
-};
+import * as MC from './mealCardSplit';
 
-interface MealCardState {
-    foods: string[];
-    timestamp: Date;
-
-    raised: boolean;
-    shadow: number;
-    fade: boolean;
-}
-
-interface InameToImage {
-    [x: string]: string;
-}
-
-export const nameToImage: InameToImage = {
-    "Beyu Blue Coffee": "/images/beyu_blue.png",
-    "Beyu Cafe at Duke Law": "/images/beyu_cafe_duke_law.png",
-    "Bseisu Coffee Bar": "/images/bseisu.jpg",
-    "Cafe": "/images/cafe.png",
-    "Cafe 300": "/images/cafe_300.jpg",
-    "Freeman Cafe": "/images/freeman.jpg",
-    "Ginger + Soy": "/images/ginger.png",
-    "Gyotaku": "/images/gyotaku.png",
-    "Il Forno": "/images/il_forno.png",
-    "J.B.'s Roast & Chops": "/images/jbs.png",
-    "Marketplace": "/images/marketplace.jpg",
-    "McDonald's": "/images/mcdonalds.png",
-    "Panda Express": "/images/panda.jpeg",
-    "Panera Bread Company": "/images/panera.jpg",
-    "Red Mango": "/images/red_mango.png",
-    "Saladalia @ The Perk": "/images/saladelia.jpg",
-    "Sanford Deli": "/images/sanford.jpg",
-    "Sazon": "/images/sazon.png",
-    "Sprout": "/images/sprout.png",
-    "Tandoor Indian Cuisine": "/images/tandoor.png",
-    "The Devils Krafthouse": "/images/krafthouse.png",
-    "The Farmstead": "/images/farmstead.png",
-    "The Loop Pizza Grill": "/images/loop.png",
-    "The Pitchfork": "/images/pitchfork.png",
-    "The Skillet": "/images/skillet.png",
-    "Trinity Cafe": "/images/trinity.png",
-    "Twinnie's": "/images/twinnie.png",
-}
-
-class MealCard extends React.Component<MealCardProps, MealCardState> {
-    constructor(props: MealCardProps) {
+class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
+    constructor(props: MC.MealCardProps) {
         super(props);
         this.state = {
             foods: [],
@@ -80,6 +32,34 @@ class MealCard extends React.Component<MealCardProps, MealCardState> {
         };
     }
 
+    async getMealData(user_id: string, token: string): Promise<MC.IMealData[]> {
+        const fetchData = await getMealByRestaurant(user_id, this.props.id, token);
+        if (fetchData.message === "Auth failed") {
+            console.log("Unable to fetch reviews");
+            return [];
+        }
+
+        const mealItems = fetchData as MC.IRawMealData[];
+        let id = 0;
+
+        const formattedMeals: MC.IMealData[] = [];
+
+        for (const meal of mealItems) {
+            const currentFoods: MC.IFoodRawData[] = meal.foods;
+
+            for (const food of currentFoods) {
+                const currentEntry: MC.IMealData = {
+                    meal: food.name,
+                    date: getFormattedDate(new Date(meal.createdAt)),
+                    id: id
+                }
+                formattedMeals.push(currentEntry);
+                id += 1
+            }
+        }
+
+        return formattedMeals;
+    }
     
     render() {
         const {
@@ -101,12 +81,7 @@ class MealCard extends React.Component<MealCardProps, MealCardState> {
             <Card sx={{ maxWidth: 360 }}>
                 <Grid container direction='row'>
                     <Grid item>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={nameToImage[name]}
-                            alt={name} 
-                        />
+                        <CardMedia component="img" height="140" image={MC.nameToImage[name]} alt={name} />
                     </Grid>
                     <Grid item>
                         <div>hello</div>

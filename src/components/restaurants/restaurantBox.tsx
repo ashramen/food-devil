@@ -103,10 +103,10 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
             <>
                 <Fade in={fade} timeout={300}>
                     <Card sx={{ maxWidth: 360 }}
-                        onMouseOver={() => this.setState({ raised: true, shadow: 20 })}
-                        onMouseOut={() => this.setState({ raised: false, shadow: 1 })}
-                        raised={raised}
-                        elevation={shadow}
+                    onMouseOver={()=>this.setState({ raised: true, shadow:20})}
+                    onMouseOut={()=>this.setState({ raised: false, shadow:1})}
+                    raised={raised}
+                    elevation={shadow}
                     >
                         <CardActionArea onClick={() => { this.props.history.push("/restaurants/" + name + "/" + id.toString()) }}>
                             <CardMedia
@@ -123,8 +123,14 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
                                     {description}
                                 </Typography>
                             </CardContent>
-                        </CardActionArea>
-
+                        </CardActionArea>                    
+                        <Grid container alignItems='center' justifyContent='center'>
+                            <Grid item>
+                                <CardActions>
+                                    <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
+                                </CardActions>
+                            </Grid>
+                        </Grid>
                     </Card>
                 </Fade>
                 <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={reviewDialogOpen} id={id} />
