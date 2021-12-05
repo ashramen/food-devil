@@ -20,10 +20,11 @@ import TextField from '@mui/material/TextField';
 
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import './styles.css';
 
-interface NutritionReportProps extends PropsFromRedux { };
+interface NutritionReportProps extends PropsFromRedux, RouteComponentProps { };
 interface NutritionReportStates {
   nutritionProgress: NutritionStats;
   nutritionGraph: NutritionStats[];
@@ -78,6 +79,8 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
   async componentDidMount() {
     if (this.props.loggedIn) {
       await this.updateData('both');
+    } else {
+      this.props.history.push('/')
     }
   }
 
@@ -87,6 +90,8 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
     } else if (this.state.historyStartDate !== prevStates.historyStartDate
       || this.state.historyEndDate !== prevStates.historyEndDate) {
       this.updateData('graph');
+    } else if (this.props.loggedIn !== prevProps.loggedIn) {
+      this.props.history.push('/')
     }
   }
 
@@ -210,4 +215,4 @@ const mapStateToProps = (state: State) => ({
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(NutritionReport);
+export default connector(withRouter(NutritionReport));

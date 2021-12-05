@@ -61,7 +61,7 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                         <Grid item xs={6}>
                             {averageRating > 0
                                 ? <div className='title'>
-                                    {name} (<Rating name='restaurant-average-rating' value={averageRating} precision={0.1} size="large" readOnly/>)
+                                    {name} (<Rating name='restaurant-average-rating' value={averageRating} precision={0.1} size="large" readOnly />)
                                 </div>
                                 : <div className='title'>
                                     {name} (no average rating)
@@ -89,9 +89,12 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                                 <Grid item xs>
                                     <div style={{ fontSize: 30 }}> Write A Review </div>
                                 </Grid>
-                                <Grid item xs>
-                                    <RestaurantReviewField name={name} id={id} />
-                                </Grid>
+                                {this.props.loggedIn ?
+                                    <Grid item xs>
+                                        <RestaurantReviewField name={name} id={id} />
+                                    </Grid>
+                                    : <div> Please login to write a review! </div>
+                                }
                             </Grid>
                             <Grid item container direction="column" xs spacing={2}>
                                 <Grid item xs>
@@ -105,9 +108,11 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                                 <Grid item xs>
                                     <div style={{ fontSize: 30 }}> Meals You've Ordered From {name} </div>
                                 </Grid>
-                                <Grid item xs>
-                                    <MealsOrdered id={id} name={name} />
-                                </Grid>
+                                {this.props.loggedIn ?
+                                    <Grid item xs>
+                                        <MealsOrdered id={id} name={name} />
+                                    </Grid>
+                                    : <div> Please login to view meals you've ordered with </div>}
                             </Grid>
                         </Grid>
                     </Grid>

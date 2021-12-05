@@ -15,11 +15,13 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { visuallyHidden } from '@mui/utils';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
 import { getReviews, upvoteReview } from '../../api/reviews';
 import { getUsername } from '../../api/login';
 import Button from '@mui/material/Button';
+import { IconButton } from "@mui/material";
 
 interface Column {
     id: 'review' | 'rating' | 'helpful' | 'username' | 'date' | 'upvote';
@@ -80,6 +82,7 @@ interface IReviewData {
     username: string;
     date: string;
     upvote: any;
+    hasUpvote: any;
 }
 
 
@@ -105,8 +108,8 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         super(props);
         this.state = {
             rows: [],
-            order: 'asc',
-            orderBy: 'date',
+            order: 'desc',
+            orderBy: 'rating',
             page: 0,
             searched: '',
             rowsPerPage: 5,
@@ -164,18 +167,37 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         if (review.is_anonymous) {
             review.user_id = "Anonymous";
         }
-        return {
+        const formattedReview = {
             review: review.description,
             rating: review.stars,
             helpful: review.helpful,
             username: review.user_id,   // TODO: this is the user_id, not the username; need new api method
             date: getFormattedDate(new Date(review.updatedAt)),
-            upvote: <Button variant="outlined" onClick={() => this.upvoteReview(review._id)}>Upvote</Button>
+            upvote: this.props.loggedIn ? (
+                    <IconButton color="default" onClick={() => this.upvoteReview(review._id, formattedReview)}>
+                        <ThumbUpIcon />
+                    </IconButton>
+                ) : (
+                    <IconButton disabled>
+                        <ThumbUpIcon />
+                    </IconButton>
+                ),
+            hasUpvote: false,
         }
+        return formattedReview;
     }
 
-    upvoteReview(id: string) {
-        upvoteReview(id, this.props.token);
+    upvoteReview(id: string, review: IReviewData) {
+        const rows = this.state.rows;
+        const row = rows.find(row => row === review);
+        if (row && !row.hasUpvote) {
+            upvoteReview(id, this.props.token);
+            row.upvote = <IconButton color="primary">
+                <ThumbUpIcon />
+            </IconButton>
+            row.hasUpvote = true;
+            this.setState( { rows: rows });
+        }
     }
 
     requestSearch(event: any) {

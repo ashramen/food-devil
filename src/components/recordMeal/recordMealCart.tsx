@@ -36,17 +36,20 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
             cartItems,
             onClear,
             userId,
+            loggedIn,
             token
         } = this.props;
-        const mealIdList: string[] = cartItems.map(item => item._id);
-        const postedMeal = await postMeal(userId!, mealIdList, token);
-        if (postedMeal.message === "Auth failed") {
-            console.log(postedMeal);
-        } else {
-            console.log("do a popup");
-            console.log(this.state);
+        if (loggedIn) {
+            const mealIdList: string[] = cartItems.map(item => item._id);
+            const postedMeal = await postMeal(userId!, mealIdList, token);
+            if (postedMeal.message === "Auth failed") {
+                console.log(postedMeal);
+            } else {
+                console.log("do a popup");
+                console.log(this.state);
+            }
+            onClear();
         }
-        onClear();
     }
 
     displayNutrition() {
@@ -69,6 +72,7 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
         return (
             <Box>
                 <div className='meal-cart--title'>Meal Items</div>
+                {this.props.loggedIn? <div></div> : <div className='meal-cart--subtitle'>Please log in to record meals.</div>}
                 {this.props.cartItems.length > 0? <List dense={true}>
                     <TransitionGroup>
                         {this.props.cartItems.map(item => {
@@ -94,7 +98,7 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
                             )
                         })}
                     </TransitionGroup>
-                </List> : <div className='meal-cart--subtitle'>You don't have anything yet. Add foods to your meal!</div>}
+                </List> : this.props.loggedIn? <div className='meal-cart--subtitle'>You don't have anything yet. Add foods to your meal!</div> : <div></div>}
                 {this.props.cartItems.length > 0? <>
                     <Tooltip 
                         TransitionComponent={Zoom} 
@@ -103,7 +107,7 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
                         placement="left-start">
                             {<Button sx={{color: '#003087', marginBottom: 1}}>View Meal Nutrition</Button>}
                     </Tooltip>
-                    <Button variant='contained' onClick={() => this.recordMeal()} sx={{bgcolor: '#003087'}} disabled={this.props.cartItems.length === 0}>
+                    <Button variant='contained' onClick={() => this.recordMeal()} sx={{bgcolor: '#003087'}} disabled={this.props.cartItems.length === 0 || !this.props.loggedIn}>
                         Record Meal
                     </Button>
                 </> : <div></div>}

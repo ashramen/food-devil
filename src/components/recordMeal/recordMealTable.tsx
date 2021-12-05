@@ -232,7 +232,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
     }
 
     async getFoodData(restaurant_id: string, token: string): Promise<IFormattedFoodData[]> {
-        const fetchData = await getFoodsByRestaurant(restaurant_id, token);
+        const fetchData = await getFoodsByRestaurant(restaurant_id);
         // const fetchData = await getAllFoods(token);
         if (fetchData.message === "Auth failed") {
             console.log("Unable to fetch reviews");
