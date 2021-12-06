@@ -3,66 +3,16 @@ import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
 import Pagination from '@mui/material/Pagination';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { visuallyHidden } from '@mui/utils';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
-import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
+import { Order, getFormattedDate } from "./restaurantConstants";
 import RestaurantReviewCard from './restaurantReviewCard';
 import { getReviews, upvoteReview } from '../../api/reviews';
 import { getUsername } from '../../api/login';
-import Button from '@mui/material/Button';
 import { IconButton } from "@mui/material";
-
-interface Column {
-    id: 'review' | 'rating' | 'helpful' | 'username' | 'date' | 'upvote';
-    label: string;
-    minWidth?: number;
-    maxWidth?: number;
-    align?: 'right';
-    format?: (value: number) => string;
-    sortDisabled?: boolean;
-}
-
-const columns: readonly Column[] = [
-    { id: 'review', label: 'Review', minWidth: 250, maxWidth: 300 },
-    { id: 'rating', label: 'Rating', minWidth: 10, maxWidth: 100 },
-    { id: 'helpful', label: 'Helpful', minWidth: 10, maxWidth: 100 },
-    {
-        id: 'username',
-        label: 'Username',
-        minWidth: 170,
-        maxWidth: 200,
-        align: 'right'
-    },
-    {
-        id: 'date',
-        label: 'Date Posted',
-        minWidth: 170,
-        maxWidth: 200,
-        align: 'right'
-    },
-    {
-        id: 'upvote',
-        label: '',
-        minWidth: 100,
-        maxWidth: 100,
-        align: 'right',
-        sortDisabled: true,
-    }
-];
-
+import Button from '@mui/material/Button';
 interface IRawReviewData {
     _id: string,
     createdAt: string,
@@ -87,8 +37,6 @@ export interface IReviewData {
     upvote: any;
     hasUpvote: any;
 }
-
-
 
 interface RestaurantReviewTableProps extends PropsFromRedux {
     name: string;
@@ -118,6 +66,10 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             rowsPerPage: 5,
             originalRows: []
         };
+
+        this.onSortByMostRecent = this.onSortByMostRecent.bind(this);
+        this.onSortByMostHelpful = this.onSortByMostHelpful.bind(this);
+        this.onSortByHighestRating = this.onSortByHighestRating.bind(this);
     }
 
     async componentDidMount() {
@@ -132,6 +84,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             }
             sumOfRatings += review.rating;
         })
+        uniqueReviewData.sort((a, b) => (a.helpful > b.helpful) ? -1 : 1);
         this.props.handleAverageRatingChange(sumOfRatings / uniqueReviewData.length);
         this.setState({
             rows: uniqueReviewData,
@@ -178,14 +131,14 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             username: review.user_id,   // TODO: this is the user_id, not the username; need new api method
             date: getFormattedDate(new Date(review.updatedAt)),
             upvote: this.props.loggedIn ? (
-                    <IconButton color="default" onClick={() => this.upvoteReview(formattedReview)}>
-                        <ThumbUpIcon />
-                    </IconButton>
-                ) : (
-                    <IconButton disabled>
-                        <ThumbUpIcon />
-                    </IconButton>
-                ),
+                <IconButton color="default" onClick={() => this.upvoteReview(formattedReview)}>
+                    <ThumbUpIcon />
+                </IconButton>
+            ) : (
+                <IconButton disabled>
+                    <ThumbUpIcon />
+                </IconButton>
+            ),
             hasUpvote: false,
         }
         return formattedReview;
@@ -200,7 +153,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
                 <ThumbUpIcon />
             </IconButton>
             row.hasUpvote = true;
-            this.setState( { rows: rows });
+            this.setState({ rows: rows });
         }
     }
 
@@ -215,6 +168,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             searched: searchedVal,
             rows: filteredRows,
         })
+
     };
 
     handleChangePage(event: any, newPage: number) {
@@ -230,21 +184,16 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         });
     };
 
-    handleRequestSort(
-        event: React.MouseEvent<unknown>,
-        property: keyof IReviewData,
-    ) {
-        const isAsc = this.state.orderBy === property && this.state.order === 'asc';
-        this.setState({
-            order: isAsc ? 'desc' : 'asc',
-            orderBy: property
-        })
-    };
+    onSortByMostRecent() {
+        this.setState({ rows: this.state.rows.sort((a, b) => (a.date > b.date) ? -1 : 1) });
+    }
 
-    createSortHandler(property: keyof IReviewData) {
-        return (event: React.MouseEvent<unknown>) => {
-            this.handleRequestSort(event, property);
-        };
+    onSortByMostHelpful() {
+        this.setState({ rows: this.state.rows.sort((a, b) => (a.helpful > b.helpful) ? -1 : 1) });
+    }
+
+    onSortByHighestRating() {
+        this.setState({ rows: this.state.rows.sort((a, b) => (a.rating > b.rating) ? -1 : 1) });
     }
 
     render() {
@@ -254,8 +203,8 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             searched,
             rowsPerPage
         } = this.state;
-        rows.sort((a, b) => (a.helpful > b.helpful) ? -1 : 1);
-        const paginatedRows = rows.slice((page-1) * rowsPerPage, Math.min((page-1) * rowsPerPage + rowsPerPage, rows.length));
+
+        const paginatedRows = rows.slice((page - 1) * rowsPerPage, Math.min((page - 1) * rowsPerPage + rowsPerPage, rows.length));
         return (
             <>
                 <Grid container sx={{ padding: '16px' }} alignItems='center' justifyContent='center'>
@@ -271,14 +220,17 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
                                 width: 250
                             }}
                         />
+                        <Button onClick={() => this.onSortByMostHelpful()}>Sort By Most Helpful </Button>
+                        <Button onClick={() => this.onSortByMostRecent()}>Sort By Most Recent </Button>
+                        <Button onClick={() => this.onSortByHighestRating()}>Sort By Highest Rating </Button>
                     </Grid>
                     <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end" }}>
                         <Pagination count={Math.ceil(rows.length / rowsPerPage)} shape="rounded" page={page}
-                        onChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)}/>
+                            onChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)} />
                     </Grid>
                 </Grid>
-                {paginatedRows.map((row: IReviewData, index: number) => 
-                    <RestaurantReviewCard reviewData={row} index={index} upvoteReview={(row) => this.upvoteReview(row)}/>
+                {paginatedRows.map((row: IReviewData, index: number) =>
+                    <RestaurantReviewCard reviewData={row} index={index} upvoteReview={(row) => this.upvoteReview(row)} />
                 )}
             </>
         );
@@ -294,65 +246,3 @@ const mapStateToProps = (state: State) => ({
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 export default connector(RestaurantReviewTable);
-
-/**
- * <TableContainer sx={{ maxHeight: 800 }}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                {columns.map((headCell) => (
-                                    <TableCell
-                                        key={headCell.id}
-                                        align={headCell.align}
-                                        sortDirection={orderBy === headCell.id ? order : false}
-                                    >
-                                        {headCell.sortDisabled ? <></> :
-                                            <TableSortLabel
-                                                active={orderBy === headCell.id}
-                                                direction={orderBy === headCell.id ? order : 'asc'}
-                                                onClick={this.createSortHandler(headCell.id)}
-                                            >
-                                                {headCell.label}
-                                                {orderBy === headCell.id ? (
-                                                    <Box component="span" sx={visuallyHidden}>
-                                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                                    </Box>
-                                                ) : null}
-                                            </TableSortLabel>
-                                        }
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {stableSort(rows, getComparator(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row) => {
-                                    return (
-                                        <TableRow hover role="checkbox" key={row.review}>
-                                            {columns.map((column) => {
-                                                const value = row[column.id];
-                                                return (
-                                                    <TableCell key={column.id} align={column.align}>
-                                                        {column.format && typeof value === 'number'
-                                                            ? column.format(value)
-                                                            : value}
-                                                    </TableCell>
-                                                );
-                                            })}
-                                        </TableRow>
-                                    );
-                                })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 20]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)}
-                    onRowsPerPageChange={(e: any) => this.handleChangeRowsPerPage(e)}
-                />
- */

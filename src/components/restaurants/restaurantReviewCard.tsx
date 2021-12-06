@@ -1,19 +1,11 @@
-import React from 'react';
-
-import Button from '@mui/material/Button';
+import { CardActionArea } from '@mui/material';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Fade from '@mui/material/Fade';
 import Grid from '@mui/material/Grid';
-import { IconButton } from "@mui/material";
 import Rating from '@mui/material/Rating';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Typography from '@mui/material/Typography';
-import RestaurantsReviewPopup from './restaurantReviewPopup';
-import { CardActionArea } from '@mui/material';
-
+import React from 'react';
 import { IReviewData } from './restaurantReviewTable';
 
 interface RestaurantReviewCardProps {
@@ -62,9 +54,9 @@ class RestaurantReviewCard extends React.Component<RestaurantReviewCardProps, Re
                                         <Rating name='restaurant-average-rating' value={reviewData.rating} precision={0.5} size="large" readOnly />
                                     </Grid>
                                     <Grid item xs={6} mt={0.5} style={{ display: "flex", justifyContent: "flex-end" }}>
-                                    <Typography variant="body2" component="div">
-                                        {username + ' on ' + date}
-                                    </Typography>
+                                        <Typography variant="body2" component="div">
+                                            {username + ' on ' + date}
+                                        </Typography>
                                     </Grid>
                                     <Grid item xs={12} mt={2} ml={1} style={{ display: "flex", justifyContent: "flex-start" }}>
                                         <Typography variant="body2" component="div" fontSize={15}>
@@ -79,7 +71,7 @@ class RestaurantReviewCard extends React.Component<RestaurantReviewCardProps, Re
                                     </Grid>
                                 </Grid>
                             </CardContent>
-                        </CardActionArea>                    
+                        </CardActionArea>
                     </Card>
                 </Fade>
             </>

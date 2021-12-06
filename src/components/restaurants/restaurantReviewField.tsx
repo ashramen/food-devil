@@ -92,6 +92,8 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
     }
 
     render() {
+
+
         const {
             textField,
             stars,
@@ -100,27 +102,35 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
 
         return (
             <Grid container
+                spacing={1}
                 direction="column"
                 alignItems="center"
                 justifyContent="center">
-                <Grid container mt={1} mb={1}>
-                    <Grid item xs={12}>
-                        <TextField
-                                label="Write Review Here"
-                                multiline
-                                value={textField}
-                                onChange={this.onTextFieldChange}
-                                rows={4}
-                                sx={{
-                                    width: '90%'
-                                }}
-                            />
-                    </Grid>
+                <Grid item xs={12}>
+                    <Box
+                        component="form"
+                        sx={{
+                            '& .MuiTextField-root': { m: 1, width: '50ch' },
+                            my: 2
+                        }}
+                        m={2}
+                        pt={1}
+                        noValidate
+                        autoComplete="off"
+                    > <TextField
+                            id="outlined-multiline-static"
+                            label="Write Review Here"
+                            multiline
+                            value={textField}
+                            onChange={this.onTextFieldChange}
+                            rows={4}
+                        />
+                    </Box>
                 </Grid>
                 <Grid container
                     alignItems="center"
                     justifyContent="center">
-                    <Grid item xs={5} style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Grid item xs={6}>
                         <Typography component="legend">Rating</Typography>
                         <Rating
                             name="simple-controlled"
@@ -130,8 +140,7 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
                             }}
                         />
                     </Grid>
-                    <Grid item xs={2}></Grid>
-                    <Grid item xs={5} style={{ display: "flex", justifyContent: "flex-start" }}>
+                    <Grid item xs={4}>
                         <FormControlLabel
                             label="Anonymous?"
                             control={
