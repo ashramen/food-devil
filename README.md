@@ -13,8 +13,6 @@ Our tech stack: MERN (React on frontend, Node on backend, MongoDB for database).
 This is the frontend repo. Our backend repo is here: https://github.com/bluqiu001/food-devil-backend
 
 # Running the App
+The App is now completed! Feel free to test it.
+
 After you `cd` into the root folder, run `npm install` to install all dependencies, followed by `npm start` to run the app.
-
-You can now test the log in page by creating an account and logging in.
-
-To test other API routes (only available in pull request #29), first log in and open the console on the home page. Then follow the instructions in `src/components/nutritionReport/nutritionReport.tsx` starting at line 67. You also want to open MongoDB cloud to keep track of the database changes.
