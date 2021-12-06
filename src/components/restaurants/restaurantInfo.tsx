@@ -73,7 +73,7 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                             <Grid item xs={6}>
                                 {averageRating > 0
                                     ? <div className='title'>
-                                        {name} (<Rating name='restaurant-average-rating' value={averageRating} precision={0.1} size="large" readOnly />)
+                                        {name} <Rating name='restaurant-average-rating' value={averageRating} precision={0.1} size="large" readOnly/>
                                     </div>
                                     : <div className='title'>
                                         {name} (no average rating)
