@@ -19,6 +19,7 @@ import { RestaurantInfo } from '../restaurants/restaurantConstants';
 import { getFood } from '../../api/foods';
 import { getRestaurant } from '../../api/restaurants';
 
+import MealCardPopup from './mealCardPopup';
 import * as MC from './mealCardSplit';
 
 class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
@@ -26,7 +27,9 @@ class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
         super(props);
         this.state = {
             mealsPerRestaurant: {},
+            mostSignificantRestaurant: "",
             mealTime: new Date(),
+            dialogOpen: false,
             raised: false,
             shadow: 1,
             fade: false,
@@ -59,56 +62,91 @@ class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
                 totalCalories: 0,
             }
         }
-        let maxCal = -1;
-        let maxCalFood = "something went wrong";
+        let maxFoodCal = -1, maxRestCal = -1;
+        let maxFood  = "something went wrong", maxRest = "something went wrong";
         for (const food of rawMealData.foods) {
             const foodData: MC.IRawFoodData = await getFood(food, this.props.token) as MC.IRawFoodData;
             const restKey = await getRestaurant(foodData.restaurantId, this.props.token);
-            if (foodData.total_cal > maxCal) {
-                maxCal = foodData.total_cal;
-                maxCalFood = foodData.name;
+            if (foodData.total_cal > maxFoodCal) {
+                maxFoodCal = foodData.total_cal;
+                maxFood = foodData.name;
             }
             mealsPerRestaurant[restKey.name].foods.push(foodData.name);
             mealsPerRestaurant[restKey.name].totalCalories += foodData.total_cal;
-            mealsPerRestaurant[restKey.name].mostCaloricFood = maxCalFood;
+            mealsPerRestaurant[restKey.name].mostCaloricFood = maxFood;
+
+            if (mealsPerRestaurant[restKey.name].totalCalories > maxRestCal) {
+                maxRestCal = mealsPerRestaurant[restKey.name].totalCalories;
+                maxRest = restKey.name;
+            }
         }
-        console.log(mealsPerRestaurant);
+
+        this.setState({ mostSignificantRestaurant: maxRest });
         return mealsPerRestaurant;
+    }
+
+    getTotalFoodsInMeal(): number {
+        let ret = 0;
+        const mpr = this.state.mealsPerRestaurant;
+        for (const key in mpr) {
+            for (const food of mpr[key].foods) {
+                ret += 1;
+            }
+        }
+        return ret;
+    }
+
+    debug() {
+        let date = "8/14/2020";
+        let dateObj = new Date(date);
+        console.log(dateObj.toLocaleDateString());
     }
 
     render() {
         const {
             mealsPerRestaurant,
+            mostSignificantRestaurant,
             mealTime,
+            dialogOpen,
             raised,
             shadow,
             fade
         } = this.state;
 
+        let loading = Object.keys(mealsPerRestaurant).length === 0;
+
         return (
-            <Fade in={fade} timeout={300}>
-                <Card>
-                    <CardActionArea onClick={() => console.log("do a popup")} disableRipple>
-                        <Grid container direction='row'>
-                            <Grid item>
-                                <CardMedia component="img" height="140" image={MC.nameToImage["Sazon"]} alt={"Sazon"} />
+            <>
+                <Fade in={fade} timeout={300}>
+                    <Card>
+                        <CardActionArea onClick={() => this.setState({ dialogOpen: !dialogOpen })} disableRipple>
+                            <Grid container direction='row' justifyContent="center">
+                                <Grid item>
+                                    <CardMedia component="img" height="140" image={MC.nameToImage[mostSignificantRestaurant]} alt={"restaurantImage"} />
+                                </Grid>
+                                <Grid item>
+                                    <CardContent sx={{ flex: '1 0 auto' }}>
+                                        <Typography component="div" variant="h5" display="inline">
+                                            {mostSignificantRestaurant}
+                                        </Typography>
+                                        {loading ? ""
+                                        : <Typography variant="subtitle1" color="text.secondary" component="div">
+                                            {mealsPerRestaurant[mostSignificantRestaurant].mostCaloricFood + 
+                                            (this.getTotalFoodsInMeal() > 1 ? "\n+ " + (this.getTotalFoodsInMeal()-1) + " more" : "")
+                                            }
+                                        </Typography>}
+                                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                                            {loading ? "" : mealTime.toLocaleTimeString()}
+                                        </Typography>
+                                    </CardContent>
+                                </Grid>
                             </Grid>
-                            <Grid item>
-                                <CardContent sx={{ flex: '1 0 auto' }}>
-                                    <Typography component="div" variant="h5">
-                                        Sazon
-                                    </Typography>
-                                    <Typography variant="subtitle1" color="text.secondary" component="div">
-                                        Arepa Bowl
-                                    </Typography>
-                                </CardContent>
-                            </Grid>
-                        </Grid>
-                    </CardActionArea>
-                    <Button onClick={() => console.log(this.state)}>Debug</Button>        
-                </Card>
-            </Fade>
-            
+                        </CardActionArea>
+                        <Button onClick={() => this.debug()}>Debug</Button>        
+                    </Card>
+                </Fade>
+                <MealCardPopup mealsPerRestaurant={mealsPerRestaurant} handleClose={() => this.setState({dialogOpen: false})} open={dialogOpen}/>
+            </>
         );
     }
 }

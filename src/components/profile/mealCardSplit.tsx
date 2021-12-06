@@ -25,6 +25,8 @@ export interface MealCardProps extends PropsFromRedux {
 
 export interface MealCardState {
     mealsPerRestaurant: IMealData;
+    mostSignificantRestaurant: string;
+    dialogOpen: boolean;
     mealTime: Date;
     raised: boolean;
     shadow: number;
@@ -37,11 +39,11 @@ export interface InameToImage {
 
 export const nameToImage: InameToImage = {
     "Beyu Blue Coffee": "/images/beyu_blue.png",
-    "Beyu Cafe at Duke Law": "/images/beyu_cafe_duke_law.png",
+    "Beyu Café at Duke Law": "/images/beyu_cafe_duke_law.png",
     "Bseisu Coffee Bar": "/images/bseisu.jpg",
     "Cafe": "/images/cafe.png",
-    "Cafe 300": "/images/cafe_300.jpg",
-    "Freeman Cafe": "/images/freeman.jpg",
+    "Café 300": "/images/cafe_300.jpg",
+    "Freeman Café": "/images/freeman.jpg",
     "Ginger + Soy": "/images/ginger.png",
     "Gyotaku": "/images/gyotaku.png",
     "Il Forno": "/images/il_forno.png",
