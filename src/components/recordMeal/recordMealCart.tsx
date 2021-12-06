@@ -100,13 +100,15 @@ class RecordMealCart extends React.Component<CartProps, CartStates> {
                     </TransitionGroup>
                 </List> : this.props.loggedIn? <div className='meal-cart--subtitle'>You don't have anything yet. Add foods to your meal!</div> : <div></div>}
                 {this.props.cartItems.length > 0? <>
-                    <Tooltip 
-                        TransitionComponent={Zoom} 
-                        title={this.displayNutrition()} 
-                        arrow 
-                        placement="left-start">
-                            {<Button sx={{color: '#003087', marginBottom: 1}}>View Meal Nutrition</Button>}
-                    </Tooltip>
+                    <div>
+                        <Tooltip
+                            TransitionComponent={Zoom}
+                            title={this.displayNutrition()}
+                            arrow
+                            placement="left-start">
+                                {<Button sx={{color: '#003087', marginBottom: 1}}>View Meal Nutrition</Button>}
+                        </Tooltip>
+                    </div>
                     <Button variant='contained' onClick={() => this.recordMeal()} sx={{bgcolor: '#003087'}} disabled={this.props.cartItems.length === 0 || !this.props.loggedIn}>
                         Record Meal
                     </Button>

@@ -217,7 +217,8 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
                             onChange={(e: any) => this.requestSearch(e)}
                             size="small"
                             sx={{
-                                width: 250
+                                width: 250,
+                                marginRight: 3
                             }}
                         />
                         <Button onClick={() => this.onSortByMostHelpful()}>Sort By Most Helpful </Button>

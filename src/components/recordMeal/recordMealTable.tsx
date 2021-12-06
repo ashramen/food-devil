@@ -141,6 +141,7 @@ function RestaurantMenu(props: IRestaurantMenu) {
                 aria-expanded={open ? 'true' : undefined}
                 sx={{
                     color: '#003087',
+                    width: '100%'
                 }}
                 onClick={handleClick}
                 endIcon={<KeyboardArrowDownIcon />}
@@ -420,7 +421,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         return (
             <Paper sx={{ width: '100%', overflow: 'hidden', padding: '18px 12px 18px 12px', marginBottom: 2 }}>
                 <Grid container sx={{ marginBottom: 1 }}>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} paddingRight={1}>
                         <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id, page: 0 })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
                     </Grid>
                     <Grid item xs={7}  style={{ display: "flex", justifyContent: "flex-start" }}>
