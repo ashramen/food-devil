@@ -208,7 +208,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         return (
             <>
                 <Grid container sx={{ padding: '16px' }} alignItems='center' justifyContent='center'>
-                    <Grid item xs={8} style={{ display: "flex", justifyContent: "flex-start" }}>
+                    <Grid item xs={8} style={{ display: "flex", justifyContent: "flex-start", alignItems: 'center' }}>
                         <TextField
                             name='search'
                             label='Search for Keyword'

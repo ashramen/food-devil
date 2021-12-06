@@ -43,7 +43,7 @@ class NutritionCard extends React.Component<NutritionCardProps, NutritionCardSta
                 }}>
                     <Grid container>
                         <Grid item xs={12} mt={3}>
-                            <Typography fontSize={25} fontFamily='Lucida Grande'>{nutrient}</Typography>
+                            <Typography fontSize={25}>{nutrient}</Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant='caption' fontSize={15}>Daily Value: {DV} {unit}</Typography>

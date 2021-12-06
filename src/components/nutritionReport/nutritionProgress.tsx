@@ -70,7 +70,7 @@ class NutritionProgress extends React.Component<NutritionProgressProps, Nutritio
                         justifyContent: "center"
                     }}
                 >
-                    <Typography variant="caption" fontSize={18} fontFamily='Lucida Grande' component="div">
+                    <Typography variant="caption" fontSize={18} component="div">
                         {`${currentStats} ${unit}`}
                     </Typography>
                 </Box>

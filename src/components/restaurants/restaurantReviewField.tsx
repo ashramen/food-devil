@@ -105,7 +105,8 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
                 spacing={1}
                 direction="column"
                 alignItems="center"
-                justifyContent="center">
+                justifyContent="center"
+                marginBottom={3}>
                 <Grid item xs={12}>
                     <Box
                         component="form"
@@ -142,10 +143,11 @@ class RestaurantReviewField extends React.Component<RestaurantReviewFieldProps, 
                     </Grid>
                     <Grid item xs={4}>
                         <FormControlLabel
-                            label="Anonymous?"
+                            label={<Typography fontSize={14}>Anonymous?</Typography>}
                             control={
                                 <Checkbox
                                     checked={anon}
+                                    size="small"
                                     onChange={this.onAnonChange}
                                     inputProps={{ 'aria-label': 'controlled' }}
                                 />}

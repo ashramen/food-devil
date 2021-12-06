@@ -77,8 +77,8 @@ class NutritionGraph extends React.Component<NutritionGraphProps, NutritionGraph
             width: 1000,
             height: 550,
             font: {
-                family: 'Arial',
-                size: 18,
+                family: 'Helvetica, Arial, sans-serif',
+                size: 16,
                 color: 'black'
             },
             xaxis: {

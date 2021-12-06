@@ -44,7 +44,7 @@ class HomePage extends React.Component<HomePageProps, HomePageStates>{
                 <Typography variant="h2" component="div" fontFamily='Apple Chancery' color='white' fontSize={100}
                     sx={{
                         paddingTop: 15,
-                        paddingBottom: 12
+                        paddingBottom: 10
                     }}
                 >
                     Food Devil

@@ -187,7 +187,8 @@ class Login extends React.Component<LoginProps, LoginStates> {
           <Card sx={{
             maxWidth: 350,
             boxShadow: 5,
-            marginTop: 20,
+            padding: 2,
+            marginTop: 5
           }}>
             <h3>{newAccount? 'Create Account' : 'Log In'}</h3>
             {newAccount?

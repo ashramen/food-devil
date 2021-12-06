@@ -11,6 +11,7 @@ import { logIn, logOut } from '../../store/actions';
 import './recordMeal.css';
 import { getRestaurants } from "../../api/restaurants";
 import RecordMealCart from "./recordMealCart";
+import Divider from "@mui/material/Divider";
 
 export interface RestaurantData {
     _id: string;
@@ -150,6 +151,7 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                 <>
                     <Box className="container">
                         <div className='title'>Record Meal</div>
+                        <Divider />
                         {this.state.loading ?
                             <Box
                                 sx={{
@@ -166,10 +168,10 @@ class RecordMeal extends React.Component<RecordMealProps, RecordMealStates> {
                                 <CircularProgress size={100} />
                             </Box> :
                             <Grid container spacing={2} mt={1}>
-                                <Grid item xs={10}>
+                                <Grid item xs={9}>
                                     <RecordMealTable addItemEvent={(food) => this.addItem(food)} allRestaurants={this.state.restaurants} />
                                 </Grid>
-                                <Grid item xs={2}>
+                                <Grid item xs={3}>
                                     <RecordMealCart cartItems={this.state.cartItems} onClear={() => this.onClear()} deleteItemEvent={food => this.deleteItem(food)} nutrients={this.state.cartNutrients}/>
                                 </Grid>
                             </Grid>
