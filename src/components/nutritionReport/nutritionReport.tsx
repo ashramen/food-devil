@@ -129,7 +129,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                 </LocalizationProvider>
               </Grid>
             </Grid>
-            <Divider variant='middle' />
+            <Divider />
             {loadingReport? <CircularProgress size={100} sx={{ marginTop: 27.25, marginBottom: 27.25}}/> :
             <Grid container justifyContent='center'>
               {Object.keys(nutritionProgress).map((key: string, index: number) => {
@@ -173,7 +173,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
                 </LocalizationProvider>
               </Grid>
             </Grid>
-            <Divider variant='middle' />
+            <Divider />
             <Grid container justifyContent='left' alignItems='left'>
               <Tabs
                 variant='scrollable'

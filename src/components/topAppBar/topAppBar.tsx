@@ -189,7 +189,7 @@ export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> 
 
     render() {
         return (
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex', marginBottom: 15 }}>
                 <CssBaseline />
                 <AppBar sx={{
                     height: 100,
