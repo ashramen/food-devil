@@ -207,9 +207,13 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <TextField
                     name='search'
+                    label='Search by food name'
                     value={searched}
                     onChange={(e: any) => this.requestSearch(e)}
-                    sx={{ padding: '16px' }}
+                    sx={{
+                        marginTop: 2
+                    }}
+                    size='small'
                 />
                 <TableContainer sx={{ maxHeight: 800 }}>
                     <Table stickyHeader aria-label="sticky table">
