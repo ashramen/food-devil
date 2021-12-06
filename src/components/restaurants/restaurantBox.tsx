@@ -124,13 +124,6 @@ class RestaurantBox extends React.Component<RestaurantBoxProps, RestaurantBoxSta
                                 </Typography>
                             </CardContent>
                         </CardActionArea>                    
-                        <Grid container alignItems='center' justifyContent='center'>
-                            <Grid item>
-                                <CardActions>
-                                    <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
-                                </CardActions>
-                            </Grid>
-                        </Grid>
                     </Card>
                 </Fade>
                 <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={reviewDialogOpen} id={id} />

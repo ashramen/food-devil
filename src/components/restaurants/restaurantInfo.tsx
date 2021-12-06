@@ -77,36 +77,25 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                         </Grid>
                     </Grid>
                     <Grid container>
-                        <Grid container direction="row" spacing={2} alignItems="flex-start" >
-                            <Grid item container direction="column" xs spacing={2}>
-                                <Grid item xs>
-                                    <div style={{ fontSize: 30 }}> Previous Reviews </div>
-                                </Grid>
-                                <Grid item xs>
-                                    <RestaurantReviewTable name={name} id={id} handleAverageRatingChange={newValue => this.handleAverageRatingChange(newValue)} />
-                                </Grid>
-
-                                <Grid item xs>
-                                    <div style={{ fontSize: 30 }}> Write A Review </div>
-                                </Grid>
-                                {this.props.loggedIn ?
-                                    <Grid item xs>
-                                        <RestaurantReviewField name={name} id={id} />
-                                    </Grid>
-                                    : <div> Please login to write a review! </div>
-                                }
+                        <Grid item container direction="column" xs style={{ display: "flex", justifyContent: "flex-start" }}>
+                            <Grid item xs mt={2}>
+                                <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Write A Review </div>
                             </Grid>
-                            <Grid item container direction="column" xs spacing={2}>
+                            {this.props.loggedIn ?
                                 <Grid item xs>
-                                    <CardMedia
-                                        component="img"
-                                        height="200"
-                                        image={nameToImage[name]}
-                                        alt={name}
-                                    />
+                                    <RestaurantReviewField name={name} id={id} />
                                 </Grid>
+                                : <div> Please login to write a review! </div>
+                            }
+                            <Grid item xs mt={1}>
+                                <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Previous Reviews </div>
+                            </Grid>
+                            <Grid item xs>
+                                <RestaurantReviewTable name={name} id={id} handleAverageRatingChange={newValue => this.handleAverageRatingChange(newValue)} />
+                            </Grid>
+                            <Grid item container direction="column" xs spacing={2} mt={1}>
                                 <Grid item xs>
-                                    <div style={{ fontSize: 30 }}> Meals You've Ordered From {name} </div>
+                                    <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Meals You've Ordered From {name} </div>
                                 </Grid>
                                 {this.props.loggedIn ?
                                     <Grid item xs>
@@ -114,7 +103,7 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                                     </Grid>
                                     : <div> Please login to view meals you've ordered with </div>}
                             </Grid>
-                        </Grid>
+                        </Grid>                            
                     </Grid>
                 </>
             </Box >
