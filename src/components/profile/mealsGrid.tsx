@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import MealCard from './mealCard';
 import * as MC from './mealCardSplit';
 import { getFormattedDate } from '../restaurants/restaurantConstants';
+import { Typography } from "@mui/material";
 
 interface IMealsGridProps {
     meals: MC.IRawMealData[];
@@ -67,7 +68,7 @@ export default class MealsGrid extends React.Component<IMealsGridProps, IMealsGr
                         <>
                             <Grid container justifyContent="flex-end" direction="row">
                                 <Grid item xs={12}>
-                                    <div className='title'>{(new Date(date)).toLocaleDateString()}</div>
+                                    <Typography className="title" fontSize={28}>{(new Date(date)).toLocaleDateString()}</Typography>
                                 </Grid>
                             </Grid>
                             <Divider variant='middle' />

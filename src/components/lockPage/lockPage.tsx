@@ -12,7 +12,7 @@ class LockPage extends React.Component{
                 <Box mt={30}>
                     <>
                         <LockIcon style={{
-                            fontSize: 200,
+                            fontSize: 160,
                         }}/>
                         <div className='text'>Please log in to access this feature.</div>
                     </>

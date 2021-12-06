@@ -67,12 +67,15 @@ class ProfilePage extends React.Component<IProfilePageProps, IProfilePageState> 
                     {this.props.loggedIn ?
                     <>
                         <Grid container mt={15} direction="column">
-                            <Grid item>
+                            <Grid item fontSize={32}>
                                 <div>Welcome {username}</div>
                             </Grid>
                             <Grid item>
-                                <div>All your meals are listed here. 
-                                    <Button onClick={() => this.setState({viewMeals: !viewMeals})}>{viewMeals ? "Show Less" : "View All"}</Button>
+                                <div>
+                                    All your meals are listed here.
+                                </div>
+                                <div>
+                                    <Button onClick={() => this.setState({viewMeals: !viewMeals})}>{viewMeals ? "Hide All" : "View All"}</Button>
                                 </div>
                             </Grid>
                         </Grid>
