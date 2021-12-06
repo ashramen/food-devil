@@ -2,9 +2,7 @@ import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
+import AddIcon from '@mui/icons-material/Add';import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -30,6 +28,9 @@ import { getFoodsByRestaurant } from "../../api/foods";
 import { getComparator, stableSort, Order, AllergenNameToImage } from "./recordMealConstants";
 import { RestaurantData } from './recordMeal';
 import { IRawFoodData } from './recordMeal';
+import { Box, Button, Container, IconButton } from "@mui/material";
+import Divider from "@mui/material/Divider";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Column {
     id: 'foodName' | 'allergens' | 'record';
@@ -58,7 +59,6 @@ const columns: readonly Column[] = [
 
 interface IFormattedFoodData {
     foodName: string;
-    // allergens: any[];
     allergens: string;
     record: any;
     total_cal: number,
@@ -141,6 +141,7 @@ function RestaurantMenu(props: IRestaurantMenu) {
                 aria-expanded={open ? 'true' : undefined}
                 sx={{
                     color: '#003087',
+                    width: '100%'
                 }}
                 onClick={handleClick}
                 endIcon={<KeyboardArrowDownIcon />}
@@ -162,7 +163,7 @@ function RestaurantMenu(props: IRestaurantMenu) {
                     </MenuItem>
                 )}
             </RestaurantMenuList>
-        </div>   
+        </div>
     )
 }
 
@@ -180,7 +181,6 @@ interface FoodTableStates {
     searched: string,
     rowsPerPage: number,
     selectedRestaurant: string,
-    // allergens: any[],
     allergens: string[],
     showNutrition: boolean,
 }
@@ -253,9 +253,10 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
     formatFoodData(food: IRawFoodData): IFormattedFoodData {
         return {
             foodName: food.name,
-            // allergens: allergensList.map(allergen => <img src={AllergenNameToImage[allergen]} alt="" />),
             allergens: food.allergens === null ? 'None' : food.allergens,
-            record: <Button variant="outlined" onClick={() => this.addItem(food)}>Add</Button>,
+            record: (<IconButton edge="end" aria-label="add" onClick={() => this.addItem(food)}>
+                <AddIcon />
+            </IconButton>),
             total_cal: food.total_cal,
             fat_g: food.fat_g,
             sat_fat_g: food.sat_fat_g,
@@ -365,25 +366,32 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         const { rows, allergens } = this.state;
         return (
             <>
-                <Checkbox
-                    onChange={(e: any) => {
-                        if (e.target.checked) {
-                            allergens.push(allergen);
-                            this.setState({ allergens })
-                        } else {
-                            const index = allergens.indexOf(allergen);
-                            if (index > -1) {
-                                allergens.splice(index, 1);
-                                this.setState({ allergens });
+                <FormControlLabel
+                    label={<Typography sx={{ fontSize: 14 }}>
+                        {allergen}
+                    </Typography>}
+                    sx={{margin: 0}}
+                    control={<Checkbox
+                        size="small"
+                        onChange={(e: any) => {
+                            if (e.target.checked) {
+                                allergens.push(allergen);
+                                this.setState({ allergens })
+                            } else {
+                                const index = allergens.indexOf(allergen);
+                                if (index > -1) {
+                                    allergens.splice(index, 1);
+                                    this.setState({ allergens });
+                                }
                             }
-                        }
-                        const filteredRows = rows.filter((row) => {
-                            return this.checkFilter(row) && this.checkAllergens(row);
-                        });
-                        this.setState({ filteredRows, page: 0 });
-                    }}
+                            const filteredRows = rows.filter((row) => {
+                                return this.checkFilter(row) && this.checkAllergens(row);
+                            });
+                            this.setState({ filteredRows, page: 0 });
+                        }}
+                    />}
+                    labelPlacement="bottom"
                 />
-                <Typography>{allergen}</Typography>
             </>
         );
     }
@@ -417,9 +425,9 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
             showNutrition,
         } = this.state;
         return (
-            <Paper sx={{ width: '100%', overflow: 'hidden', padding: '18px 12px 0px 12px' }}>
-                <Grid container>
-                    <Grid item xs={3}>
+            <Paper sx={{ width: '100%', overflow: 'hidden', padding: '18px 12px 18px 12px', marginBottom: 2 }}>
+                <Grid container sx={{ marginBottom: 1 }}>
+                    <Grid item xs={3} paddingRight={1}>
                         <RestaurantMenu onClick={(e: any) => this.setState({ selectedRestaurant: e.target.id, page: 0 })} restaurantName={selectedRestaurant} allRestaurants={this.props.allRestaurants.map((restaurant) => restaurant.name)}/>
                     </Grid>
                     <Grid item xs={7}  style={{ display: "flex", justifyContent: "flex-start" }}>
@@ -435,19 +443,22 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                     </Grid>
                     <Grid item xs={2} style={{ display: "flex", justifyContent: "flex-end" }}>
                         <FormControlLabel
-                            label="Show Nutrition"
+                            label={<Typography sx={{ fontSize: 14 }}>
+                                Show Nutrition
+                                </Typography>}
                             control={<Checkbox 
                                 defaultChecked 
-                                checked={showNutrition} 
+                                checked={showNutrition}
+                                size="small"
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.setState({ showNutrition: !showNutrition})}
                             />}
                             labelPlacement="start"
                         />
                     </Grid>
                 </Grid>
-                <Grid container>
-                    <Grid item xs={1}>
-                        <Typography mt={3}>Allergies?</Typography>
+                <Grid container sx={{ marginLeft: 3, marginBottom: 1}}>
+                    <Grid item xs={1.2}>
+                        <Typography sx={{ fontSize: 16, textAlign: 'left' }} mt={3}>Allergies?</Typography>
                     </Grid>
                     {allAllergens.map((allergen) => <Grid item xs={1}>{this.createCheckBox(allergen)}</Grid>)}
                 </Grid>

@@ -1,11 +1,9 @@
 h3 {
     text-align: center;
     color: #003087;
-    font-family: 'Open Sans';
-    font-size: 25px;
-    font-weight: 300;
-    margin-left: 0px;
-    margin-bottom: 5px;
+    font-size: 28px;
+    font-weight: 500;
+    margin: 0;
 }
 
 .subtitle {

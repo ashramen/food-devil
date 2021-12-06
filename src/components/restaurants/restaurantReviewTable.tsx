@@ -208,7 +208,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         return (
             <>
                 <Grid container sx={{ padding: '16px' }} alignItems='center' justifyContent='center'>
-                    <Grid item xs={8} style={{ display: "flex", justifyContent: "flex-start" }}>
+                    <Grid item xs={8} style={{ display: "flex", justifyContent: "flex-start", alignItems: 'center' }}>
                         <TextField
                             name='search'
                             label='Search for Keyword'
@@ -217,7 +217,8 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
                             onChange={(e: any) => this.requestSearch(e)}
                             size="small"
                             sx={{
-                                width: 250
+                                width: 250,
+                                marginRight: 3
                             }}
                         />
                         <Button onClick={() => this.onSortByMostHelpful()}>Sort By Most Helpful </Button>
