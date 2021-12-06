@@ -9,14 +9,12 @@ import TopAppBar from '../topAppBar/topAppBar';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { CardMedia, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Rating from '@mui/material/Rating';
 
-import { nameToImage } from './restaurantBox';
 import RestaurantReviewTable from './restaurantReviewTable';
-import RestaurantReviewField from './restaurantReviewField';
 import MealsOrdered from './mealsOrdered';
-
+import RestaurantsReviewPopup from './restaurantReviewPopup';
 import './styles.css';
 
 interface MatchParams {
@@ -31,6 +29,7 @@ interface RestaurantInfoProps extends PropsFromRedux, RouteComponentProps<MatchP
 
 interface RestaurantInfoState {
     averageRating: number
+    dialogOpen: boolean
 }
 
 class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfoState> {
@@ -38,8 +37,11 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
     constructor(props: RestaurantInfoProps) {
         super(props);
         this.state = {
-            averageRating: 0
+            averageRating: 0,
+            dialogOpen: false
         };
+        this.onWriteAReviewClick = this.onWriteAReviewClick.bind(this);
+        this.handleClose = this.handleClose.bind(this);
         // this.handleAverageRatingChange = this.handleAverageRatingChange.bind(this);
     }
 
@@ -49,64 +51,72 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
         })
     }
 
+    onWriteAReviewClick() {
+        this.setState({ dialogOpen: true });
+    }
+
+    handleClose() {
+        this.setState({ dialogOpen: false })
+    }
+
     render() {
 
         const { name, id } = this.props.match.params;
+        const { dialogOpen } = this.state;
         const averageRating = this.state.averageRating;
         return (
-            <Box mx={2}>
-                <>
-                    <TopAppBar page='restaurants' />
-                    <Grid container mt={15}>
-                        <Grid item xs={6}>
-                            {averageRating > 0
-                                ? <div className='title'>
-                                    {name} (<Rating name='restaurant-average-rating' value={averageRating} precision={0.1} size="large" readOnly />)
-                                </div>
-                                : <div className='title'>
-                                    {name} (no average rating)
-                                </div>
-                            }
+            <>
+                <Box mx={2}>
+                    <>
+                        <TopAppBar page='restaurants' />
+                        <Grid container mt={15}>
+                            <Grid item xs={6}>
+                                {averageRating > 0
+                                    ? <div className='title'>
+                                        {name} (<Rating name='restaurant-average-rating' value={averageRating} precision={0.1} size="large" readOnly />)
+                                    </div>
+                                    : <div className='title'>
+                                        {name} (no average rating)
+                                    </div>
+                                }
+                            </Grid>
+                            <Grid item xs={6} >
+                                <Typography align="right">
+                                    <Link to={"/restaurants"}>
+                                        <Button>Go Back</Button>
+                                    </Link>
+                                </Typography>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={6} >
-                            <Typography align="right">
-                                <Link to={"/restaurants"}>
-                                    <Button>Go Back</Button>
-                                </Link>
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item container direction="column" xs style={{ display: "flex", justifyContent: "flex-start" }}>
-                            <Grid item xs mt={2}>
-                                <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Write A Review </div>
-                            </Grid>
-                            {this.props.loggedIn ?
-                                <Grid item xs>
-                                    <RestaurantReviewField name={name} id={id} />
+                        <Grid container>
+                            <Grid item container direction="column" xs style={{ display: "flex", justifyContent: "flex-start" }}>
+                                <Grid item xs mt={1}>
+                                    <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Previous Reviews {this.props.loggedIn ?
+                                        <Grid item xs>
+                                            <Button onClick={() => this.onWriteAReviewClick()}>Write a Review</Button>
+                                        </Grid>
+                                        : <div> Please login to write a review! </div>
+                                    } </div>
                                 </Grid>
-                                : <div> Please login to write a review! </div>
-                            }
-                            <Grid item xs mt={1}>
-                                <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Previous Reviews </div>
-                            </Grid>
-                            <Grid item xs>
-                                <RestaurantReviewTable name={name} id={id} handleAverageRatingChange={newValue => this.handleAverageRatingChange(newValue)} />
-                            </Grid>
-                            <Grid item container direction="column" xs spacing={2} mt={1}>
                                 <Grid item xs>
-                                    <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Meals You've Ordered From {name} </div>
+                                    <RestaurantReviewTable name={name} id={id} handleAverageRatingChange={newValue => this.handleAverageRatingChange(newValue)} />
                                 </Grid>
-                                {this.props.loggedIn ?
+                                <Grid item container direction="column" xs spacing={2} mt={1}>
                                     <Grid item xs>
-                                        <MealsOrdered id={id} name={name} />
+                                        <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Meals You've Ordered From {name} </div>
                                     </Grid>
-                                    : <div> Please login to view meals you've ordered with </div>}
+                                    {this.props.loggedIn ?
+                                        <Grid item xs>
+                                            <MealsOrdered id={id} name={name} />
+                                        </Grid>
+                                        : <div> Please login to view meals you've ordered with </div>}
+                                </Grid>
                             </Grid>
-                        </Grid>                            
-                    </Grid>
-                </>
-            </Box >
+                        </Grid>
+                    </>
+                </Box >
+                <RestaurantsReviewPopup name={name} handleClose={this.handleClose} open={dialogOpen} id={id} />
+            </>
         );
     }
 }
