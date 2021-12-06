@@ -143,7 +143,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
               <Grid item xs={6}>
                 <div className='title'>Nutrition History</div>
               </Grid>
-              <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end" }} mb={1}>
+              <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end", gap: 8}} mb={1}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label='Start Date'
