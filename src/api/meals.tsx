@@ -27,9 +27,13 @@ export const getMealNutritionByDays = async (id: string, token: string, days: Da
     return nutritionInfoPerDay;
 }
 
-export const getMealByDays  = async (id: string, token: string, days: Date[]) => {
+export const getMealByDays = async (id: string, token: string, days: Date[]) => {
     const data = await fetchData(GET_USER_MEAL(id), 'GET', token);
-    const nutritionInfoPerDay: NutritionStats[] = [];
+    if (data.message === "Auth failed") {
+        console.log("API method `getMealByDays` failed");
+        return [];
+    }
+    const allMeals = [];
     for (const date of days) {
         const filteredData = data.filter((meal: any) => {
             const mealDate: Date = new Date(meal.createdAt);
@@ -39,17 +43,17 @@ export const getMealByDays  = async (id: string, token: string, days: Date[]) =>
                 && mealDate.getFullYear() === date.getFullYear()
             )
         });
-        const allFoods = [];
-        for (const meal of filteredData) {
-            for (const foodId of meal.foods) {
-                const foodInfo: Food = await getFood(foodId, token) as Food;
-                allFoods.push(foodInfo);
-            }
-        }
-        const nutritionInfo: NutritionStats = translateData(allFoods);
-        nutritionInfoPerDay.push(nutritionInfo);
+        allMeals.push(filteredData);
     }
-    return nutritionInfoPerDay;
+    return allMeals;
+}
+
+export const getAllUserMeals = async (id: string, token: string) => {
+    const data = await fetchData(GET_USER_MEAL(id), 'GET', token);
+    if (data.message === "Auth failed") {
+        console.log("API method `getAllUserMeals` failed");
+    }
+    return data;
 }
 
 export const postMeal = async (userId: string, foods: string[], token: string) => {

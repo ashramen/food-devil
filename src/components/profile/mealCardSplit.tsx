@@ -19,16 +19,13 @@ import { getComparator, stableSort, Order, getFormattedDate } from "../restauran
 import { getMealByRestaurant } from '../../api/meals';
 
 export interface MealCardProps extends PropsFromRedux {
-    name: string;
-    description: string;
-    id: string;
+    rawMealData: IRawMealData;
     index: number;
 };
 
 export interface MealCardState {
-    foods: string[];
-    timestamp: Date;
-
+    mealsPerRestaurant: IMealData;
+    mealTime: Date;
     raised: boolean;
     shadow: number;
     fade: boolean;
@@ -68,24 +65,47 @@ export const nameToImage: InameToImage = {
     "Twinnie's": "/images/twinnie.png",
 }
 
-export interface IMealData {
-    meal: string;
-    date: string;
-    id: number;
-}
-
-export interface IFoodRawData {
-    _id: string,
-    name: string
-}
 export interface IRawMealData {
     _id: string,
     user_id: string,
-    foods: IFoodRawData[],
-    restaurant_id: string,
+    foods: string[],
+    restaurants: string[],
     createdAt: string,
     updatedAt: string,
     __v: number
+}
+
+export interface IMealData {
+    [index: string]: {
+        foods: string[],
+        mostCaloricFood: string,
+        totalCalories: number,
+    },
+}
+
+export interface Nutrients {
+    total_cal: number,
+    fat_g: number,
+    sat_fat_g: number,
+    trans_fat_g: number,
+    sodium_mg: number,
+    carbs_g: number,
+    fiber_g: number,
+    sugars_g: number,
+    protein_g: number,
+    cholesterol_mg: number
+}
+
+export interface IRawFoodData extends Nutrients {
+    _id: string;
+    restaurantId: string,
+    menu: string,
+    submenu: string,
+    name: string,
+    allergens: string[]
+    ingredients: string,
+    serving_size: string,
+    servings_per_container: number,
 }
 
 //////////////////////////////////////////////////

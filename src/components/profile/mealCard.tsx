@@ -9,14 +9,15 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
+import { CardActionArea } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Fade from '@mui/material/Fade';
+import Typography from '@mui/material/Typography';
 
-
-import { getComparator, stableSort, Order, getFormattedDate } from "../restaurants/restaurantConstants";
-import { getMealByRestaurant } from '../../api/meals';
+import { RestaurantInfo } from '../restaurants/restaurantConstants';
+import { getFood } from '../../api/foods';
+import { getRestaurant } from '../../api/restaurants';
 
 import * as MC from './mealCardSplit';
 
@@ -24,72 +25,90 @@ class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
     constructor(props: MC.MealCardProps) {
         super(props);
         this.state = {
-            foods: [],
-            timestamp: new Date(),
+            mealsPerRestaurant: {},
+            mealTime: new Date(),
             raised: false,
             shadow: 1,
             fade: false,
         };
     }
-
-    async getMealData(user_id: string, token: string): Promise<MC.IMealData[]> {
-        const fetchData = await getMealByRestaurant(user_id, this.props.id, token);
-        if (fetchData.message === "Auth failed") {
-            console.log("Unable to fetch reviews");
-            return [];
+    
+    async componentDidMount() {
+        setTimeout(() => this.setState({ fade: true }), 150 * this.props.index);
+        const rawMealData = this.props.rawMealData;
+        if (!this.props.loggedIn) {
+            console.log("user not logged in");
+            return;
         }
+        
+        const fetchData = await this.getMealData(this.props.rawMealData);
 
-        const mealItems = fetchData as MC.IRawMealData[];
-        let id = 0;
+        this.setState({
+            mealsPerRestaurant: fetchData,
+            mealTime: new Date(rawMealData.updatedAt),
+        });
+    }
 
-        const formattedMeals: MC.IMealData[] = [];
-
-        for (const meal of mealItems) {
-            const currentFoods: MC.IFoodRawData[] = meal.foods;
-
-            for (const food of currentFoods) {
-                const currentEntry: MC.IMealData = {
-                    meal: food.name,
-                    date: getFormattedDate(new Date(meal.createdAt)),
-                    id: id
-                }
-                formattedMeals.push(currentEntry);
-                id += 1
+    async getMealData(rawMealData: MC.IRawMealData) {
+        let mealsPerRestaurant = {} as MC.IMealData;
+        for (const rest of rawMealData.restaurants) {
+            const restName = await getRestaurant(rest, this.props.token);
+            mealsPerRestaurant[""+restName.name] = {
+                foods: [],
+                mostCaloricFood: '',
+                totalCalories: 0,
             }
         }
-
-        return formattedMeals;
+        let maxCal = -1;
+        let maxCalFood = "something went wrong";
+        for (const food of rawMealData.foods) {
+            const foodData: MC.IRawFoodData = await getFood(food, this.props.token) as MC.IRawFoodData;
+            const restKey = await getRestaurant(foodData.restaurantId, this.props.token);
+            if (foodData.total_cal > maxCal) {
+                maxCal = foodData.total_cal;
+                maxCalFood = foodData.name;
+            }
+            mealsPerRestaurant[restKey.name].foods.push(foodData.name);
+            mealsPerRestaurant[restKey.name].totalCalories += foodData.total_cal;
+            mealsPerRestaurant[restKey.name].mostCaloricFood = maxCalFood;
+        }
+        console.log(mealsPerRestaurant);
+        return mealsPerRestaurant;
     }
-    
+
     render() {
         const {
-            name,
-            description,
-            id,
-            index,
-        } = this.props;
-
-        const {
-            foods,
-            timestamp,
+            mealsPerRestaurant,
+            mealTime,
             raised,
             shadow,
             fade
         } = this.state;
 
         return (
-            <Card sx={{ maxWidth: 360 }}>
-                <Grid container direction='row'>
-                    <Grid item>
-                        <CardMedia component="img" height="140" image={MC.nameToImage[name]} alt={name} />
-                    </Grid>
-                    <Grid item>
-                        <div>hello</div>
-                    </Grid>
-                    
-                </Grid>
-                
-            </Card>
+            <Fade in={fade} timeout={300}>
+                <Card>
+                    <CardActionArea onClick={() => console.log("do a popup")} disableRipple>
+                        <Grid container direction='row'>
+                            <Grid item>
+                                <CardMedia component="img" height="140" image={MC.nameToImage["Sazon"]} alt={"Sazon"} />
+                            </Grid>
+                            <Grid item>
+                                <CardContent sx={{ flex: '1 0 auto' }}>
+                                    <Typography component="div" variant="h5">
+                                        Sazon
+                                    </Typography>
+                                    <Typography variant="subtitle1" color="text.secondary" component="div">
+                                        Arepa Bowl
+                                    </Typography>
+                                </CardContent>
+                            </Grid>
+                        </Grid>
+                    </CardActionArea>
+                    <Button onClick={() => console.log(this.state)}>Debug</Button>        
+                </Card>
+            </Fade>
+            
         );
     }
 }
