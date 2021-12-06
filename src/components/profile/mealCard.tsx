@@ -15,7 +15,6 @@ import CardMedia from '@mui/material/CardMedia';
 import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 
-import { RestaurantInfo } from '../restaurants/restaurantConstants';
 import { getFood } from '../../api/foods';
 import { getRestaurant } from '../../api/restaurants';
 
@@ -63,17 +62,17 @@ class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
             }
         }
         let maxFoodCal = -1, maxRestCal = -1;
-        let maxFood  = "something went wrong", maxRest = "something went wrong";
+        let maxFood = {} as MC.IRawFoodData, maxRest = "something went wrong";
         for (const food of rawMealData.foods) {
             const foodData: MC.IRawFoodData = await getFood(food, this.props.token) as MC.IRawFoodData;
             const restKey = await getRestaurant(foodData.restaurantId, this.props.token);
             if (foodData.total_cal > maxFoodCal) {
                 maxFoodCal = foodData.total_cal;
-                maxFood = foodData.name;
+                maxFood = foodData;
             }
-            mealsPerRestaurant[restKey.name].foods.push(foodData.name);
+            mealsPerRestaurant[restKey.name].foods.push(foodData);
             mealsPerRestaurant[restKey.name].totalCalories += foodData.total_cal;
-            mealsPerRestaurant[restKey.name].mostCaloricFood = maxFood;
+            mealsPerRestaurant[restKey.name].mostCaloricFood = maxFood.name;
 
             if (mealsPerRestaurant[restKey.name].totalCalories > maxRestCal) {
                 maxRestCal = mealsPerRestaurant[restKey.name].totalCalories;
@@ -108,8 +107,6 @@ class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
             mostSignificantRestaurant,
             mealTime,
             dialogOpen,
-            raised,
-            shadow,
             fade
         } = this.state;
 
@@ -118,14 +115,14 @@ class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
         return (
             <>
                 <Fade in={fade} timeout={300}>
-                    <Card>
+                    <Card variant="outlined" sx={{ display: 'inline-block' }}>
                         <CardActionArea onClick={() => this.setState({ dialogOpen: !dialogOpen })} disableRipple>
-                            <Grid container direction='row' justifyContent="center">
-                                <Grid item>
-                                    <CardMedia component="img" height="140" image={MC.nameToImage[mostSignificantRestaurant]} alt={"restaurantImage"} />
-                                </Grid>
-                                <Grid item>
-                                    <CardContent sx={{ flex: '1 0 auto' }}>
+                            <CardContent sx={{ flex: '1 0 auto' }}>
+                                <Grid container direction='row' justifyContent="center" spacing={2} alignItems="center">
+                                    <Grid item xs={6}>
+                                        <CardMedia component="img" width="160" image={MC.nameToImage[mostSignificantRestaurant]} alt={"restaurantImage"} />
+                                    </Grid>
+                                    <Grid item>
                                         <Typography component="div" variant="h5" display="inline">
                                             {mostSignificantRestaurant}
                                         </Typography>
@@ -138,11 +135,11 @@ class MealCard extends React.Component<MC.MealCardProps, MC.MealCardState> {
                                         <Typography variant="subtitle1" color="text.secondary" component="div">
                                             {loading ? "" : mealTime.toLocaleTimeString()}
                                         </Typography>
-                                    </CardContent>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
+                            </CardContent>
                         </CardActionArea>
-                        <Button onClick={() => this.debug()}>Debug</Button>        
+                        {/* <Button onClick={() => this.debug()}>Debug</Button>         */}
                     </Card>
                 </Fade>
                 <MealCardPopup mealsPerRestaurant={mealsPerRestaurant} handleClose={() => this.setState({dialogOpen: false})} open={dialogOpen}/>

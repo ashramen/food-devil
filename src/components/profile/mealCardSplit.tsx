@@ -79,7 +79,7 @@ export interface IRawMealData {
 
 export interface IMealData {
     [index: string]: {
-        foods: string[],
+        foods: IRawFoodData[],
         mostCaloricFood: string,
         totalCalories: number,
     },

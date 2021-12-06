@@ -66,9 +66,11 @@ class ProfilePage extends React.Component<IProfilePageProps, IProfilePageState> 
                     <TopAppBar page='profile' />
                     {this.props.loggedIn ?
                     <>
-                        <Grid container mt={15}>
+                        <Grid container mt={15} direction="column">
                             <Grid item>
                                 <div>Welcome {username}</div>
+                            </Grid>
+                            <Grid item>
                                 <div>All your meals are listed here. 
                                     <Button onClick={() => this.setState({viewMeals: !viewMeals})}>{viewMeals ? "Show Less" : "View All"}</Button>
                                 </div>

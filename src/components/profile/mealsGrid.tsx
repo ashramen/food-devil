@@ -65,11 +65,13 @@ export default class MealsGrid extends React.Component<IMealsGridProps, IMealsGr
             <>
                 {sortedKeys.map((date, index) => 
                         <>
-                            <Grid item xs={6}>
-                                <div className='title'>{(new Date(date)).toLocaleDateString()}</div>
+                            <Grid container justifyContent="flex-end" direction="row">
+                                <Grid item xs={12}>
+                                    <div className='title'>{(new Date(date)).toLocaleDateString()}</div>
+                                </Grid>
                             </Grid>
                             <Divider variant='middle' />
-                            <Grid container spacing={2} pb={2} sx={{ marginTop: 1}}>
+                            <Grid container spacing={2} pb={2} sx={{ marginTop: 1, width:'fit-content' }}>
                                 {mealsByDate[date].map( (rawMealData) =>
                                     <Grid item xs={3}>
                                         <MealCard rawMealData={rawMealData} index={index} />
