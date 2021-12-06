@@ -6,10 +6,11 @@ import { Link } from "react-router-dom";
 import { State } from '../../store/index';
 import TopAppBar from '../topAppBar/topAppBar';
 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { CardMedia, Typography } from '@mui/material';
+import { CardMedia, Divider, IconButton, Typography } from '@mui/material';
 import Rating from '@mui/material/Rating';
 
 import { nameToImage } from './restaurantBox';
@@ -18,6 +19,7 @@ import RestaurantReviewField from './restaurantReviewField';
 import MealsOrdered from './mealsOrdered';
 
 import './styles.css';
+import AddIcon from "@mui/icons-material/Add";
 
 interface MatchParams {
     name: string;
@@ -54,11 +56,11 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
         const { name, id } = this.props.match.params;
         const averageRating = this.state.averageRating;
         return (
-            <Box mx={2}>
+            <Box mx={2} sx={{marginBottom: 3}}>
                 <>
                     <TopAppBar page='restaurants' />
                     <Grid container mt={15}>
-                        <Grid item xs={6}>
+                        <Grid item>
                             {averageRating > 0
                                 ? <div className='title'>
                                     {name} (<Rating name='restaurant-average-rating' value={averageRating} precision={0.1} size="large" readOnly />)
@@ -68,18 +70,21 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                                 </div>
                             }
                         </Grid>
-                        <Grid item xs={6} >
+                        <Grid item marginLeft="auto">
                             <Typography align="right">
                                 <Link to={"/restaurants"}>
-                                    <Button>Go Back</Button>
+                                    <IconButton size="large">
+                                        <ArrowBackIcon />
+                                    </IconButton>
                                 </Link>
                             </Typography>
                         </Grid>
                     </Grid>
+                    <Divider />
                     <Grid container>
                         <Grid item container direction="column" xs style={{ display: "flex", justifyContent: "flex-start" }}>
                             <Grid item xs mt={2}>
-                                <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Write A Review </div>
+                                <div style={{ fontSize: 25 }}> Write A Review </div>
                             </Grid>
                             {this.props.loggedIn ?
                                 <Grid item xs>
@@ -87,15 +92,17 @@ class RestaurantInfo extends React.Component<RestaurantInfoProps, RestaurantInfo
                                 </Grid>
                                 : <div> Please login to write a review! </div>
                             }
+                            <Divider  sx={{marginTop: 3, marginBottom: 1}}/>
                             <Grid item xs mt={1}>
-                                <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Previous Reviews </div>
+                                <div style={{ fontSize: 25 }}> Previous Reviews </div>
                             </Grid>
                             <Grid item xs>
                                 <RestaurantReviewTable name={name} id={id} handleAverageRatingChange={newValue => this.handleAverageRatingChange(newValue)} />
                             </Grid>
+                            <Divider sx={{marginTop: 4}}/>
                             <Grid item container direction="column" xs spacing={2} mt={1}>
                                 <Grid item xs>
-                                    <div style={{ fontSize: 25, fontFamily: 'Open Sans' }}> Meals You've Ordered From {name} </div>
+                                    <div style={{ fontSize: 25 }}> Meals You've Ordered From {name} </div>
                                 </Grid>
                                 {this.props.loggedIn ?
                                     <Grid item xs>

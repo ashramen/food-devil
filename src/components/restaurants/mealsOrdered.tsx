@@ -207,6 +207,7 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <TextField
                     name='search'
+                    size="small"
                     value={searched}
                     onChange={(e: any) => this.requestSearch(e)}
                     sx={{ padding: '16px' }}
