@@ -27,7 +27,7 @@ import Zoom from '@mui/material/Zoom';
 import { visuallyHidden } from '@mui/utils';
 
 import { getFoodsByRestaurant } from "../../api/foods";
-import { getComparator, stableSort, Order } from "./recordMealConstants";
+import { getComparator, stableSort, Order, AllergenNameToImage } from "./recordMealConstants";
 import { RestaurantData } from './recordMeal';
 import { IRawFoodData } from './recordMeal';
 
@@ -58,6 +58,7 @@ const columns: readonly Column[] = [
 
 interface IFormattedFoodData {
     foodName: string;
+    // allergens: any[];
     allergens: string;
     record: any;
     total_cal: number,
@@ -179,7 +180,8 @@ interface FoodTableStates {
     searched: string,
     rowsPerPage: number,
     selectedRestaurant: string,
-    allergens: string[]
+    // allergens: any[],
+    allergens: string[],
     showNutrition: boolean,
 }
 
@@ -251,7 +253,8 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
     formatFoodData(food: IRawFoodData): IFormattedFoodData {
         return {
             foodName: food.name,
-            allergens: food.allergens === null? 'None' : food.allergens,
+            // allergens: allergensList.map(allergen => <img src={AllergenNameToImage[allergen]} alt="" />),
+            allergens: food.allergens === null ? 'None' : food.allergens,
             record: <Button variant="outlined" onClick={() => this.addItem(food)}>Add</Button>,
             total_cal: food.total_cal,
             fat_g: food.fat_g,
@@ -318,7 +321,13 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
         return (
             <TableRow hover role="checkbox" key={row.foodName}>
                 {columns.map((column) => {
-                    const value = row[column.id];
+                    let value = row[column.id];
+                    if (column.id === "allergens") {
+                        console.log(typeof(row.allergens));
+                        let allergenParam = typeof(row.allergens) === "string" ? "" : row.allergens[0];
+                        let allergensList = allergenParam.split(", ");
+                        value = allergensList.map(allergen => <img src={AllergenNameToImage[allergen]} alt="" height={35} />);
+                    }
                     return (
                         <TableCell key={column.id} align={column.align}>
                             {column.format && typeof value === 'number'
