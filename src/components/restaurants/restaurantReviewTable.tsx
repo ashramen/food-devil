@@ -208,7 +208,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         return (
             <>
                 <Grid container sx={{ padding: '16px' }} alignItems='center' justifyContent='center'>
-                    <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-start" }}>
+                    <Grid item xs={8} style={{ display: "flex", justifyContent: "flex-start", alignItems: 'center' }}>
                         <TextField
                             name='search'
                             label='Search for Keyword'
@@ -224,7 +224,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
                         <Button onClick={() => this.onSortByMostRecent()}>Sort By Most Recent </Button>
                         <Button onClick={() => this.onSortByHighestRating()}>Sort By Highest Rating </Button>
                     </Grid>
-                    <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Grid item xs={4} style={{ display: "flex", justifyContent: "flex-end" }}>
                         <Pagination count={Math.ceil(rows.length / rowsPerPage)} shape="rounded" page={page}
                             onChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)} />
                     </Grid>
