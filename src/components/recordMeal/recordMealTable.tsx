@@ -457,7 +457,7 @@ class RecordMealTable extends React.Component<FoodTableProps, FoodTableStates> {
                     </Grid>
                 </Grid>
                 <Grid container sx={{ marginLeft: 3, marginBottom: 1}}>
-                    <Grid item xs={1.2}>
+                    <Grid item xs={1}>
                         <Typography sx={{ fontSize: 16, textAlign: 'left' }} mt={3}>Allergies?</Typography>
                     </Grid>
                     {allAllergens.map((allergen) => <Grid item xs={1}>{this.createCheckBox(allergen)}</Grid>)}
