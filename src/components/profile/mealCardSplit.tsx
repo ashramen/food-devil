@@ -1,34 +1,17 @@
-import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { State } from '../../store/index';
 
-
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Fade from '@mui/material/Fade';
-
-
-import { getComparator, stableSort, Order, getFormattedDate } from "../restaurants/restaurantConstants";
-import { getMealByRestaurant } from '../../api/meals';
-
 export interface MealCardProps extends PropsFromRedux {
-    name: string;
-    description: string;
-    id: string;
+    rawMealData: IRawMealData;
     index: number;
 };
 
 export interface MealCardState {
-    foods: string[];
-    timestamp: Date;
-
+    mealsPerRestaurant: IMealData;
+    mostSignificantRestaurant: string;
+    dialogOpen: boolean;
+    mealTime: Date;
     raised: boolean;
     shadow: number;
     fade: boolean;
@@ -40,11 +23,11 @@ export interface InameToImage {
 
 export const nameToImage: InameToImage = {
     "Beyu Blue Coffee": "/images/beyu_blue.png",
-    "Beyu Cafe at Duke Law": "/images/beyu_cafe_duke_law.png",
+    "Beyu Café at Duke Law": "/images/beyu_cafe_duke_law.png",
     "Bseisu Coffee Bar": "/images/bseisu.jpg",
     "Cafe": "/images/cafe.png",
-    "Cafe 300": "/images/cafe_300.jpg",
-    "Freeman Cafe": "/images/freeman.jpg",
+    "Café 300": "/images/cafe_300.jpg",
+    "Freeman Café": "/images/freeman.jpg",
     "Ginger + Soy": "/images/ginger.png",
     "Gyotaku": "/images/gyotaku.png",
     "Il Forno": "/images/il_forno.png",
@@ -68,24 +51,47 @@ export const nameToImage: InameToImage = {
     "Twinnie's": "/images/twinnie.png",
 }
 
-export interface IMealData {
-    meal: string;
-    date: string;
-    id: number;
-}
-
-export interface IFoodRawData {
-    _id: string,
-    name: string
-}
 export interface IRawMealData {
     _id: string,
     user_id: string,
-    foods: IFoodRawData[],
-    restaurant_id: string,
+    foods: string[],
+    restaurants: string[],
     createdAt: string,
     updatedAt: string,
     __v: number
+}
+
+export interface IMealData {
+    [index: string]: {
+        foods: IRawFoodData[],
+        mostCaloricFood: string,
+        totalCalories: number,
+    },
+}
+
+export interface Nutrients {
+    total_cal: number,
+    fat_g: number,
+    sat_fat_g: number,
+    trans_fat_g: number,
+    sodium_mg: number,
+    carbs_g: number,
+    fiber_g: number,
+    sugars_g: number,
+    protein_g: number,
+    cholesterol_mg: number
+}
+
+export interface IRawFoodData extends Nutrients {
+    _id: string;
+    restaurantId: string,
+    menu: string,
+    submenu: string,
+    name: string,
+    allergens: string[]
+    ingredients: string,
+    serving_size: string,
+    servings_per_container: number,
 }
 
 //////////////////////////////////////////////////

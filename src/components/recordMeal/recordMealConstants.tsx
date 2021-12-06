@@ -44,3 +44,20 @@ export function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => n
     });
     return stabilizedThis.map((el) => el[0]);
 }
+
+export interface IAllergenNameToImage {
+    [x: string]: string;
+}
+
+export const AllergenNameToImage: IAllergenNameToImage = {
+    "Milk Allergen": "/images/allergen-dairy.png",
+    "Eggs Allergen": "/images/allergen-egg.png",
+    "Fish Allergen": "/images/allergen-fish.png",
+    "Contains Gluten": "/images/allergen-gluten.png",
+    "Tree Nuts Allergen": "/images/allergen-nuts.png",
+    "Peanut Allergen": "/images/allergen-peanut.png",
+    "Seasame": "/images/allergen-sesame.png",
+    "Shellfish Allergen": "/images/allergen-shellfish.png",
+    "Soy Allergen": "/images/allergen-soy.png",
+    "Wheat Allergen": "/images/allergen-wheat.png",
+}
