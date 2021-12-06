@@ -43,6 +43,7 @@ interface ILogInOutMenu {
     onClick: any;
     loggedIn: boolean;
     username: string | null;
+    handleProfileClick: any;
 };
 
 const LogOutMenuList = styled((props: MenuProps) => (
@@ -122,6 +123,9 @@ function LogOutMenu(props: ILogInOutMenu) {
                 open={open}
                 onClose={handleClose}
             >
+                <MenuItem onClick={props.handleProfileClick} disableRipple>
+                    Profile
+                </MenuItem>
                 <MenuItem onClick={props.onClick} disableRipple>
                     Log Out
                 </MenuItem>
@@ -137,6 +141,7 @@ function LogInOutButton(props: ILogInOutMenu) {
                 onClick={props.onClick}
                 loggedIn={props.loggedIn}
                 username={props.username}
+                handleProfileClick={props.handleProfileClick}
             />
         )
     } else {
@@ -172,6 +177,12 @@ export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> 
             this.props.logOut();
         } else {
             this.props.history.push('/login');
+        }
+    };
+
+    handleProfileClick = () => {
+        if (this.props.loggedIn) {
+            this.props.history.push('/profile');
         }
     };
 
@@ -227,6 +238,7 @@ export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> 
                                         onClick={() => this.handleLogInButton()} 
                                         loggedIn={this.props.loggedIn} 
                                         username={this.props.username ? this.props.username : null}
+                                        handleProfileClick={() => this.handleProfileClick()}
                                     />
                                 </div>}
                             </Grid>

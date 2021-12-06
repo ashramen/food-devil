@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/index';
 
+import Pagination from '@mui/material/Pagination';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -18,6 +19,7 @@ import { visuallyHidden } from '@mui/utils';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
+import RestaurantReviewCard from './restaurantReviewCard';
 import { getReviews, upvoteReview } from '../../api/reviews';
 import { getUsername } from '../../api/login';
 import Button from '@mui/material/Button';
@@ -75,7 +77,8 @@ interface IRawReviewData {
 }
 
 
-interface IReviewData {
+export interface IReviewData {
+    id: string;
     review: string;
     rating: number;
     helpful: number;
@@ -110,7 +113,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             rows: [],
             order: 'desc',
             orderBy: 'rating',
-            page: 0,
+            page: 1,
             searched: '',
             rowsPerPage: 5,
             originalRows: []
@@ -129,7 +132,7 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             }
             sumOfRatings += review.rating;
         })
-        this.props.handleAverageRatingChange(sumOfRatings / uniqueReviewData.length)
+        this.props.handleAverageRatingChange(sumOfRatings / uniqueReviewData.length);
         this.setState({
             rows: uniqueReviewData,
             originalRows: uniqueReviewData
@@ -168,13 +171,14 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
             review.user_id = "Anonymous";
         }
         const formattedReview = {
+            id: review._id,
             review: review.description,
             rating: review.stars,
             helpful: review.helpful,
             username: review.user_id,   // TODO: this is the user_id, not the username; need new api method
             date: getFormattedDate(new Date(review.updatedAt)),
             upvote: this.props.loggedIn ? (
-                    <IconButton color="default" onClick={() => this.upvoteReview(review._id, formattedReview)}>
+                    <IconButton color="default" onClick={() => this.upvoteReview(formattedReview)}>
                         <ThumbUpIcon />
                     </IconButton>
                 ) : (
@@ -187,11 +191,11 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
         return formattedReview;
     }
 
-    upvoteReview(id: string, review: IReviewData) {
+    upvoteReview(review: IReviewData) {
         const rows = this.state.rows;
         const row = rows.find(row => row === review);
         if (row && !row.hasUpvote) {
-            upvoteReview(id, this.props.token);
+            upvoteReview(review.id, this.props.token);
             row.upvote = <IconButton color="primary">
                 <ThumbUpIcon />
             </IconButton>
@@ -246,26 +250,53 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
     render() {
         const {
             rows,
-            order,
-            orderBy,
             page,
             searched,
             rowsPerPage
         } = this.state;
+        rows.sort((a, b) => (a.helpful > b.helpful) ? -1 : 1);
+        const paginatedRows = rows.slice((page-1) * rowsPerPage, Math.min((page-1) * rowsPerPage + rowsPerPage, rows.length));
         return (
-            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <>
                 <Grid container sx={{ padding: '16px' }} alignItems='center' justifyContent='center'>
-                    <Grid item>
+                    <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-start" }}>
                         <TextField
                             name='search'
                             label='Search for Keyword'
                             variant='outlined'
                             value={searched}
                             onChange={(e: any) => this.requestSearch(e)}
+                            size="small"
+                            sx={{
+                                width: 250
+                            }}
                         />
                     </Grid>
+                    <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Pagination count={Math.ceil(rows.length / rowsPerPage)} shape="rounded" page={page}
+                        onChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)}/>
+                    </Grid>
                 </Grid>
-                <TableContainer sx={{ maxHeight: 800 }}>
+                {paginatedRows.map((row: IReviewData, index: number) => 
+                    <RestaurantReviewCard reviewData={row} index={index} upvoteReview={(row) => this.upvoteReview(row)}/>
+                )}
+            </>
+        );
+    }
+}
+
+const mapStateToProps = (state: State) => ({
+    loggedIn: state.logIn.loggedIn,
+    token: state.logIn.token,
+    userId: state.logIn.userId,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+export default connector(RestaurantReviewTable);
+
+/**
+ * <TableContainer sx={{ maxHeight: 800 }}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -324,17 +355,4 @@ class RestaurantReviewTable extends React.Component<RestaurantReviewTableProps, 
                     onPageChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)}
                     onRowsPerPageChange={(e: any) => this.handleChangeRowsPerPage(e)}
                 />
-            </Paper>
-        );
-    }
-}
-
-const mapStateToProps = (state: State) => ({
-    loggedIn: state.logIn.loggedIn,
-    token: state.logIn.token,
-    userId: state.logIn.userId,
-});
-
-const connector = connect(mapStateToProps);
-type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(RestaurantReviewTable);
+ */

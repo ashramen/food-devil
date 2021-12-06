@@ -1,6 +1,15 @@
-import * as React from 'react';
+import React from 'react';
+import { RouteComponentProps } from 'react-router';
 import { connect, ConnectedProps } from 'react-redux';
+import { Link } from "react-router-dom";
+
 import { State } from '../../store/index';
+import TopAppBar from '../topAppBar/topAppBar';
+import LockPage from '../lockPage/lockPage';
+
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -12,11 +21,13 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
 
-import { getComparator, stableSort, Order, getFormattedDate } from "./restaurantConstants";
+import { getComparator, stableSort, Order, getFormattedDate } from "../restaurants/restaurantConstants";
 import { getMealByRestaurant } from '../../api/meals';
+
+import MealCard from './mealCard';
+
 
 interface Column {
     id: 'meal' | 'date';
@@ -74,8 +85,6 @@ const dataRows: IMealData[] = [
 ];
 
 interface MealsOrderedProps extends PropsFromRedux {
-    name: string;
-    id: string;
 }
 
 interface MealsOrderedState {
@@ -89,7 +98,7 @@ interface MealsOrderedState {
 }
 
 
-class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState> {
+class ProfilePage extends React.Component<MealsOrderedProps, MealsOrderedState> {
     constructor(props: MealsOrderedProps) {
         super(props);
         this.state = {
@@ -118,7 +127,7 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
     }
 
     async getReviewData(user_id: string, token: string): Promise<IMealData[]> {
-        const fetchData = await getMealByRestaurant(user_id, this.props.id, token);
+        const fetchData = await getMealByRestaurant(user_id, "616ad5d1d252dea11b9043db", token);
         if (fetchData.message === "Auth failed") {
             console.log("Unable to fetch reviews");
             return [];
@@ -145,8 +154,6 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
 
         return formattedMeals;
     }
-
-
 
     requestSearch(event: any) {
         const searchedVal = event.target.value;
@@ -204,71 +211,23 @@ class MealsOrdered extends React.Component<MealsOrderedProps, MealsOrderedState>
             return (<div>{"You haven't ordered any meals from here yet"}</div>);
         }
         return (
-            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                <TextField
-                    name='search'
-                    value={searched}
-                    onChange={(e: any) => this.requestSearch(e)}
-                    sx={{ padding: '16px' }}
-                />
-                <TableContainer sx={{ maxHeight: 800 }}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                {columns.map((headCell) => (
-                                    <TableCell
-                                        key={headCell.id}
-                                        align={headCell.align}
-                                        sortDirection={orderBy === headCell.id ? order : false}
-                                    >
-                                        <TableSortLabel
-                                            active={orderBy === headCell.id}
-                                            direction={orderBy === headCell.id ? order : 'asc'}
-                                            onClick={this.createSortHandler(headCell.id)}
-                                        >
-                                            {headCell.label}
-                                            {orderBy === headCell.id ? (
-                                                <Box component="span" sx={visuallyHidden}>
-                                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                                </Box>
-                                            ) : null}
-                                        </TableSortLabel>
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {stableSort(rows, getComparator(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row) => {
-                                    return (
-                                        <TableRow hover role="checkbox" key={row.id}>
-                                            {columns.map((column) => {
-                                                const value = row[column.id];
-                                                return (
-                                                    <TableCell key={column.id} align={column.align}>
-                                                        {column.format && typeof value === 'number'
-                                                            ? column.format(value)
-                                                            : value}
-                                                    </TableCell>
-                                                );
-                                            })}
-                                        </TableRow>
-                                    );
-                                })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 20]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={(e: any, newPage: number) => this.handleChangePage(e, newPage)}
-                    onRowsPerPageChange={(e: any) => this.handleChangeRowsPerPage(e)}
-                />
-            </Paper>
+            <>
+                <Box mx={2}>
+                    <TopAppBar page='profile' />
+                    {this.props.loggedIn ?
+                    <>
+                        <Grid container mt={15}>
+                            <Grid item>
+                                <div>Welcome {this.props.userId}</div>
+                            </Grid>
+                        </Grid>
+                        <Grid item>
+                                <MealCard name={"Sazon"} description={"desc hello"} id={"some id"} index={300} />
+                        </Grid>
+                    </> : <LockPage />}
+                </Box>
+            </>
+                                   
         );
     }
 }
@@ -281,4 +240,4 @@ const mapStateToProps = (state: State) => ({
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-export default connector(MealsOrdered);
+export default connector(ProfilePage);

@@ -5,7 +5,7 @@ import NutritionCard from './nutritionCard';
 import NutritionGraph from './nutritionGraph';
 import TopAppBar from '../topAppBar/topAppBar';
 import { NutritionStats } from '../../util/translateData';
-import { getMealByDays } from '../../api/meals';
+import { getMealNutritionByDays } from '../../api/meals';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Box from '@mui/material/Box';
@@ -62,7 +62,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
     const { reportDate, historyStartDate, historyEndDate } = this.state;
     if (updating === 'report' || updating === 'both') {
       this.setState({ loadingReport: true });
-      const nutritionStats: NutritionStats[] = await getMealByDays(userId!, token, [reportDate]);
+      const nutritionStats: NutritionStats[] = await getMealNutritionByDays(userId!, token, [reportDate]);
       this.setState({ nutritionProgress: nutritionStats[0], loadingReport: false });
     }
     if (updating === 'graph' || updating === 'both') {
@@ -71,7 +71,7 @@ class NutritionReport extends React.Component<NutritionReportProps, NutritionRep
       for (let date = new Date(historyStartDate.getTime()); date < new Date(historyEndDate.getTime() + 24 * 60 * 60 * 1000); date.setDate(date.getDate() + 1)) {
         dateList.push(new Date(date.getTime()));
       };
-      const nutritionGraph: NutritionStats[] = await getMealByDays(userId!, token, dateList);
+      const nutritionGraph: NutritionStats[] = await getMealNutritionByDays(userId!, token, dateList);
       this.setState({ nutritionGraph, loadingGraph: false });
     }
   }
