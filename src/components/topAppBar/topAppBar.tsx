@@ -44,6 +44,7 @@ interface ILogInOutMenu {
     loggedIn: boolean;
     username: string | null;
     handleProfileClick: any;
+    handleExportClick: any;
 };
 
 const LogOutMenuList = styled((props: MenuProps) => (
@@ -126,6 +127,9 @@ function LogOutMenu(props: ILogInOutMenu) {
                 <MenuItem onClick={props.handleProfileClick} disableRipple>
                     Profile
                 </MenuItem>
+                <MenuItem onClick={props.handleExportClick} disableRipple>
+                    Export Data
+                </MenuItem>
                 <MenuItem onClick={props.onClick} disableRipple>
                     Log Out
                 </MenuItem>
@@ -142,6 +146,7 @@ function LogInOutButton(props: ILogInOutMenu) {
                 loggedIn={props.loggedIn}
                 username={props.username}
                 handleProfileClick={props.handleProfileClick}
+                handleExportClick={props.handleExportClick}
             />
         )
     } else {
@@ -183,6 +188,12 @@ export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> 
     handleProfileClick = () => {
         if (this.props.loggedIn) {
             this.props.history.push('/profile');
+        }
+    };
+
+    handleExportClick = () => {
+        if (this.props.loggedIn) {
+            this.props.history.push('/export');
         }
     };
 
@@ -239,6 +250,7 @@ export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> 
                                         loggedIn={this.props.loggedIn} 
                                         username={this.props.username ? this.props.username : null}
                                         handleProfileClick={() => this.handleProfileClick()}
+                                        handleExportClick={() => this.handleExportClick()}
                                     />
                                 </div>}
                             </Grid>
