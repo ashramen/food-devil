@@ -100,24 +100,7 @@ class ExportPage extends React.Component<NutritionReportProps, NutritionReportSt
         date.setDate(date.getDate() + 1)
         
       }
-
-      const options = { 
-        fieldSeparator: ',',
-        filename: 'Nutrition from ' + formatDate(historyStartDate) + ' to ' + formatDate(historyEndDate),
-        quoteStrings: '"',
-        decimalSeparator: '.',
-        showLabels: false, 
-        showTitle: false,
-        useTextFile: false,
-        useBom: true,
-        useKeysAsHeaders: true,
-        //headers: ['Column 1', 'Column 2'] //<-- Won't work with useKeysAsHeaders present!
-      };
-
-      const csvExporter = new ExportToCsv(options);
-
-
-      csvExporter.generateCsv(nutritionGraph);
+      
       this.setState({ nutritionGraph, loadingGraph: false });
     }
   }
@@ -155,14 +138,10 @@ class ExportPage extends React.Component<NutritionReportProps, NutritionReportSt
       useTextFile: false,
       useBom: true,
       useKeysAsHeaders: true,
-      //headers: ['Column 1', 'Column 2'] //<-- Won't work with useKeysAsHeaders present!
     };
 
     const csvExporter = new ExportToCsv(options);
-
-
     csvExporter.generateCsv(nutritionGraph);
-    this.setState({ nutritionGraph, loadingGraph: false });
   } 
 
   render() {
@@ -177,14 +156,10 @@ class ExportPage extends React.Component<NutritionReportProps, NutritionReportSt
         loadingGraph
       } = this.state;
 
-    
-
-
-    //csvExporter.generateCsv([nutritionProgress])
     return (
         <>
-            <Box mt={30}>
-                <TopAppBar page='profile' />
+            <Box  mx={2}>
+                <TopAppBar page='export' />
 
                 <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end", gap: 8}} mb={1}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -218,10 +193,10 @@ class ExportPage extends React.Component<NutritionReportProps, NutritionReportSt
                     <>
                     {loadingGraph? <CircularProgress size={100} sx={{ marginTop: 24, marginBottom: 24}}/> :
                     <Button variant='contained' onClick={() => this.downloadCSV()} sx={{bgcolor: '#003087'}}>
-                    Record Meal
+                    Export Nutrition History
                     </Button>
                     }
-                        <div className='text'>{JSON.stringify(nutritionGraph)}</div>
+                        
                     </>
             </Box>
         </>
@@ -233,15 +208,10 @@ function processStats(arr: any) {
   let len = arr.length;
   for (let i=0; i<len; i++){
     const dayObj = arr[i];
-    //console.log(i);
-    //console.log(dayObj);
     const keys = Object.keys(dayObj)
-    //console.log(keys);
     keys.forEach(key => {
-      //console.log(dayObj[key]);
       dayObj[key + " unit"] = dayObj[key].unit;
       dayObj[key] = dayObj[key].intake;
-      //console.log('success');
     })
   }
   return arr;
@@ -260,5 +230,4 @@ const mapStateToProps = (state: State) => ({
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-// oh so this was the problem... 
 export default connector(withRouter(ExportPage));
