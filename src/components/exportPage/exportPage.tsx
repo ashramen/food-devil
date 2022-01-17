@@ -7,6 +7,7 @@ import TopAppBar from '../topAppBar/topAppBar';
 import { NutritionStats } from '../../util/translateData';
 import { getMealNutritionByDays } from '../../api/meals';
 
+import {Button, Collapse, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Zoom } from "@mui/material";
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -142,6 +143,28 @@ class ExportPage extends React.Component<NutritionReportProps, NutritionReportSt
     }
   }
 
+  async downloadCSV() {
+    const { reportDate, historyStartDate, historyEndDate, nutritionGraph} = this.state;
+    const options = { 
+      fieldSeparator: ',',
+      filename: 'Nutrition from ' + formatDate(historyStartDate) + ' to ' + formatDate(historyEndDate),
+      quoteStrings: '"',
+      decimalSeparator: '.',
+      showLabels: false, 
+      showTitle: false,
+      useTextFile: false,
+      useBom: true,
+      useKeysAsHeaders: true,
+      //headers: ['Column 1', 'Column 2'] //<-- Won't work with useKeysAsHeaders present!
+    };
+
+    const csvExporter = new ExportToCsv(options);
+
+
+    csvExporter.generateCsv(nutritionGraph);
+    this.setState({ nutritionGraph, loadingGraph: false });
+  } 
+
   render() {
     const {
         nutritionProgress,
@@ -162,9 +185,41 @@ class ExportPage extends React.Component<NutritionReportProps, NutritionReportSt
         <>
             <Box mt={30}>
                 <TopAppBar page='profile' />
+
+                <Grid item xs={6} style={{ display: "flex", justifyContent: "flex-end", gap: 8}} mb={1}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label='Start Date'
+                    value={historyStartDate}
+                    minDate={new Date(historyEndDate.getTime() - (14 * 24 * 60 * 60 * 1000))}
+                    maxDate={new Date()}
+                    onChange={(newDate: Date | null) => {
+                      this.setState({
+                        historyStartDate: newDate ? newDate : new Date(),
+                        historyEndDate: newDate && newDate > historyEndDate ? newDate : historyEndDate,
+                      })
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                  <DatePicker
+                    label='End Date'
+                    value={historyEndDate}
+                    maxDate={new Date() > new Date(historyStartDate.getTime() + (14 * 24 * 60 * 60 * 1000))? new Date(historyStartDate.getTime() + (30 * 24 * 60 * 60 * 1000)) : new Date()}
+                    onChange={(newDate: Date | null) => {
+                      this.setState({
+                        historyEndDate: newDate ? newDate : new Date(),
+                        historyStartDate: newDate && newDate < historyStartDate ? newDate : historyStartDate,
+                      })
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+              </Grid>
                     <>
                     {loadingGraph? <CircularProgress size={100} sx={{ marginTop: 24, marginBottom: 24}}/> :
-                    "Successful download"
+                    <Button variant='contained' onClick={() => this.downloadCSV()} sx={{bgcolor: '#003087'}}>
+                    Record Meal
+                    </Button>
                     }
                         <div className='text'>{JSON.stringify(nutritionGraph)}</div>
                     </>
