@@ -4,7 +4,9 @@ import HomePage from "./components/homePage/HomePage";
 import RecordMeal from "./components/recordMeal/recordMeal";
 import NutritionReport from "./components/nutritionReport/nutritionReport";
 import Login from "./components/login/login";
-import ProfilePage from "./components/profile/profile"
+import ProfilePage from "./components/profile/profile";
+import ExportPage from "./components/exportPage/exportPage";
+
 import Restaurants from "./components/restaurants/restaurants";
 import RestaurantInfo from "./components/restaurants/restaurantInfo";
 
@@ -24,6 +26,9 @@ function App() {
             </Route>
             <Route exact path="/profile">
               <ProfilePage />
+            </Route>
+            <Route exact path="/export">
+              <ExportPage />
             </Route>
             <Route exact path="/recordmeal">
               <RecordMeal />
