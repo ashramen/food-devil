@@ -2,6 +2,8 @@ import React from "react";
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import TopAppBar from '../topAppBar/topAppBar';
+import BottomAppBar from '../bottomAppBar/bottomAppBar';
+
 import { signup, login, getUserId } from '../../api/login';
 
 import Alert from '@mui/material/Alert';
@@ -183,6 +185,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
     return (
       <>
         <TopAppBar page='login'/>
+        <BottomAppBar page='login'/>
         <Grid container alignItems='center' direction="column">
           <Card sx={{
             maxWidth: 350,
@@ -263,6 +266,7 @@ class Login extends React.Component<LoginProps, LoginStates> {
             </Grid>
           </Card>
         </Grid>
+        <BottomAppBar page='login'/>
       </>
     );
   }
