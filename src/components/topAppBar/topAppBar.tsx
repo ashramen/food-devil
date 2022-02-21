@@ -9,6 +9,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import CssBaseline from '@mui/material/CssBaseline';
 import Drawer from '@mui/material/Drawer';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
+import FeedbackIcon from '@mui/icons-material/Feedback';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -295,6 +296,15 @@ export class TopAppBar extends React.Component<TopAppBarProps, TopAppBarStates> 
                             <RestaurantIcon sx={this.sidebarItemStyle('restaurants')}/>
                             <ListItemText primary={'Restaurants'} sx={this.sidebarItemStyle('restaurants')}/>
                         </ListItemButton>
+
+
+                        <ListItemButton style={this.sidebarButtonStyle('feedback')} onClick={() => {window.open('https://forms.gle/Rn8eAZXcBpjAeFRg9')}}>
+                            <FeedbackIcon sx={this.sidebarItemStyle('feedback')}/>
+                            <ListItemText primary={'Feedback?'} sx={this.sidebarItemStyle('feedback')}/>
+                        </ListItemButton>
+
+
+
                     </List>
                 </Drawer>
             </Box>
