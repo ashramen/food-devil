@@ -16,3 +16,6 @@ This is the frontend repo. Our backend repo is here: https://github.com/bluqiu00
 The App is now completed! Feel free to test it.
 
 After you `cd` into the root folder, run `npm install` to install all dependencies, followed by `npm start` to run the app.
+
+# Website Link
+If you want to check out our website, go to https://fooddevil.herokuapp.com/
