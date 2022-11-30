@@ -19,3 +19,6 @@ After you `cd` into the root folder, run `npm install` to install all dependenci
 
 # Website Link
 If you want to check out our website, go to https://fooddevil.herokuapp.com/
+
+<img width="1381" alt="Food Devil Image" src="https://user-images.githubusercontent.com/44830071/204692159-f68a9c4d-c43c-417d-bb6d-f43ad58a9d94.png">
+
